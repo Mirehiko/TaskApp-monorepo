@@ -1,18 +1,21 @@
-import {Body, HttpStatus, Injectable, Param, Res} from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+import {Body, HttpStatus, Injectable, Res, UnauthorizedException} from '@nestjs/common';
 import {UserResponseDto} from "../user/dto/user-response.dto";
-import {User, UserDocument} from "../user/schemas/user.schema";
+import {UserResponse} from "../../shared/interfaces/user";
+import {InjectRepository} from "@nestjs/typeorm";
+import {Repository} from "typeorm";
+import {User} from "../user/schemas/user.entity";
 
 @Injectable()
 export class AuthService {
-    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {
-    }
+    constructor(
+        @InjectRepository(User)
+        private usersRepository: Repository<User>,
+    ) {}
 
     async register(@Body() body, @Res() response): Promise<boolean> {
         const email: string = body.email;
         const password: string = body.password;
-        const candidate = await this.userModel.findOne({ email: email });
+        const candidate = await this.usersRepository.findOne({ email: email });
         console.log(candidate, email, password)
 
         if (candidate) {
@@ -24,11 +27,11 @@ export class AuthService {
             // const password = req.body.password;
             // const role = await Role.findOne({ code_name: "default" });
             //
-            const newUser = new this.userModel({
-                email,
-                password,
-                name: '',
-            });
+            // const newUser = new this.usersRepository.save({
+            //     email,
+            //     password,
+            //     name: '',
+            // });
             // const user = new User({
             //     email: req.body.email,
             //     password: bcrypt.hashSync(password, salt),
@@ -41,10 +44,10 @@ export class AuthService {
                 // await this.userModel.save().then(() => {
                 //     console.log("User created");
                 // });
-                await newUser.save();
+                // await newUser.save();
                 response
                     .status(HttpStatus.CREATED)
-                    .json(newUser);
+                    // .json(newUser);
             } catch (error) {
                 // errorHandler(res, error);
             }
@@ -55,7 +58,7 @@ export class AuthService {
     async login(@Body() body, @Res() response): Promise<UserResponseDto> {
         const email: string = body.email;
         const password: string = body.password;
-        const candidate = await this.userModel.findOne({email: email});
+        const candidate = await this.usersRepository.findOne({email: email});
 
         if (candidate) {
             // const passwordResult = bcrypt.compareSync(
@@ -110,5 +113,30 @@ export class AuthService {
         // res.status(200).json({
         //     logout: true,
         // });
+    }
+
+    private async generateToken(data: any, options?: any): Promise<string> {
+        // return this.jwtService.sign(data: options);
+        return;
+    }
+
+    private async verifyToken(token): Promise<any> {
+        try {
+            // const data = this.jwtService.verify(token);
+            // const tokenExists = await this.jwtService.exists(data._id, token);
+            // if (tokenExists) {
+            //     return data;
+            // }
+            throw new UnauthorizedException();
+        }
+        catch(e) {
+            throw new UnauthorizedException();
+        }
+    }
+
+    private async saveToken(userResponse: UserResponse) {
+        // const userToken = await this.tokenService.create(userResponse);
+        // return userToken;userToken
+        return;
     }
 }

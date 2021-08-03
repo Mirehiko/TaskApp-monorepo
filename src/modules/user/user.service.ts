@@ -1,28 +1,30 @@
 import {HttpStatus, Injectable, Param, Res} from '@nestjs/common';
 import { ID } from '../../shared/types/id.type';
 import { UserRequestDto } from './dto/user-request.dto';
-import { User, UserDocument } from './schemas/user.schema';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
 import { UserResponseDto } from './dto/user-response.dto';
+import {InjectRepository} from "@nestjs/typeorm";
+import {User} from "./schemas/user.entity";
+import {Repository} from "typeorm";
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {
-  }
+  constructor(
+      @InjectRepository(User)
+      private usersRepository: Repository<User>,
+  ) {}
 
   async getAll(): Promise<UserResponseDto[]> {
     return;
   }
 
   async getById(id: ID): Promise<UserResponseDto> {
-    const user: User = await this.userModel.findOne({ id });
+    const user: User = await this.usersRepository.findOne(id);
     const result: UserResponseDto = Object.assign(user, {permissions: []});
     return result;
   }
 
   async createUser(@Param() userRequestDto: UserRequestDto, @Res() response): Promise<any> {
-    const candidate = await this.userModel.findOne({ email: userRequestDto.email });
+    const candidate = await this.usersRepository.findOne({ email: userRequestDto.email });
     if (candidate) {
       response
           .status(HttpStatus.CONFLICT)
@@ -39,20 +41,19 @@ export class UserService {
       //   userInfo.avatar = req.body.avatar;
       // }
 
-      // const user = new this.userModel.createCollection(userRequestDto);
-      const newUser = new this.userModel(userRequestDto);
+      // const newUser = new this.usersRepository(userRequestDto);
 
       try {
 
         // await user.save().then(() => {
         //   console.log('User created');
         // });
-        await newUser.save();
+        // await newUser.save();
 
 
         response
             .status(HttpStatus.CREATED)
-            .json(newUser);
+            // .json(newUser);
 
 
       } catch (error) { /*errorHandler(res, error);*/ }
@@ -62,12 +63,12 @@ export class UserService {
   }
 
   async updateUser(@Param() id: ID, user: UserRequestDto): Promise<UserResponseDto> {
-    await this.userModel.findByIdAndUpdate(id, user);
+    // await this.usersRepository.update(id, user);
     // return newUser as UserResponseDto;
     return;
   }
 
   async deleteUser(id: ID): Promise<any> {
-    return this.userModel.findByIdAndRemove(id);
+    return await this.usersRepository.delete(id);
   }
 }
