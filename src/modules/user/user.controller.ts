@@ -5,36 +5,30 @@ import {
   Get,
   Param,
   Patch,
-  Post,
+  Post, Res,
   // HttpCode,
   // HttpStatus,
 } from '@nestjs/common';
 import { UserRequestDto } from './dto/user-request.dto';
-import { ID } from '../../types/id.type';
+import { ID } from '../../shared/types/id.type';
 import { UserService } from './user.service';
 import { UserResponseDto } from './dto/user-response.dto';
 
-@Controller('users')
+@Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {
   }
-  @Get()
+  @Get('users')
   getUsers(): Promise<UserResponseDto[]> {
     return this.userService.getAll();
   }
 
-  @Get(':id')
+  @Get('user/:id')
   getUser(@Param('id') id: ID): Promise<UserResponseDto> {
     return this.userService.getById(id);
   }
 
-  @Post()
-  // @HttpCode(HttpStatus.CREATED)
-  createUser(@Body() userRequestDto: UserRequestDto): Promise<any> {
-    return this.userService.createUser(userRequestDto);
-  }
-
-  @Patch(':id')
+  @Patch('user/:id')
   updateUser(
     @Body() userRequestDto: UserRequestDto,
     @Param() id: ID,
@@ -42,7 +36,13 @@ export class UserController {
     return this.userService.updateUser(id, userRequestDto);
   }
 
-  @Delete(':id')
+  @Post('user')
+  // @HttpCode(HttpStatus.CREATED)
+  createUser(@Body() userRequestDto: UserRequestDto, @Res() response): Promise<any> {
+    return this.userService.createUser(userRequestDto, response);
+  }
+
+  @Delete('user/:id')
   deleteUser(@Param('id') id: ID): Promise<any> {
     return this.userService.deleteUser(id);
   }

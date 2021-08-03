@@ -1,4 +1,4 @@
-import { ID } from '../../../types/id.type';
+import { ID } from '../../../shared/types/id.type';
 
 export class UserRequestDto {
   id?: ID;

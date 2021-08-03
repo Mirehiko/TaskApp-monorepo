@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { ID } from '../../types/id.type';
+import {HttpStatus, Injectable, Param, Res} from '@nestjs/common';
+import { ID } from '../../shared/types/id.type';
 import { UserRequestDto } from './dto/user-request.dto';
 import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
@@ -16,15 +16,52 @@ export class UserService {
   }
 
   async getById(id: ID): Promise<UserResponseDto> {
-    return;
+    const user: User = await this.userModel.findOne({ id });
+    const result: UserResponseDto = Object.assign(user, {permissions: []});
+    return result;
   }
 
-  async createUser(user: UserRequestDto): Promise<any> {
-    const newUser = new this.userModel(user);
-    return newUser.save();
+  async createUser(@Param() userRequestDto: UserRequestDto, @Res() response): Promise<any> {
+    const candidate = await this.userModel.findOne({ email: userRequestDto.email });
+    if (candidate) {
+      response
+          .status(HttpStatus.CONFLICT)
+          .json({message: "Такой email уже существует. Введите другой email"});
+    }
+    else {
+      // const salt = bcrypt.genSaltSync(10);
+      // const password = req.body.password;
+      //
+      // console.log(req.body)
+
+      // const userInfo = userRequestDto;
+      // if (userRequestDto.avatar) {
+      //   userInfo.avatar = req.body.avatar;
+      // }
+
+      // const user = new this.userModel.createCollection(userRequestDto);
+      const newUser = new this.userModel(userRequestDto);
+
+      try {
+
+        // await user.save().then(() => {
+        //   console.log('User created');
+        // });
+        await newUser.save();
+
+
+        response
+            .status(HttpStatus.CREATED)
+            .json(newUser);
+
+
+      } catch (error) { /*errorHandler(res, error);*/ }
+    }
+    // const newUser = new this.userModel(user);
+    // return newUser.save();
   }
 
-  async updateUser(id: ID, user: UserRequestDto): Promise<UserResponseDto> {
+  async updateUser(@Param() id: ID, user: UserRequestDto): Promise<UserResponseDto> {
     await this.userModel.findByIdAndUpdate(id, user);
     // return newUser as UserResponseDto;
     return;
