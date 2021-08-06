@@ -11,10 +11,12 @@ import {User} from "./modules/user/schemas/user.entity";
   imports: [
     UserModule,
     AuthModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: '.env'
+    }),
       TypeOrmModule.forRoot({
         type: 'mongodb',
-        url: "",
+        url: process.env.MONGO_URI,
         entities: [User],
         synchronize: false,
       })
