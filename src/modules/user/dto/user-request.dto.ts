@@ -1,20 +1,22 @@
-import { ID } from '../../../shared/types/id.type';
 import {ApiOperation, ApiProperty} from "@nestjs/swagger";
-import {Column, PrimaryGeneratedColumn} from "typeorm";
+import {Role} from "../../role/schemas/role.entity";
 
 export class UserRequestDto {
   @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
-  id?: ID;
+  id?: number;
 
   @ApiProperty({example: 'FirstName LastName', description: 'Имя пользователя'})
-  name: string;
+  name?: string;
 
   @ApiProperty({example: 'example@email.ru', description: 'Почтовый адрес'})
-  email: string;
+  email?: string;
 
   @ApiProperty({example: 'asdfs12casd;', description: 'Пароль'})
-  permissions: string[];
+  password?: string;
 
   @ApiProperty({example: 'example@email.ru', description: 'Аватарка'})
-  avatar: string;
+  avatar?: string;
+
+  @ApiProperty({example: 'Список ролей', description: 'Список ролей, которыми обладает пользователь'})
+  roles?: Role[];
 }

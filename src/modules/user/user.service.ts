@@ -1,26 +1,27 @@
 import {HttpStatus, Injectable, Param, Res} from '@nestjs/common';
-import { ID } from '../../shared/types/id.type';
-import { UserRequestDto } from './dto/user-request.dto';
-import { UserResponseDto } from './dto/user-response.dto';
+import {ID} from '../../shared/types/id.type';
+import {UserRequestDto} from './dto/user-request.dto';
+import {UserResponseDto} from './dto/user-response.dto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "./schemas/user.entity";
 import {Repository} from "typeorm";
+import {RoleService} from "../role/role.service";
 
 @Injectable()
 export class UserService {
   constructor(
       @InjectRepository(User)
       private usersRepository: Repository<User>,
+      private roleService: RoleService
   ) {}
 
   async getAll(): Promise<UserResponseDto[]> {
     return;
   }
 
-  async getById(id: ID): Promise<UserResponseDto> {
+  async getById(@Param() id: number): Promise<UserResponseDto> {
     const user: User = await this.usersRepository.findOne(id);
-    const result: UserResponseDto = Object.assign(user, {permissions: []});
-    return result;
+    return Object.assign(user, {roles: []});
   }
 
   async createUser(@Param() userRequestDto: UserRequestDto, @Res() response): Promise<any> {
@@ -36,25 +37,22 @@ export class UserService {
       //
       // console.log(req.body)
 
-      // const userInfo = userRequestDto;
       // if (userRequestDto.avatar) {
       //   userInfo.avatar = req.body.avatar;
       // }
 
-      // const newUser = new this.usersRepository(userRequestDto);
 
       try {
-
-        // await user.save().then(() => {
-        //   console.log('User created');
-        // });
-        // await newUser.save();
-
-
+        // const role = await this.roleService.getBy({name: 'USER'}, response)
+        const newUser = await this.usersRepository.create({...userRequestDto});
+        // newUser.roles = [role];
+        await this.usersRepository.save(newUser).then(() => {
+          console.log('User created');
+        });
+        // await this.usersRepository.save(newUser);
         response
             .status(HttpStatus.CREATED)
-            // .json(newUser);
-
+            .json(newUser);
 
       } catch (error) { /*errorHandler(res, error);*/ }
     }
@@ -68,7 +66,7 @@ export class UserService {
     return;
   }
 
-  async deleteUser(id: ID): Promise<any> {
+  async deleteUser(id: number): Promise<any> {
     return await this.usersRepository.delete(id);
   }
 }

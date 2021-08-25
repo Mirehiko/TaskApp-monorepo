@@ -1,15 +1,15 @@
-import { Permission } from './permission';
+import {PermissionResponse} from "./permission";
 
 export interface FeatureResponse {
   id: number;
   displayName: string;
   name: string;
-  permissions?: Permission[];
+  permissions?: PermissionResponse[];
 }
 
 export interface FeatureRequest {
   id?: number;
   displayName: string;
   name: string;
-  permissions: Permission[];
+  permissions: PermissionResponse[];
 }
