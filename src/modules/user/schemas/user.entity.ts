@@ -1,11 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, ObjectIdColumn, ManyToMany, JoinTable } from 'typeorm';
 import {ApiProperty} from "@nestjs/swagger";
+import {Role} from "../../role/schemas/role.entity";
 
 @Entity()
 export class User {
     @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
-    @PrimaryGeneratedColumn()
-    id: number;
+    @ObjectIdColumn()
+    id: string;
 
     @ApiProperty({example: 'FirstName LastName', description: 'Имя пользователя'})
     @Column({ length: 150 })
@@ -22,4 +23,8 @@ export class User {
     @ApiProperty({example: 'example@email.ru', description: 'Аватарка'})
     @Column('text')
     avatar: string;
+
+    @ManyToMany(() => Role, x => x.id)
+    @JoinTable()
+    roles: Role[];
 }

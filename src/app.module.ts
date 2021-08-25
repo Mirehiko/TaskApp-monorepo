@@ -6,7 +6,10 @@ import {AuthModule} from "./modules/auth/auth.module";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {Connection} from "typeorm";
 import {User} from "./modules/user/schemas/user.entity";
-import { RolesModule } from './modules/roles/roles.module';
+import { RoleModule } from './modules/role/role.module';
+import { Role } from './modules/role/schemas/role.entity';
+import {Permission} from "./modules/permission/schemas/permission.entity";
+import {PermissionModule} from "./modules/permission/permission.module";
 
 @Module({
   imports: [
@@ -16,12 +19,13 @@ import { RolesModule } from './modules/roles/roles.module';
     TypeOrmModule.forRoot({
       type: 'mongodb',
       url: process.env.MONGO_URI,
-      entities: [User],
+      entities: [User, Role, Permission],
       synchronize: false,
     }),
     UserModule,
     AuthModule,
-    RolesModule,
+    RoleModule,
+    PermissionModule,
   ],
   controllers: [AppController],
 })

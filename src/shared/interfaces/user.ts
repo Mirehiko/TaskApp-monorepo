@@ -1,4 +1,4 @@
-import { Permission } from "./permission";
+import {PermissionResponse} from "./permission";
 import { RoleResponse } from './role';
 import { TaskStates } from '../enums/task-states';
 import { Themes } from '../enums/themes';
@@ -8,7 +8,7 @@ export interface UserResponse {
   name: string;
   email?: string;
   role?: RoleResponse;
-  permissions?: Permission[];
+  permissions?: PermissionResponse[];
   createdAt?: string | Date;
   updatedAt?: string | Date;
   createdBy?: UserResponse | null;
@@ -20,7 +20,7 @@ export interface UserRequest {
   name: string;
   email: string;
   role: RoleResponse;
-  permissions?: Permission[];
+  permissions?: PermissionResponse[];
   createdAt: string | Date;
   updatedAt: string | Date;
   createdBy: UserResponse | null;

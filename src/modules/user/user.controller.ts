@@ -10,14 +10,13 @@ import {
   // HttpStatus,
 } from '@nestjs/common';
 import { UserRequestDto } from './dto/user-request.dto';
-import { ID } from '../../shared/types/id.type';
 import { UserService } from './user.service';
 import { UserResponseDto } from './dto/user-response.dto';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "./schemas/user.entity";
 
 @ApiTags('Пользователи')
-@Controller()
+@Controller('/api/main/')
 export class UserController {
   constructor(private readonly userService: UserService) {
   }
@@ -32,7 +31,7 @@ export class UserController {
   @ApiOperation({summary: 'Получение пользователя'})
   @ApiResponse({status: 200, type: User})
   @Get('user/:id')
-  getUser(@Param('id') id: ID): Promise<UserResponseDto> {
+  getUser(@Param('id') id: string): Promise<UserResponseDto> {
     return this.userService.getById(id);
   }
 
@@ -41,7 +40,7 @@ export class UserController {
   @Patch('user/:id')
   updateUser(
     @Body() userRequestDto: UserRequestDto,
-    @Param() id: ID,
+    @Param() id: string,
   ): Promise<UserResponseDto> {
     return this.userService.updateUser(id, userRequestDto);
   }
@@ -57,7 +56,7 @@ export class UserController {
   @ApiOperation({summary: 'Удаление пользователя'})
   @ApiResponse({status: 200, type: User})
   @Delete('user/:id')
-  deleteUser(@Param('id') id: ID): Promise<any> {
+  deleteUser(@Param('id') id: string): Promise<any> {
     return this.userService.deleteUser(id);
   }
 }

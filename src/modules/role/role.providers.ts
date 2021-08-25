@@ -4,7 +4,7 @@ import {Role} from "./schemas/role.entity";
 
 export const roleProviders = [
     {
-        provide: Constants.USER_REPOSITORY,
+        provide: Constants.ROLE_REPOSITORY,
         useFactory: (connection: Connection) => connection.getRepository(Role),
         inject: [Constants.DATABASE_CONNECTION],
     },
