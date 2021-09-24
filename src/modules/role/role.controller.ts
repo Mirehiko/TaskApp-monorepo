@@ -4,6 +4,7 @@ import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {RoleRequestDto} from "./dto/role-request.dto";
 import {RoleResponseDto} from "./dto/role-response.dto";
 import { Role } from './schemas/role.entity';
+import {RoleRequestParams} from "./params";
 
 @ApiTags('Роли')
 @Controller('/api/main/')
@@ -22,8 +23,8 @@ export class RoleController {
     @ApiOperation({summary: 'Получение роли'})
     @ApiResponse({status: 200, type: Role})
     @Get('role/:id')
-    getRoleById(@Param('id') id: string, @Res() response): Promise<RoleResponseDto> {
-        return this.roleService.getByID(id, response);
+    getRoleById(@Param() params: RoleRequestParams, @Res() response): Promise<RoleResponseDto> {
+        return this.roleService.getByID(params, response);
     }
 
     // @ApiOperation({summary: 'Получение роли'})
@@ -37,7 +38,7 @@ export class RoleController {
     @ApiResponse({status: 200, type: Role})
     @Patch('role/:id')
     updateRole(
-        @Param('id') id: string,
+        @Param('id') id: number,
         @Body() roleRequestDto: RoleRequestDto,
         @Res() response
     ): Promise<RoleRequestDto> {
@@ -54,7 +55,9 @@ export class RoleController {
     @ApiOperation({summary: 'Удаление роли'})
     @ApiResponse({status: 200, type: Role})
     @Delete('role/:id')
-    deleteRole(@Param('id') id: string, @Res() response): Promise<any> {
+    deleteRole(@Param('id') id: number, @Res() response): Promise<any> {
         return this.roleService.deleteRole(id, response);
     }
 }
+
+

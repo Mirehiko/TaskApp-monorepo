@@ -4,7 +4,7 @@ import { Role } from './schemas/role.entity';
 import {InjectRepository} from "@nestjs/typeorm";
 import { Repository } from 'typeorm';
 import {RoleResponseDto} from "./dto/role-response.dto";
-import {ObjectID} from "mongodb";
+import {RoleRequestParams} from "./params";
 
 
 @Injectable()
@@ -18,9 +18,15 @@ export class RoleService {
         return await this.roleRepository.find();
     }
 
-    async getByID(@Param() id: string, @Res() response): Promise<RoleResponseDto | any> {
+    async getByID(@Param() params: RoleRequestParams, @Res() response): Promise<RoleResponseDto | any> {
         try {
-            const role = await this.roleRepository.findOne({where: {_id: new ObjectID(id)}});
+            const requestObject = {
+                where: {id: params.id}
+            };
+            // if (params.withPermissions) {
+                requestObject['relations'] = ['permissions']
+            // }
+            const role = await this.roleRepository.findOne(requestObject);
             if (role) {
                 response
                     .status(HttpStatus.OK)
@@ -60,12 +66,11 @@ export class RoleService {
         }
         else {
             try {
-                const newRole = await this.roleRepository.create({...role});
-                newRole.permissions = role.permissions;
-                role.permissions.map(p => {
-                    // newRole.permissionIds.add(p.id)
-                    return p;
-                })
+                const newRole = new Role();
+                newRole.name = role.name;
+                newRole.displayName = role.displayName;
+                newRole.description = role.description;
+                newRole.permissions = role.permissions
                 await this.roleRepository.save(newRole);
                 response
                     .status(HttpStatus.CREATED)
@@ -79,12 +84,13 @@ export class RoleService {
         return response;
     }
 
-    async updateRole(@Param() id: string, roleRequestDto: RoleRequestDto, @Res() response): Promise<RoleResponseDto> {
-        const role = await this.roleRepository.findOne({where: {_id: new ObjectID(id)}});
+    async updateRole(@Param() id: number, roleRequestDto: RoleRequestDto, @Res() response): Promise<RoleResponseDto> {
+        const role = await this.roleRepository.findOne({where: {id}});
         role.name = roleRequestDto.name;
         role.displayName = roleRequestDto.displayName;
         role.description = roleRequestDto.description;
-        console.log(role)
+        role.permissions = roleRequestDto.permissions;
+
         try {
             await this.roleRepository.save(role);
             response
@@ -98,9 +104,9 @@ export class RoleService {
         return response;
     }
 
-    async deleteRole(@Param() id: string, @Res() response): Promise<any> {
+    async deleteRole(@Param() id: number, @Res() response): Promise<any> {
         try {
-            const role = await this.roleRepository.findOne({where: {_id: new ObjectID(id)}});
+            const role = await this.roleRepository.findOne({where: {id}});
             await this.roleRepository.remove(role);
             response.status(HttpStatus.OK).json({message: 'Successfully deleted'});
         }

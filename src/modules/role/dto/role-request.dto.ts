@@ -3,7 +3,7 @@ import {PermissionResponseDto} from "../../permission/dto/permission-response.dt
 
 export class RoleRequestDto {
   @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
-  id?: string;
+  id?: number;
 
   @ApiProperty({example: 'ADMIN', description: 'Уникальное название роли'})
   name: string;

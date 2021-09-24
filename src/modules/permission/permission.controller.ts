@@ -21,7 +21,7 @@ export class PermissionController {
     @ApiOperation({summary: 'Получение разрешения'})
     @ApiResponse({status: 200, type: Permission})
     @Get('permission/:id')
-    getPermissionById(@Param('id') id: string, @Res() response): Promise<PermissionResponseDto> {
+    getPermissionById(@Param('id') id: number, @Res() response): Promise<PermissionResponseDto> {
         return this.permissionService.getByID(id, response);
     }
 
@@ -53,7 +53,7 @@ export class PermissionController {
     @ApiOperation({summary: 'Удаление разрешения'})
     @ApiResponse({status: 200, type: Permission})
     @Delete('permission/:id')
-    deletePermission(@Param('id') id: string, @Res() response): Promise<any> {
+    deletePermission(@Param('id') id: number, @Res() response): Promise<any> {
 
         return this.permissionService.deletePermission(id, response);
     }

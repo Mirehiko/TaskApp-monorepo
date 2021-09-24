@@ -3,7 +3,7 @@ import {Role} from "../../role/schemas/role.entity";
 
 export class UserRequestDto {
   @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
-  id?: string;
+  id?: number;
 
   @ApiProperty({example: 'FirstName LastName', description: 'Имя пользователя'})
   name?: string;

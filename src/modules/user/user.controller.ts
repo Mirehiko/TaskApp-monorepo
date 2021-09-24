@@ -31,8 +31,8 @@ export class UserController {
   @ApiOperation({summary: 'Получение пользователя'})
   @ApiResponse({status: 200, type: User})
   @Get('user/:id')
-  getUser(@Param('id') id: string): Promise<UserResponseDto> {
-    return this.userService.getById(id);
+  getUserById(@Param('id') id: number, @Res() response): Promise<UserResponseDto> {
+    return this.userService.getById(id, response);
   }
 
   @ApiOperation({summary: 'Обновление пользователя'})
@@ -40,7 +40,7 @@ export class UserController {
   @Patch('user/:id')
   updateUser(
     @Body() userRequestDto: UserRequestDto,
-    @Param() id: string,
+    @Param() id: number,
   ): Promise<UserResponseDto> {
     return this.userService.updateUser(id, userRequestDto);
   }
@@ -56,7 +56,7 @@ export class UserController {
   @ApiOperation({summary: 'Удаление пользователя'})
   @ApiResponse({status: 200, type: User})
   @Delete('user/:id')
-  deleteUser(@Param('id') id: string): Promise<any> {
+  deleteUser(@Param('id') id: number): Promise<any> {
     return this.userService.deleteUser(id);
   }
 }

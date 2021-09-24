@@ -16,12 +16,28 @@ export class UserService {
   ) {}
 
   async getAll(): Promise<UserResponseDto[]> {
-    return;
+    return await this.usersRepository.find();
   }
 
-  async getById(@Param() id: string): Promise<UserResponseDto> {
-    const user: User = await this.usersRepository.findOne(id);
-    return Object.assign(user, {roles: []});
+  async getById(@Param() id: number, @Res() response): Promise<UserResponseDto> {
+    try {
+      const user = await this.usersRepository.findOne({where: {id}});
+      if (user) {
+        response
+          .status(HttpStatus.OK)
+          .json(user);
+      }
+      else {
+        response
+          .status(HttpStatus.NOT_FOUND)
+          .json({message: "Нет такого пользователя"});
+      }
+    }
+    catch (e) {
+      console.log(e);
+      response.json(e);
+    }
+    return response;
   }
 
   async createUser(@Param() userRequestDto: UserRequestDto, @Res() response): Promise<any> {
@@ -42,19 +58,19 @@ export class UserService {
       // }
 
 
-      try {
-        // const role = await this.roleService.getBy({name: 'USER'}, response)
-        const newUser = await this.usersRepository.create({...userRequestDto});
-        // newUser.roles = [role];
-        await this.usersRepository.save(newUser).then(() => {
-          console.log('User created');
-        });
-        // await this.usersRepository.save(newUser);
-        response
-            .status(HttpStatus.CREATED)
-            .json(newUser);
-
-      } catch (error) { /*errorHandler(res, error);*/ }
+      // try {
+      //   // const role = await this.roleService.getBy({name: 'USER'}, response)
+      //   const newUser = await this.usersRepository.create({...userRequestDto});
+      //   // newUser.roles = [role];
+      //   await this.usersRepository.save(newUser).then(() => {
+      //     console.log('User created');
+      //   });
+      //   // await this.usersRepository.save(newUser);
+      //   response
+      //       .status(HttpStatus.CREATED)
+      //       .json(newUser);
+      //
+      // } catch (error) { /*errorHandler(res, error);*/ }
     }
     // const newUser = new this.userModel(user);
     // return newUser.save();
@@ -66,7 +82,7 @@ export class UserService {
     return;
   }
 
-  async deleteUser(id: string): Promise<any> {
+  async deleteUser(id: number): Promise<any> {
     return await this.usersRepository.delete(id);
   }
 }

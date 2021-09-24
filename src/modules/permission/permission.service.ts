@@ -19,9 +19,9 @@ export class PermissionService {
         return await this.permissionRepository.find();
     }
 
-    async getByID(@Param() id: string, @Res() response): Promise<PermissionResponseDto | any> {
+    async getByID(@Param() id: number, @Res() response): Promise<PermissionResponseDto | any> {
         try {
-            const permission = await this.permissionRepository.findOne({where: {_id: new ObjectID(id)}});
+            const permission = await this.permissionRepository.findOne({where: {id}});
             if (permission) {
                 response
                     .status(HttpStatus.OK)
@@ -76,7 +76,7 @@ export class PermissionService {
     }
 
     async updatePermission(@Param() id: string, permissionRequestDto: PermissionRequestDto, @Res() response): Promise<PermissionResponseDto> {
-        const permission = await this.permissionRepository.findOne({where: {_id: new ObjectID(id)}});
+        const permission = await this.permissionRepository.findOne({where: {id}});
         permission.name = permissionRequestDto.name;
         permission.displayName = permissionRequestDto.displayName;
         permission.description = permissionRequestDto.description;
@@ -94,9 +94,9 @@ export class PermissionService {
         return response;
     }
 
-    async deletePermission(@Param() id: string, @Res() response): Promise<any> {
+    async deletePermission(@Param() id: number, @Res() response): Promise<any> {
         try {
-            const permission = await this.permissionRepository.findOne({where: {_id: new ObjectID(id)}});
+            const permission = await this.permissionRepository.findOne({where: {id}});
             await this.permissionRepository.remove(permission);
             response.status(HttpStatus.OK).json({message: 'Successfully deleted'});
         }

@@ -5,10 +5,7 @@ import {ConfigModule} from "@nestjs/config";
 import {AuthModule} from "./modules/auth/auth.module";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {Connection} from "typeorm";
-import {User} from "./modules/user/schemas/user.entity";
 import { RoleModule } from './modules/role/role.module';
-import { Role } from './modules/role/schemas/role.entity';
-import {Permission} from "./modules/permission/schemas/permission.entity";
 import {PermissionModule} from "./modules/permission/permission.module";
 
 @Module({
@@ -16,11 +13,24 @@ import {PermissionModule} from "./modules/permission/permission.module";
     ConfigModule.forRoot({
       envFilePath: '.env'
     }),
-    TypeOrmModule.forRoot({
-      type: 'mongodb',
-      url: process.env.MONGO_URI,
-      entities: [User, Role, Permission],
-      synchronize: false,
+    TypeOrmModule.forRootAsync({
+      useFactory: () => ({
+          type: 'mysql',
+          host: process.env.DB_HOST,
+          port: parseInt(process.env.DB_PORT) || 3306,
+          username: process.env.DB_USER,
+          password: process.env.DB_PASSWORD,
+          database: process.env.DB_NAME,
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          // entities: [User, Role, Permission],
+          synchronize: true
+        })
+      // migrations: [
+      //   "src/migration/**/*.ts"
+      // ],
+      // subscribers: [
+      //   "src/subscriber/**/*.ts"
+      // ],
     }),
     UserModule,
     AuthModule,

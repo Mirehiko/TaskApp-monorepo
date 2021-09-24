@@ -2,7 +2,7 @@ import {ApiOperation, ApiProperty} from "@nestjs/swagger";
 
 export class PermissionRequestDto {
     @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
-    id?: string;
+    id?: number;
 
     @ApiProperty({example: 'permissionName', description: 'Уникальное название разрешения'})
     name: string;
