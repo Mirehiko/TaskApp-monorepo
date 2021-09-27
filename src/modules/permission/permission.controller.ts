@@ -21,8 +21,8 @@ export class PermissionController {
     @ApiOperation({summary: 'Получение разрешения'})
     @ApiResponse({status: 200, type: Permission})
     @Get('permission/:id')
-    getPermissionById(@Param('id') id: number, @Res() response): Promise<PermissionResponseDto> {
-        return this.permissionService.getByID(id, response);
+    getPermissionById(@Param('id') id: number): Promise<PermissionResponseDto> {
+        return this.permissionService.getByID(id);
     }
 
     @ApiOperation({summary: 'Обновление разрешения'})
@@ -30,10 +30,9 @@ export class PermissionController {
     @Patch('permission/:id')
     updatePermission(
         @Param('id') id: string,
-        @Body() permissionRequestDto: PermissionRequestDto,
-        @Res() response
+        @Body() permissionRequestDto: PermissionRequestDto
     ): Promise<PermissionRequestDto> {
-        return this.permissionService.updatePermission(id, permissionRequestDto, response);
+        return this.permissionService.updatePermission(id, permissionRequestDto);
     }
 
     // @ApiOperation({summary: 'Получение роли'})
@@ -46,15 +45,15 @@ export class PermissionController {
     @ApiOperation({summary: 'Создание разрешения'})
     @ApiResponse({status: 201, type: Permission})
     @Post('permission')
-    createPermission(@Body() permissionRequestDto: PermissionRequestDto, @Res() response): Promise<any> {
-        return this.permissionService.createPermission(permissionRequestDto, response);
+    createPermission(@Body() permissionRequestDto: PermissionRequestDto): Promise<any> {
+        return this.permissionService.createPermission(permissionRequestDto);
     }
 
     @ApiOperation({summary: 'Удаление разрешения'})
     @ApiResponse({status: 200, type: Permission})
     @Delete('permission/:id')
-    deletePermission(@Param('id') id: number, @Res() response): Promise<any> {
+    deletePermission(@Param('id') id: number): Promise<any> {
 
-        return this.permissionService.deletePermission(id, response);
+        return this.permissionService.deletePermission(id);
     }
 }

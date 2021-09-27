@@ -19,63 +19,52 @@ export class PermissionService {
         return await this.permissionRepository.find();
     }
 
-    async getByID(@Param() id: number, @Res() response): Promise<PermissionResponseDto | any> {
+    async getByID(@Param() id: number): Promise<PermissionResponseDto | any> {
         try {
             const permission = await this.permissionRepository.findOne({where: {id}});
             if (permission) {
-                response
-                    .status(HttpStatus.OK)
-                    .json(permission);
+                return  permission; // 200
             }
             else {
-                response
-                    .status(HttpStatus.NOT_FOUND)
-                    .json({message: "Нет такого пермишена"});
+                return {message: "Нет такого пермишена"}; // 404
             }
         }
         catch (e) {
             console.log(e);
-            response.json(e);
+            return e;
         }
-        return response;
+        return true;
     }
 
-    async getBy(@Param() params, @Res() response): Promise<PermissionResponseDto | any> {
+    async getBy(@Param() params): Promise<PermissionResponseDto | any> {
         const permission = await this.permissionRepository.findOne(params);
         if (permission) {
             return Object.assign(permission, {permissions: []});
         }
         else {
-            response
-                .status(HttpStatus.NOT_FOUND)
-                .json({message: "Нет такого пермишена"});
+            return {message: "Нет такого пермишена"}; // 404
         }
     }
 
-    async createPermission(permission: PermissionRequestDto, @Res() response): Promise<any> {
+    async createPermission(permission: PermissionRequestDto): Promise<any> {
         const candidate = await this.permissionRepository.findOne({ name: permission.name });
         if (candidate) {
-            response
-                .status(HttpStatus.CONFLICT)
-                .json({message: "Такой пермишен уже существует. Введите другое имя пермишена"});
+            return {message: "Такой пермишен уже существует. Введите другое имя пермишена"}; // 409
         }
         else {
             try {
                 const newPermission = await this.permissionRepository.create({...permission});
                 await this.permissionRepository.save(newPermission);
-                response
-                    .status(HttpStatus.CREATED)
-                    .json(newPermission);
-
+                return newPermission; // 201
             } catch (e) {
                 console.log(e);
-                response.json(e);
+                return e;
             }
         }
-        return response;
+        return true;
     }
 
-    async updatePermission(@Param() id: string, permissionRequestDto: PermissionRequestDto, @Res() response): Promise<PermissionResponseDto> {
+    async updatePermission(@Param() id: string, permissionRequestDto: PermissionRequestDto): Promise<PermissionResponseDto> {
         const permission = await this.permissionRepository.findOne({where: {id}});
         permission.name = permissionRequestDto.name;
         permission.displayName = permissionRequestDto.displayName;
@@ -83,26 +72,24 @@ export class PermissionService {
         console.log(permission)
         try {
             await this.permissionRepository.save(permission);
-            response
-                .status(HttpStatus.OK)
-                .json(permission);
         }
         catch (e) {
-            response.json(e)
+            console.log(e);
+            return e;
         }
 
-        return response;
+        return permission; // 200
     }
 
-    async deletePermission(@Param() id: number, @Res() response): Promise<any> {
+    async deletePermission(@Param() id: number): Promise<any> {
         try {
             const permission = await this.permissionRepository.findOne({where: {id}});
             await this.permissionRepository.remove(permission);
-            response.status(HttpStatus.OK).json({message: 'Successfully deleted'});
         }
         catch (e) {
-            response.json(e);
+            console.log(e);
+            return e;
         }
-        return response;
+        return {message: 'Successfully deleted'} // 200
     }
 }

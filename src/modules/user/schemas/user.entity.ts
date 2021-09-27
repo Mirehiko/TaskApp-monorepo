@@ -22,7 +22,7 @@ export class User {
 
     @ApiProperty({example: 'example@email.ru', description: 'Аватарка'})
     @Column('text')
-    avatar: string;
+    avatar: string = '';
 
     @ManyToMany(() => Role, x => x.id)
     @JoinTable()

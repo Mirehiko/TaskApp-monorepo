@@ -1,13 +1,15 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, Res} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, Res, UseInterceptors} from '@nestjs/common';
 import {RoleService} from "./role.service";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {RoleRequestDto} from "./dto/role-request.dto";
 import {RoleResponseDto} from "./dto/role-response.dto";
 import { Role } from './schemas/role.entity';
-import {RoleRequestParams} from "./params";
+import {RoleRequestParams} from "./roleRequestParams";
+import {TransformInterceptor} from "../../interceptors/transform.interceptor";
 
 @ApiTags('Роли')
-@Controller('/api/main/')
+@Controller('api/main/')
+@UseInterceptors(new TransformInterceptor())
 export class RoleController {
     constructor(private readonly roleService: RoleService) {
     }
@@ -23,8 +25,8 @@ export class RoleController {
     @ApiOperation({summary: 'Получение роли'})
     @ApiResponse({status: 200, type: Role})
     @Get('role/:id')
-    getRoleById(@Param() params: RoleRequestParams, @Res() response): Promise<RoleResponseDto> {
-        return this.roleService.getByID(params, response);
+    getRoleById(@Param() params: RoleRequestParams): Promise<RoleResponseDto> {
+        return this.roleService.getByID(params);
     }
 
     // @ApiOperation({summary: 'Получение роли'})
@@ -40,23 +42,22 @@ export class RoleController {
     updateRole(
         @Param('id') id: number,
         @Body() roleRequestDto: RoleRequestDto,
-        @Res() response
     ): Promise<RoleRequestDto> {
-        return this.roleService.updateRole(id, roleRequestDto, response);
+        return this.roleService.updateRole(id, roleRequestDto);
     }
 
     @ApiOperation({summary: 'Создание роли'})
     @ApiResponse({status: 201, type: Role})
     @Post('role')
-    createRole(@Body() roleRequestDto: RoleRequestDto, @Res() response): Promise<any> {
-        return this.roleService.createRole(roleRequestDto, response);
+    createRole(@Body() roleRequestDto: RoleRequestDto): Promise<any> {
+        return this.roleService.createRole(roleRequestDto);
     }
 
     @ApiOperation({summary: 'Удаление роли'})
     @ApiResponse({status: 200, type: Role})
     @Delete('role/:id')
     deleteRole(@Param('id') id: number, @Res() response): Promise<any> {
-        return this.roleService.deleteRole(id, response);
+        return this.roleService.deleteRole(id);
     }
 }
 

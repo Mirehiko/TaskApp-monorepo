@@ -1,11 +1,13 @@
 import {HttpStatus, Injectable, Param, Res} from '@nestjs/common';
-import {ID} from '../../shared/types/id.type';
 import {UserRequestDto} from './dto/user-request.dto';
 import {UserResponseDto} from './dto/user-response.dto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "./schemas/user.entity";
-import {Repository} from "typeorm";
+import {FindOneOptions, Repository} from "typeorm";
 import {RoleService} from "../role/role.service";
+import {UserGetParams} from "./userRequestParams";
+import {RoleResponseDto} from "../role/dto/role-response.dto";
+
 
 @Injectable()
 export class UserService {
@@ -19,70 +21,119 @@ export class UserService {
     return await this.usersRepository.find();
   }
 
-  async getById(@Param() id: number, @Res() response): Promise<UserResponseDto> {
+  async getById(@Param() userRequestParams: UserGetParams): Promise<UserResponseDto | any> {
     try {
-      const user = await this.usersRepository.findOne({where: {id}});
+      const requestObject: FindOneOptions<User> = {
+        where: {id: userRequestParams.id}
+      };
+      // if (params.withPermissions) {
+      requestObject.relations = ['roles', 'roles.permissions'];
+      // }
+      const user = await this.usersRepository.findOneOrFail(requestObject);
       if (user) {
-        response
-          .status(HttpStatus.OK)
-          .json(user);
+        return user; // 200
       }
       else {
-        response
-          .status(HttpStatus.NOT_FOUND)
-          .json({message: "Нет такого пользователя"});
+        return {message: "Нет такого пользователя"}; // 404
       }
     }
     catch (e) {
       console.log(e);
-      response.json(e);
+      return e;
     }
-    return response;
   }
 
-  async createUser(@Param() userRequestDto: UserRequestDto, @Res() response): Promise<any> {
+  async getUserBy(userRequestParams: UserGetParams): Promise<UserResponseDto | any> {
+    try {
+      const requestObject: FindOneOptions<User> = {
+        where: userRequestParams
+      };
+
+      // if (userRequestParams.withPermissions) {
+        requestObject.relations = ['roles', 'roles.permissions'];
+      // }
+      console.log('getUserBy', requestObject)
+      const user = await this.usersRepository.findOneOrFail(requestObject);
+      console.log('get', user)
+      if (user) {
+        return user;
+      }
+      else {
+        return {message: "Нет такого пользователя"}; // 404
+      }
+    }
+    catch (e) {
+      console.log(e);
+      return e;
+    }
+    return true;
+  }
+
+  async createUser(@Param() userRequestDto: UserRequestDto): Promise<any> {
     const candidate = await this.usersRepository.findOne({ email: userRequestDto.email });
+    console.log('reg', candidate)
     if (candidate) {
-      response
-          .status(HttpStatus.CONFLICT)
-          .json({message: "Такой email уже существует. Введите другой email"});
+      return {message: "Такой email уже существует. Введите другой email"}; // 409
     }
     else {
-      // const salt = bcrypt.genSaltSync(10);
-      // const password = req.body.password;
-      //
-      // console.log(req.body)
 
-      // if (userRequestDto.avatar) {
-      //   userInfo.avatar = req.body.avatar;
-      // }
+      try {
+        const newUser = await this.usersRepository.create({...userRequestDto});
+        let role;
+        if (!userRequestDto.roles || !userRequestDto.roles.length) {
+          role = await this.roleService.getByID({id: 8});
+          newUser.roles = [role];
+        }
 
-
-      // try {
-      //   // const role = await this.roleService.getBy({name: 'USER'}, response)
-      //   const newUser = await this.usersRepository.create({...userRequestDto});
-      //   // newUser.roles = [role];
-      //   await this.usersRepository.save(newUser).then(() => {
-      //     console.log('User created');
-      //   });
-      //   // await this.usersRepository.save(newUser);
-      //   response
-      //       .status(HttpStatus.CREATED)
-      //       .json(newUser);
-      //
-      // } catch (error) { /*errorHandler(res, error);*/ }
+        await this.usersRepository.save(newUser)
+        return newUser; // 200
+      } catch (e) {
+        console.log(e);
+        return e;
+      }
     }
-    // const newUser = new this.userModel(user);
-    // return newUser.save();
+    return true;
   }
 
-  async updateUser(@Param() id: ID, user: UserRequestDto): Promise<UserResponseDto> {
-    // await this.usersRepository.update(id, user);
-    // return newUser as UserResponseDto;
-    return;
+  async updateUser(@Param() id: number, userRequestDto: UserRequestDto): Promise<UserResponseDto> {
+    const user = await this.usersRepository.findOne({ where: {id} });
+    user.email = userRequestDto.email ? userRequestDto.email : user.email;
+    user.password = userRequestDto.password ? userRequestDto.password : user.password;
+    user.avatar = userRequestDto.avatar ? userRequestDto.avatar : user.avatar;
+    user.name = userRequestDto.name ? userRequestDto.name : user.name;
+
+    try {
+      await this.usersRepository.save(user);
+      if (userRequestDto.roles) {
+        await this.assignRolesToUser(user.id, userRequestDto.roles);
+      }
+
+    }
+    catch (e) {
+      console.log(e);
+      return e;
+    }
+
+    return user; // 200;
+  }
+
+  async assignRolesToUser(@Param() id: number, roles: RoleResponseDto[]): Promise<any> {
+    const user = await this.usersRepository.findOne({ where: {id} });
+    user.roles = roles;
+    try {
+      await this.usersRepository.save(user); // 200
+    }
+    catch (e) {
+      console.log(e);
+      return e;
+    }
+
+    return user;
   }
 
   async deleteUser(id: number): Promise<any> {
     return await this.usersRepository.delete(id);
   }
 }
+
+

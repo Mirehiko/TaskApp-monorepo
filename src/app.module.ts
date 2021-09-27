@@ -1,12 +1,13 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { UserModule } from './modules/user/user.module';
+import {MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
+import {AppController} from './app.controller';
+import {UserModule} from './modules/user/user.module';
 import {ConfigModule} from "@nestjs/config";
 import {AuthModule} from "./modules/auth/auth.module";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {Connection} from "typeorm";
-import { RoleModule } from './modules/role/role.module';
+import {RoleModule} from './modules/role/role.module';
 import {PermissionModule} from "./modules/permission/permission.module";
+import {LoggingMiddleware} from "./middleware/logging-middleware";
 
 @Module({
   imports: [
@@ -39,7 +40,13 @@ import {PermissionModule} from "./modules/permission/permission.module";
   ],
   controllers: [AppController],
 })
-export class AppModule {
+export class AppModule implements NestModule {
   constructor(private connection: Connection) {
   }
+
+    configure(consumer: MiddlewareConsumer): any {
+        consumer
+            .apply(LoggingMiddleware)
+            .forRoutes({path: '*', method: RequestMethod.ALL})
+    }
 }

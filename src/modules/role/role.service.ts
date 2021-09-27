@@ -2,9 +2,9 @@ import {HttpStatus, Injectable, Param, Res} from '@nestjs/common';
 import {RoleRequestDto} from "./dto/role-request.dto";
 import { Role } from './schemas/role.entity';
 import {InjectRepository} from "@nestjs/typeorm";
-import { Repository } from 'typeorm';
+import {FindOneOptions, Repository} from 'typeorm';
 import {RoleResponseDto} from "./dto/role-response.dto";
-import {RoleRequestParams} from "./params";
+import {RoleRequestParams} from "./roleRequestParams";
 
 
 @Injectable()
@@ -18,51 +18,52 @@ export class RoleService {
         return await this.roleRepository.find();
     }
 
-    async getByID(@Param() params: RoleRequestParams, @Res() response): Promise<RoleResponseDto | any> {
+    async getByID(@Param() params: RoleRequestParams): Promise<RoleResponseDto | any> {
         try {
-            const requestObject = {
+            const requestObject: FindOneOptions<Role> = {
                 where: {id: params.id}
             };
             // if (params.withPermissions) {
-                requestObject['relations'] = ['permissions']
+                requestObject.relations = ['permissions'];
             // }
+
             const role = await this.roleRepository.findOne(requestObject);
             if (role) {
-                response
-                    .status(HttpStatus.OK)
-                    .json(role);
+                return role;
+                // response
+                //     .status(HttpStatus.OK)
+                //     .json(role);
             }
             else {
-                response
-                    .status(HttpStatus.NOT_FOUND)
-                    .json({message: "Нет такой роли"});
+                return {message: "Нет такой роли"};
+                // response
+                //     .status(HttpStatus.NOT_FOUND)
+                //     .json({message: "Нет такой роли"});
             }
         }
         catch (e) {
             console.log(e);
-            response.json(e);
+            return e;
+            // response.json(e);
         }
-        return response;
+        // return response;
     }
 
-    async getBy(@Param() params, @Res() response): Promise<RoleResponseDto | any> {
+    async getBy(@Param() params): Promise<RoleResponseDto | any> {
         const role = await this.roleRepository.findOne(params);
         if (role) {
             return Object.assign(role, {permissions: []});
         }
         else {
-            response
-                .status(HttpStatus.NOT_FOUND)
-                .json({message: "Нет такой роли"});
+            return {message: "Нет такой роли"}; // 404
         }
     }
 
-    async createRole(role: RoleRequestDto, @Res() response): Promise<any> {
+    async createRole(role: RoleRequestDto): Promise<any> {
         const candidate = await this.roleRepository.findOne({ name: role.name });
         if (candidate) {
-            response
-                .status(HttpStatus.CONFLICT)
-                .json({message: "Такая роль уже существует. Введите другое имя роли"});
+            return {message: "Такая роль уже существует. Введите другое имя роли"};
+            // 409
         }
         else {
             try {
@@ -72,19 +73,16 @@ export class RoleService {
                 newRole.description = role.description;
                 newRole.permissions = role.permissions
                 await this.roleRepository.save(newRole);
-                response
-                    .status(HttpStatus.CREATED)
-                    .json(newRole);
+                return newRole; // 201
 
             } catch (e) {
                 console.log(e);
-                response.json(e);
             }
         }
-        return response;
+        return true;
     }
 
-    async updateRole(@Param() id: number, roleRequestDto: RoleRequestDto, @Res() response): Promise<RoleResponseDto> {
+    async updateRole(@Param() id: number, roleRequestDto: RoleRequestDto): Promise<RoleResponseDto> {
         const role = await this.roleRepository.findOne({where: {id}});
         role.name = roleRequestDto.name;
         role.displayName = roleRequestDto.displayName;
@@ -93,27 +91,22 @@ export class RoleService {
 
         try {
             await this.roleRepository.save(role);
-            response
-                .status(HttpStatus.OK)
-                .json(role);
         }
         catch (e) {
-            response.json(e)
+            console.log(e);
         }
 
-        return response;
+        return role;
     }
 
-    async deleteRole(@Param() id: number, @Res() response): Promise<any> {
+    async deleteRole(@Param() id: number): Promise<any> {
         try {
             const role = await this.roleRepository.findOne({where: {id}});
             await this.roleRepository.remove(role);
-            response.status(HttpStatus.OK).json({message: 'Successfully deleted'});
         }
         catch (e) {
-            response.json(e);
+            console.log(e)
         }
-        console.log(response)
-        return response;
+        return {message: 'Successfully deleted'};
     }
 }

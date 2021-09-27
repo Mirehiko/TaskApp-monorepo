@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   Patch,
-  Post, Res,
+  Post, Query, Res,
   // HttpCode,
   // HttpStatus,
 } from '@nestjs/common';
@@ -14,6 +14,10 @@ import { UserService } from './user.service';
 import { UserResponseDto } from './dto/user-response.dto';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "./schemas/user.entity";
+import {RoleRequestParams} from "../role/roleRequestParams";
+import {RoleResponseDto} from "../role/dto/role-response.dto";
+import {UserGetParams, UserRequestParams} from "./userRequestParams";
+import { Req } from '@nestjs/common';
 
 @ApiTags('Пользователи')
 @Controller('/api/main/')
@@ -31,8 +35,15 @@ export class UserController {
   @ApiOperation({summary: 'Получение пользователя'})
   @ApiResponse({status: 200, type: User})
   @Get('user/:id')
-  getUserById(@Param('id') id: number, @Res() response): Promise<UserResponseDto> {
-    return this.userService.getById(id, response);
+  getUserById(@Param() userRequestParams: UserGetParams, @Res() response): Promise<UserResponseDto> {
+    return this.userService.getById(userRequestParams, response);
+  }
+
+  @ApiOperation({summary: 'Получение пользователя полю'})
+  @ApiResponse({status: 200, type: User})
+  @Get('user/')
+  getUserBy(@Query() userRequestParams: UserGetParams): Promise<UserResponseDto | any> {
+    return this.userService.getUserBy(userRequestParams);
   }
 
   @ApiOperation({summary: 'Обновление пользователя'})
@@ -41,16 +52,17 @@ export class UserController {
   updateUser(
     @Body() userRequestDto: UserRequestDto,
     @Param() id: number,
+    @Res() response
   ): Promise<UserResponseDto> {
-    return this.userService.updateUser(id, userRequestDto);
+    return this.userService.updateUser(id, userRequestDto, response);
   }
 
   @ApiOperation({summary: 'Создание пользователя'})
   @ApiResponse({status: 201, type: User})
   @Post('user')
   // @HttpCode(HttpStatus.CREATED)
-  createUser(@Body() userRequestDto: UserRequestDto, @Res() response): Promise<any> {
-    return this.userService.createUser(userRequestDto, response);
+  createUser(@Body() userRequestDto: UserRequestDto): Promise<any> {
+    return this.userService.createUser(userRequestDto);
   }
 
   @ApiOperation({summary: 'Удаление пользователя'})
@@ -58,5 +70,13 @@ export class UserController {
   @Delete('user/:id')
   deleteUser(@Param('id') id: number): Promise<any> {
     return this.userService.deleteUser(id);
+  }
+
+  @ApiOperation({summary: 'Назначение прав пользователю'})
+  @ApiResponse({status: 201, type: User})
+  @Post('userRoles')
+  // @HttpCode(HttpStatus.CREATED)
+  assignRolesToUser(@Param() id: number, roleResponseDto: RoleResponseDto[], @Res() response): Promise<any> {
+    return this.userService.assignRolesToUser(id, roleResponseDto, response);
   }
 }

@@ -18,7 +18,7 @@ export class AuthController {
     @ApiResponse({status: 201, type: User})
     @Post('register')
     register(@Body() body, @Res() response): Promise<any> {
-        return this.authService.register(body, response);
+        return this.authService.register(body);
     }
 
     @ApiOperation({summary: 'Вход в систему'})
