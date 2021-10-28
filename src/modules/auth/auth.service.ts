@@ -1,7 +1,6 @@
 import {Body, HttpException, HttpStatus, Injectable, Res, UnauthorizedException} from '@nestjs/common';
 import {UserResponseDto} from "../user/dto/user-response.dto";
 import {UserResponse} from "../../shared/interfaces/user";
-import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "../user/schemas/user.entity";
 import {UserRequestDto} from "../user/dto/user-request.dto";
 import {UserService} from "../user/user.service";
@@ -15,19 +14,20 @@ export class AuthService {
         private jwtService: JwtService
     ) {}
 
-    async register(userRequestDto: UserRequestDto) {
+    async register(userRequestDto: UserRequestDto): Promise<any> {
         const candidate = await this.userService.getUserBy({email: userRequestDto.email});
         console.log('auth', candidate)
-        if (candidate) {
+        console.log(candidate.status === HttpStatus.NOT_FOUND)
+        if (candidate.status !== HttpStatus.NOT_FOUND) {
             throw new HttpException("Такой email уже существует. Введите другой email", HttpStatus.CONFLICT);
         }
-
+        userRequestDto.password += '';
         const hashPassword = await bcrypt.hash(userRequestDto.password, 5);
         const user = await this.userService.createUser({...userRequestDto, password: hashPassword});
-        return this.generateToken(user);
+        return await this.generateToken(user);
     }
 
-    async login(@Body() body, @Res() response): Promise<UserResponseDto> {
+    async login(@Body() body): Promise<UserResponseDto> {
         const email: string = body.email;
         const password: string = body.password;
         const userRequestParams = {
@@ -89,7 +89,7 @@ export class AuthService {
         // });
     }
 
-    private async generateToken(user: User) {
+    private async generateToken(user: User): Promise<{token: string}> {
         const payload = {email: user.email, id: user.id}; //еще роли, но что-то нет...
         return {
             token: this.jwtService.sign(payload)

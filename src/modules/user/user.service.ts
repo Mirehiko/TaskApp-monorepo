@@ -29,12 +29,12 @@ export class UserService {
       // if (params.withPermissions) {
       requestObject.relations = ['roles', 'roles.permissions'];
       // }
-      const user = await this.usersRepository.findOneOrFail(requestObject);
+      const user = await this.usersRepository.findOne(requestObject);
       if (user) {
         return user; // 200
       }
       else {
-        return {message: "Нет такого пользователя"}; // 404
+        return {status: HttpStatus.NOT_FOUND, message: "Нет такого пользователя"}; // 404
       }
     }
     catch (e) {
@@ -53,13 +53,13 @@ export class UserService {
         requestObject.relations = ['roles', 'roles.permissions'];
       // }
       console.log('getUserBy', requestObject)
-      const user = await this.usersRepository.findOneOrFail(requestObject);
+      const user = await this.usersRepository.findOne(requestObject);
       console.log('get', user)
       if (user) {
         return user;
       }
       else {
-        return {message: "Нет такого пользователя"}; // 404
+        return {status: HttpStatus.NOT_FOUND, message: "Нет такого пользователя"}; // 404
       }
     }
     catch (e) {
@@ -71,7 +71,6 @@ export class UserService {
 
   async createUser(@Param() userRequestDto: UserRequestDto): Promise<any> {
     const candidate = await this.usersRepository.findOne({ email: userRequestDto.email });
-    console.log('reg', candidate)
     if (candidate) {
       return {message: "Такой email уже существует. Введите другой email"}; // 409
     }

@@ -13,6 +13,7 @@ import {LoggingMiddleware} from "./middleware/logging-middleware";
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.env'
+      // envFilePath: `.${process.env.NODE_ENV.env}`
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
@@ -38,7 +39,7 @@ import {LoggingMiddleware} from "./middleware/logging-middleware";
     RoleModule,
     PermissionModule,
   ],
-  controllers: [AppController],
+  // controllers: [AppController],
 })
 export class AppModule implements NestModule {
   constructor(private connection: Connection) {

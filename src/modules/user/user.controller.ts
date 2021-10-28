@@ -14,10 +14,8 @@ import { UserService } from './user.service';
 import { UserResponseDto } from './dto/user-response.dto';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "./schemas/user.entity";
-import {RoleRequestParams} from "../role/roleRequestParams";
 import {RoleResponseDto} from "../role/dto/role-response.dto";
 import {UserGetParams, UserRequestParams} from "./userRequestParams";
-import { Req } from '@nestjs/common';
 
 @ApiTags('Пользователи')
 @Controller('/api/main/')
@@ -35,8 +33,8 @@ export class UserController {
   @ApiOperation({summary: 'Получение пользователя'})
   @ApiResponse({status: 200, type: User})
   @Get('user/:id')
-  getUserById(@Param() userRequestParams: UserGetParams, @Res() response): Promise<UserResponseDto> {
-    return this.userService.getById(userRequestParams, response);
+  getUserById(@Param() userRequestParams: UserGetParams): Promise<UserResponseDto> {
+    return this.userService.getById(userRequestParams);
   }
 
   @ApiOperation({summary: 'Получение пользователя полю'})
@@ -52,9 +50,8 @@ export class UserController {
   updateUser(
     @Body() userRequestDto: UserRequestDto,
     @Param() id: number,
-    @Res() response
   ): Promise<UserResponseDto> {
-    return this.userService.updateUser(id, userRequestDto, response);
+    return this.userService.updateUser(id, userRequestDto);
   }
 
   @ApiOperation({summary: 'Создание пользователя'})
@@ -76,7 +73,7 @@ export class UserController {
   @ApiResponse({status: 201, type: User})
   @Post('userRoles')
   // @HttpCode(HttpStatus.CREATED)
-  assignRolesToUser(@Param() id: number, roleResponseDto: RoleResponseDto[], @Res() response): Promise<any> {
-    return this.userService.assignRolesToUser(id, roleResponseDto, response);
+  assignRolesToUser(@Param() id: number, roleResponseDto: RoleResponseDto[]): Promise<any> {
+    return this.userService.assignRolesToUser(id, roleResponseDto);
   }
 }

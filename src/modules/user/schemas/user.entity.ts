@@ -10,7 +10,7 @@ export class User {
 
     @ApiProperty({example: 'FirstName LastName', description: 'Имя пользователя'})
     @Column({ length: 150 })
-    name: string;
+    name: string = '';
 
     @ApiProperty({example: 'example@email.ru', description: 'Почтовый адрес'})
     @Column({ length: 150 })
@@ -18,7 +18,7 @@ export class User {
 
     @ApiProperty({example: 'asdfs12casd;', description: 'Пароль'})
     @Column({ length: 150 })
-    password: string;
+    password: string = '';
 
     @ApiProperty({example: 'example@email.ru', description: 'Аватарка'})
     @Column('text')
