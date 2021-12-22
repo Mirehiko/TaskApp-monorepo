@@ -27,57 +27,13 @@ export class AuthService {
         return await this.generateToken(user);
     }
 
-    async login(@Body() body): Promise<UserResponseDto> {
-        const email: string = body.email;
-        const password: string = body.password;
-        const userRequestParams = {
-            userGetParams: {email: email}
+    async login(@Body() body): Promise<any> {
+        const userRequestParams: UserRequestDto = {
+            email: body.email,
+            password: body.password
         };
-        const candidate = this.userService.getUserBy({email: email});
-        // if (candidate) {
-            // const passwordResult = bcrypt.compareSync(
-            //     req.body.password,
-            //     candidate.password
-            // );
-            // const passwordResult = password === candidate.password;
-        //
-        //     if (passwordResult) {
-        //         // const role = await Role.findById(candidate.role);
-        //         // const token = jwt.sign(
-        //         //     {
-        //         //         email: candidate.email,
-        //         //         userId: candidate._id,
-        //         //     },
-        //         //     keys.jwt,
-        //         //     {
-        //         //         expiresIn: 36000,
-        //         //     }
-        //         // );
-        //         //
-        //         // req.session.user = {
-        //         //     _id: candidate._id,
-        //         //     email: candidate.email,
-        //         //     role: candidate.role,
-        //         //     isAdmin: role.code_name === 'administrator'
-        //         // };
-        //         response
-        //             .status(HttpStatus.OK)
-        //             .json({
-        //                 // token: `Bearer ${token}`,
-        //                 // user: req.session.user
-        //             });
-        //
-        //     } else {
-        //         response
-        //             .status(HttpStatus.UNAUTHORIZED)
-        //             .json({message: "Пароли не совпадают"});
-        //     }
-        // } else {
-        //     response
-        //         .status(HttpStatus.EXPECTATION_FAILED)
-        //         .json({message: "Пользователь с такими данными не найден",});
-        // }
-        return;
+        const user = await this.validateUser(userRequestParams);
+        return this.generateToken(user);
     }
 
     async logout(@Res() response): Promise<any> {
@@ -95,6 +51,16 @@ export class AuthService {
             token: this.jwtService.sign(payload)
         };
     }
+
+    private async validateUser(user: UserRequestDto): Promise<User> {
+        const candidate = await this.userService.getUserBy({email: user.email});
+        const isPasswordEquals = await bcrypt.compare(user.password + '', candidate.password);
+        if (candidate && isPasswordEquals) {
+            return candidate;
+        }
+        throw new UnauthorizedException({message: 'Incorrect email or password'});
+    }
+
 
     private async verifyToken(token): Promise<any> {
         try {

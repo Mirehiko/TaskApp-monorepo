@@ -52,9 +52,9 @@ export class UserService {
       // if (userRequestParams.withPermissions) {
         requestObject.relations = ['roles', 'roles.permissions'];
       // }
-      console.log('getUserBy', requestObject)
+      // console.log('getUserBy', requestObject)
       const user = await this.usersRepository.findOne(requestObject);
-      console.log('get', user)
+      // console.log('get', user)
       if (user) {
         return user;
       }
@@ -66,7 +66,6 @@ export class UserService {
       console.log(e);
       return e;
     }
-    return true;
   }
 
   async createUser(@Param() userRequestDto: UserRequestDto): Promise<any> {
@@ -91,7 +90,6 @@ export class UserService {
         return e;
       }
     }
-    return true;
   }
 
   async updateUser(@Param() id: number, userRequestDto: UserRequestDto): Promise<UserResponseDto> {
