@@ -60,5 +60,3 @@ export class RoleController {
         return this.roleService.deleteRole(id);
     }
 }
-
-

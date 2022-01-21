@@ -27,4 +27,16 @@ export class User {
     @ManyToMany(() => Role, x => x.id)
     @JoinTable()
     roles: Role[];
+
+    @ApiProperty({ example: '2022.01.21', description: 'Дата регистрации'})
+    @Column("timestamp")
+    createdAt: Date = new Date();
+
+    @ApiProperty({ example: '2022.01.21', description: 'Дата блокировки'})
+    @Column({type: "timestamp", nullable: true})
+    suspendedAt: Date = null;
+
+    @ApiProperty({example: 'Bad behavior', description: 'Причина блокировки'})
+    @Column({type: "text", nullable: true})
+    suspendReason: string = '';
 }

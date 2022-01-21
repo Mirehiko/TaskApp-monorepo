@@ -1,11 +1,10 @@
-import {HttpStatus, Injectable, Param, Res} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, Param} from '@nestjs/common';
 import {PermissionResponseDto} from "./dto/permission-response.dto";
 
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
 import { Permission } from './schemas/permission.entity';
 import {PermissionRequestDto} from "./dto/permission-request.dto";
-import { ObjectID } from 'mongodb';
 
 @Injectable()
 export class PermissionService {
@@ -20,20 +19,11 @@ export class PermissionService {
     }
 
     async getByID(@Param() id: number): Promise<PermissionResponseDto | any> {
-        try {
-            const permission = await this.permissionRepository.findOne({where: {id}});
-            if (permission) {
-                return  permission; // 200
-            }
-            else {
-                return {message: "Нет такого пермишена"}; // 404
-            }
+        const permission = await this.permissionRepository.findOne({where: {id}});
+        if (permission) {
+            return permission; // 200
         }
-        catch (e) {
-            console.log(e);
-            return e;
-        }
-        return true;
+        throw new HttpException('Нет такого пермишена', HttpStatus.NOT_FOUND);
     }
 
     async getBy(@Param() params): Promise<PermissionResponseDto | any> {
@@ -41,27 +31,22 @@ export class PermissionService {
         if (permission) {
             return Object.assign(permission, {permissions: []});
         }
-        else {
-            return {message: "Нет такого пермишена"}; // 404
-        }
+        throw new HttpException('Нет такого пермишена', HttpStatus.NOT_FOUND);
     }
 
     async createPermission(permission: PermissionRequestDto): Promise<any> {
         const candidate = await this.permissionRepository.findOne({ name: permission.name });
         if (candidate) {
-            return {message: "Такой пермишен уже существует. Введите другое имя пермишена"}; // 409
+            throw new HttpException('Такой пермишен уже существует. Введите другое имя пермишена', HttpStatus.CONFLICT);
         }
-        else {
-            try {
-                const newPermission = await this.permissionRepository.create({...permission});
-                await this.permissionRepository.save(newPermission);
-                return newPermission; // 201
-            } catch (e) {
-                console.log(e);
-                return e;
-            }
+
+        try {
+            const newPermission = await this.permissionRepository.create({...permission});
+            await this.permissionRepository.save(newPermission);
+            return newPermission; // 201
+        } catch (e) {
+            throw new Error(e);
         }
-        return true;
     }
 
     async updatePermission(@Param() id: string, permissionRequestDto: PermissionRequestDto): Promise<PermissionResponseDto> {
@@ -69,27 +54,23 @@ export class PermissionService {
         permission.name = permissionRequestDto.name;
         permission.displayName = permissionRequestDto.displayName;
         permission.description = permissionRequestDto.description;
-        console.log(permission)
+
         try {
-            await this.permissionRepository.save(permission);
+            return await this.permissionRepository.save(permission);
         }
         catch (e) {
-            console.log(e);
-            return e;
+            throw new Error(e);
         }
-
-        return permission; // 200
     }
 
     async deletePermission(@Param() id: number): Promise<any> {
         try {
             const permission = await this.permissionRepository.findOne({where: {id}});
             await this.permissionRepository.remove(permission);
+            return {message: 'Successfully deleted'} // 200
         }
         catch (e) {
-            console.log(e);
-            return e;
+            throw new Error(e);
         }
-        return {message: 'Successfully deleted'} // 200
     }
 }

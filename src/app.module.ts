@@ -1,5 +1,4 @@
 import {MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
-import {AppController} from './app.controller';
 import {UserModule} from './modules/user/user.module';
 import {ConfigModule} from "@nestjs/config";
 import {AuthModule} from "./modules/auth/auth.module";
@@ -24,12 +23,13 @@ import {LoggingMiddleware} from "./middleware/logging-middleware";
           password: process.env.DB_PASSWORD,
           database: process.env.DB_NAME,
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          // entities: [User, Role, Permission],
-          synchronize: true
+          synchronize: true,
+          // migrationsRun: true,
+          charset: 'UTF8',
+          // migrations: [
+          //   "src/migration/**/*.ts"
+          // ],
         })
-      // migrations: [
-      //   "src/migration/**/*.ts"
-      // ],
       // subscribers: [
       //   "src/subscriber/**/*.ts"
       // ],
