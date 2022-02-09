@@ -8,6 +8,7 @@ import {RoleService} from "../role/role.service";
 import {UserGetParams} from "./userRequestParams";
 import {UserRolesDto} from "./dto/assign-roles.dto";
 import {BanUserDto} from "./dto/ban-user.dto";
+import {FilesService} from "../../files/files.service";
 
 
 @Injectable()
@@ -15,7 +16,8 @@ export class UserService {
   constructor(
       @InjectRepository(User)
       private usersRepository: Repository<User>,
-      private roleService: RoleService
+      private roleService: RoleService,
+      private fileService: FilesService,
   ) {}
 
   async getAll(): Promise<UserResponseDto[]> {
@@ -81,16 +83,19 @@ export class UserService {
     }
   }
 
-  async updateUser(@Param() id: number, userRequestDto: UserRequestDto): Promise<UserResponseDto> {
+  async updateUser(@Param() id: number, userRequestDto: UserRequestDto, avatar: any): Promise<UserResponseDto> {
     let user = await this.usersRepository.findOne(id);
     if (!user) {
       throw new HttpException('Нет такого пользователя', HttpStatus.NOT_FOUND);
     }
-
     user.email = userRequestDto.email ? userRequestDto.email : user.email;
     user.password = userRequestDto.password ? userRequestDto.password : user.password;
-    user.avatar = userRequestDto.avatar ? userRequestDto.avatar : user.avatar;
+    // user.avatar = userRequestDto.avatar ? userRequestDto.avatar : user.avatar;
     user.name = userRequestDto.name ? userRequestDto.name : user.name;
+
+    if(avatar) {
+      user.avatar = await this.fileService.createFile(avatar);
+    }
 
     try {
       await this.usersRepository.save(user);

@@ -7,12 +7,20 @@ import {Connection} from "typeorm";
 import {RoleModule} from './modules/role/role.module';
 import {PermissionModule} from "./modules/permission/permission.module";
 import {LoggingMiddleware} from "./middleware/logging-middleware";
+import { FilesService } from './files/files.service';
+import { FilesModule } from './files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import * as path from 'path';
+
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: '.env'
       // envFilePath: `.${process.env.NODE_ENV.env}`
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(__dirname, 'static'),
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
@@ -38,7 +46,9 @@ import {LoggingMiddleware} from "./middleware/logging-middleware";
     AuthModule,
     RoleModule,
     PermissionModule,
+    FilesModule,
   ],
+  providers: [FilesService],
   // controllers: [AppController],
 })
 export class AppModule implements NestModule {

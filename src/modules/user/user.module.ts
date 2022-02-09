@@ -6,6 +6,7 @@ import {User} from "./schemas/user.entity";
 import {Role} from "../role/schemas/role.entity";
 import { RoleModule } from '../role/role.module';
 import {AuthModule} from "../auth/auth.module";
+import {FilesModule} from "../../files/files.module";
 
 @Module({
   controllers: [UserController],
@@ -15,6 +16,7 @@ import {AuthModule} from "../auth/auth.module";
       // DatabaseModule,
       TypeOrmModule.forFeature(([User, Role])),
       RoleModule,
+      FilesModule,
       forwardRef(() => AuthModule)
   ],
     exports: [UserService]

@@ -5,7 +5,7 @@ import {
   Get,
   Param,
   Patch,
-  Post, Query, UseGuards,
+  Post, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes,
   // HttpCode,
   // HttpStatus,
 } from '@nestjs/common';
@@ -20,6 +20,8 @@ import {RolesGuard} from "../auth/roles.guard";
 import { Roles } from '../auth/roles-auth.decorator';
 import {UserRolesDto} from "./dto/assign-roles.dto";
 import {BanUserDto} from "./dto/ban-user.dto";
+import {ValidationPipe} from "../../pipes/validation.pipe";
+import {FileInterceptor} from "@nestjs/platform-express";
 
 @ApiTags('Пользователи')
 @Controller('/api/main/')
@@ -54,17 +56,20 @@ export class UserController {
 
   @ApiOperation({summary: 'Обновление пользователя'})
   @ApiResponse({status: 200, type: User})
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('avatar'))
   @Patch('user/:id')
   updateUser(
     @Body() userRequestDto: UserRequestDto,
     @Param() id: number,
+    @UploadedFile() avatar
   ): Promise<UserResponseDto> {
-    return this.userService.updateUser(id, userRequestDto);
+    return this.userService.updateUser(id, userRequestDto, avatar);
   }
 
   @ApiOperation({summary: 'Создание пользователя'})
   @ApiResponse({status: 201, type: User})
+  // @UsePipes(ValidationPipe)
   @UseGuards(JwtAuthGuard)
   @Post('user')
   // @HttpCode(HttpStatus.CREATED)
