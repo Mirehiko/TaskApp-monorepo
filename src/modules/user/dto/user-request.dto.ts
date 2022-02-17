@@ -16,6 +16,9 @@ export class UserRequestDto implements RequestObjectWithId {
   @IsEmail({}, {message: 'Некорректный email'})
   email?: string;
 
+  @ApiProperty({example: 'active', description: 'Статус пользователя'})
+  status?: string;
+
   @ApiProperty({example: 'asdfs12casd;', description: 'Пароль'})
   // @IsString({message: 'Должно быть строкой'})
   @Length(6, 20, {message: 'Значение от 6 до 20 символов'})

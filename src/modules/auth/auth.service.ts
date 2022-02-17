@@ -1,59 +1,130 @@
-import {Body, HttpException, HttpStatus, Injectable, Res, UnauthorizedException} from '@nestjs/common';
-import {UserResponseDto} from "../user/dto/user-response.dto";
-import {UserResponse} from "../../shared/interfaces/user";
+import {
+    BadRequestException,
+    HttpException,
+    HttpStatus,
+    Injectable, MethodNotAllowedException, Req,
+    Res,
+    UnauthorizedException
+} from '@nestjs/common';
 import {User} from "../user/schemas/user.entity";
 import {UserRequestDto} from "../user/dto/user-request.dto";
 import {UserService} from "../user/user.service";
 import {JwtService} from "@nestjs/jwt";
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
+import {TokenService} from "../token/token.service";
+import {CreateUserTokenDto} from "../token/dto/user-token-dto";
+import {ConfigService} from "@nestjs/config";
+import {UserStatusEnum} from "../user/user-status.enum";
+import {ChangePasswordDto} from "./dto/change-password.dto";
+import {ForgotPasswordDto} from "./dto/forgot-password.dto";
+import {SignOptions} from "jsonwebtoken";
+import * as moment from 'moment';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private userService: UserService,
-        private jwtService: JwtService
-    ) {}
+    private readonly clientAppUrl: string;
 
-    async register(userRequestDto: UserRequestDto): Promise<any> {
-        const candidate = await this.userService.getUserBy({email: userRequestDto.email});
-        console.log('auth', candidate)
-        console.log(candidate.status === HttpStatus.NOT_FOUND)
-        if (candidate.status !== HttpStatus.NOT_FOUND) {
+    constructor(
+        private readonly userService: UserService,
+        private readonly tokenService: TokenService,
+        private readonly jwtService: JwtService,
+        private readonly configService: ConfigService,
+    ) {
+        // this.clientAppUrl = this.configService.get<string>('FE_APP_URL');
+    }
+
+    async signUp(userRequestDto: UserRequestDto): Promise<any> {
+        const candidate = await this.userService.getUserBy({email: userRequestDto.email}, true);
+        if (candidate) {
             throw new HttpException("Такой email уже существует. Введите другой email", HttpStatus.CONFLICT);
         }
         userRequestDto.password += '';
-        const hashPassword = await bcrypt.hash(userRequestDto.password, 5);
-        const user = await this.userService.createUser({...userRequestDto, password: hashPassword});
-        return await this.generateToken(user);
+        // const hashPassword = await bcrypt.hash(userRequestDto.password, 5);
+        // const user = await this.userService.createUser({...userRequestDto, password: hashPassword});
+        // return await this.generateToken(user);
+        const user = await this.userService.createUser({...userRequestDto});
+        await this.sendConfirmation(user);
+        return true;
     }
 
-    async login(@Body() body): Promise<any> {
-        const userRequestParams: UserRequestDto = {
-            email: body.email,
-            password: body.password
-        };
-        const user = await this.validateUser(userRequestParams);
-        return this.generateToken(user);
+    async signIn(userRequestDto: UserRequestDto): Promise<{ token: string }> {
+        const user = await this.validateUser(userRequestDto);
+        const token = await this.generateToken(user);
+        if (user.status === UserStatusEnum.PENDING) {
+            // user.status = UserStatusEnum.ACTIVE;
+            // await this.userService.usersRepository.save(user);
+            await this.sendConfirmation(user);
+        }
+        return {token: token};
     }
 
-    async logout(@Res() response): Promise<any> {
-        response
-            .status(HttpStatus.OK)
-            .json({logout: true,});
-        // res.status(200).json({
-        //     logout: true,
+    async logout(token: string): Promise<any> {
+        const data = await this.verifyToken(token);
+        return await this.tokenService.deleteAll(data.id);
+    }
+
+    async signUser(user: User, withStatusCheck: boolean = true): Promise<string> {
+        if (withStatusCheck && (user.status === UserStatusEnum.BLOCKED)) {
+            throw new MethodNotAllowedException();
+        }
+        const token = await this.generateToken(user);
+        const expireAt = moment()
+            .add(1, 'day')
+            .toISOString();
+
+        await this.saveToken({
+            token,
+            expireAt,
+            userId: user.id,
+        });
+
+        return token;
+    }
+
+    async changePassword(changePasswordDto: ChangePasswordDto): Promise<boolean> {
+        const data = await this.verifyToken(changePasswordDto.token);
+        const password = await this.userService.hashPassword(changePasswordDto.password);
+
+        await this.userService.updateUser(data.id, {password});
+        await this.tokenService.deleteAll(data.id);
+        return true;
+    }
+
+    async confirm(token: string): Promise<User> {
+        const data = await this.verifyToken(token);
+        const user = await this.userService.getUserBy({id: data.id});
+
+        await this.tokenService.delete(data.id, token);
+
+        if (user && user.status === UserStatusEnum.PENDING) {
+            user.status = UserStatusEnum.ACTIVE;
+            return await this.userService.usersRepository.save(user);
+        }
+        throw new BadRequestException('Confirmation error');
+    }
+
+    async sendConfirmation(user: User): Promise<void> {
+        const token = await this.signUser(user, false);
+        const confirmLink = `${this.clientAppUrl}/auth/confirm?token=${token}`;
+        console.log(confirmLink);
+        // await this.mailService.send({
+        //     from: this.configService.get<string>('JS_CODE_MAIL'),
+        //     to: user.email,
+        //     subject: 'Verify User',
+        //     html: `
+        //         <h3>Hello ${user.firstName}!</h3>
+        //         <p>Please use this <a href="${confirmLink}">link</a> to confirm your account.</p>
+        //     `,
         // });
     }
 
-    private async generateToken(user: User): Promise<{token: string}> {
+    private async generateToken(user: User, options?: SignOptions): Promise<string> {
         const payload = {email: user.email, id: user.id}; //еще роли, но что-то нет...
-        return {
-            token: this.jwtService.sign(payload)
-        };
+        return this.jwtService.sign(payload, options);
     }
 
     private async validateUser(user: UserRequestDto): Promise<User> {
-        const candidate = await this.userService.getUserBy({email: user.email});
+        const candidate = await this.userService.getUserBy({email: user.email}, true);
         const isPasswordEquals = await bcrypt.compare(user.password + '', candidate.password);
         if (candidate && isPasswordEquals) {
             return candidate;
@@ -63,22 +134,37 @@ export class AuthService {
 
 
     private async verifyToken(token): Promise<any> {
-        try {
-            // const data = this.jwtService.verify(token);
-            // const tokenExists = await this.jwtService.exists(data._id, token);
-            // if (tokenExists) {
-            //     return data;
-            // }
-            throw new UnauthorizedException();
+        const data = this.jwtService.verify(token);
+        const tokenExists = await this.tokenService.exists(data.id, token);
+        if (tokenExists) {
+            return data;
         }
-        catch(e) {
-            throw new UnauthorizedException();
-        }
+        throw new UnauthorizedException();
     }
 
-    private async saveToken(userResponse: UserResponse) {
-        // const userToken = await this.tokenService.create(userResponse);
-        // return userToken;userToken
-        return;
+    private async saveToken(createUserTokenDto: CreateUserTokenDto) {
+        return this.tokenService.create(createUserTokenDto);
+    }
+
+    async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
+        const user = await this.userService.getUserBy({email: forgotPasswordDto.email});
+        if (!user) {
+            throw new BadRequestException('Invalid email');
+        }
+        const token = await this.signUser(user);
+        if (user.status === UserStatusEnum.PENDING) {
+            await this.confirm(token);
+        }
+        const forgotLink = `${this.clientAppUrl}/auth/change-password?token=${token}`;
+        console.log(forgotLink);
+        // await this.mailService.send({
+        //     from: this.configService.get<string>('JS_CODE_MAIL'),
+        //     to: user.email,
+        //     subject: 'Forgot Password',
+        //     html: `
+        //         <h3>Hello ${user.firstName}!</h3>
+        //         <p>Please use this <a href="${forgotLink}">link</a> to reset your password.</p>
+        //     `,
+        // });
     }
 }

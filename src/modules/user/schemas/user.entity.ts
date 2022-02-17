@@ -1,6 +1,8 @@
-import {Entity, Column, ManyToMany, JoinTable, PrimaryGeneratedColumn} from 'typeorm';
+import {Entity, Column, ManyToMany, JoinTable, PrimaryGeneratedColumn, OneToOne} from 'typeorm';
 import {ApiProperty} from "@nestjs/swagger";
 import {Role} from "../../role/schemas/role.entity";
+import {UserStatusEnum} from "../user-status.enum";
+import {UserToken} from "../../token/schemas/user-token.entity";
 
 @Entity()
 export class User {
@@ -35,6 +37,9 @@ export class User {
     @ApiProperty({ example: '2022.01.21', description: 'Дата блокировки'})
     @Column({type: "timestamp", nullable: true})
     suspendedAt: Date = null;
+
+    @Column({type: "enum", enum: Object.values(UserStatusEnum), default: UserStatusEnum.PENDING})
+    status: string;
 
     @ApiProperty({example: 'Bad behavior', description: 'Причина блокировки'})
     @Column({type: "text", nullable: true})

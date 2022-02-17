@@ -1,10 +1,12 @@
 import {CanActivate, ExecutionContext, Injectable, UnauthorizedException} from "@nestjs/common";
 import {JwtService} from "@nestjs/jwt";
 import {UserService} from "../user/user.service";
+import {TokenService} from "../token/token.service";
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-    constructor(private jwtService: JwtService,
+    constructor(private tokenService: TokenService,
+                private jwtService: JwtService,
                 private userService: UserService) {
     }
 
@@ -17,8 +19,11 @@ export class JwtAuthGuard implements CanActivate {
             if (bearer !== 'Bearer' || !token) {
                 throw new UnauthorizedException({message: "User unauthorized"});
             }
-            const user = this.jwtService.verify(token);
-
+            const user = await this.jwtService.verify(token);
+            const exists = await this.tokenService.exists(user.id, token);
+            if (!exists) {
+                throw new UnauthorizedException({message: "User unauthorized"});
+            }
             req.user = await this.userService.getUserBy({id: user.id});
             // TODO: Need to get user and his params
             return true;

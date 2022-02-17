@@ -9,16 +9,15 @@ import {AuthModule} from "../auth/auth.module";
 import {FilesModule} from "../../files/files.module";
 
 @Module({
-  controllers: [UserController],
+    imports: [
+        // DatabaseModule,
+        TypeOrmModule.forFeature(([User, Role])),
+        RoleModule,
+        FilesModule,
+        forwardRef(() => AuthModule)
+    ],
     providers: [UserService],
-    // providers: [UserService, ...userProviders],
-  imports: [
-      // DatabaseModule,
-      TypeOrmModule.forFeature(([User, Role])),
-      RoleModule,
-      FilesModule,
-      forwardRef(() => AuthModule)
-  ],
+    controllers: [UserController],
     exports: [UserService]
 })
 export class UserModule {}

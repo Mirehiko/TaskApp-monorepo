@@ -9,4 +9,5 @@ export interface UserGetParams {
     name?: string;
     roleId?: number;
     roleName?: string;
+    checkOnly?: boolean;
 }

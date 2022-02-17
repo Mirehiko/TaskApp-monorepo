@@ -11,14 +11,13 @@ import { FilesService } from './files/files.service';
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
+import {TokenModule} from "./modules/token/token.module";
+import {configModule} from "./config/configure.root";
 
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: '.env'
-      // envFilePath: `.${process.env.NODE_ENV.env}`
-    }),
+    configModule,
     ServeStaticModule.forRoot({
       rootPath: path.resolve(__dirname, 'static'),
     }),
@@ -47,6 +46,7 @@ import * as path from 'path';
     RoleModule,
     PermissionModule,
     FilesModule,
+    TokenModule,
   ],
   providers: [FilesService],
   // controllers: [AppController],

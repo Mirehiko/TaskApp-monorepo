@@ -9,25 +9,29 @@ import {UserGetParams} from "./userRequestParams";
 import {UserRolesDto} from "./dto/assign-roles.dto";
 import {BanUserDto} from "./dto/ban-user.dto";
 import {FilesService} from "../../files/files.service";
-
+import * as bcrypt from 'bcrypt';
+import {UserHelper} from "./user-helper";
 
 @Injectable()
 export class UserService {
+  private readonly saltRounds = 10;
+
   constructor(
       @InjectRepository(User)
-      private usersRepository: Repository<User>,
+      public usersRepository: Repository<User>,
       private roleService: RoleService,
       private fileService: FilesService,
   ) {}
 
   async getAll(): Promise<UserResponseDto[]> {
-    return await this.usersRepository.find();
+    const users: User[] = await this.usersRepository.find();
+    return UserHelper.mapEntitiesToDto(users);
   }
 
-  async getById(@Param() userRequestParams: UserGetParams): Promise<UserResponseDto | any> {
+  async getById(@Param() userGetParams: UserGetParams): Promise<User | any> {
     try {
       const requestObject: FindOneOptions<User> = {
-        where: {id: userRequestParams.id}
+        where: {id: userGetParams.id}
       };
       // if (params.withPermissions) {
       requestObject.relations = ['roles', 'roles.permissions'];
@@ -43,10 +47,10 @@ export class UserService {
     }
   }
 
-  async getUserBy(userRequestParams: UserGetParams): Promise<UserResponseDto | any> {
+  async getUserBy(userGetParams: UserGetParams, checkOnly?: boolean): Promise<User> {
     try {
       const requestObject: FindOneOptions<User> = {
-        where: userRequestParams
+        where: userGetParams
       };
 
       // if (userRequestParams.withPermissions) {
@@ -55,6 +59,10 @@ export class UserService {
       const user = await this.usersRepository.findOne(requestObject);
       if (user) {
         return user;
+      }
+
+      if (checkOnly) {
+        return;
       }
       throw new HttpException('Нет такого пользователя', HttpStatus.NOT_FOUND);
     }
@@ -83,7 +91,7 @@ export class UserService {
     }
   }
 
-  async updateUser(@Param() id: number, userRequestDto: UserRequestDto, avatar: any): Promise<UserResponseDto> {
+  async updateUser(@Param() id: number, userRequestDto: UserRequestDto, avatar?: any): Promise<User> {
     let user = await this.usersRepository.findOne(id);
     if (!user) {
       throw new HttpException('Нет такого пользователя', HttpStatus.NOT_FOUND);
@@ -175,6 +183,11 @@ export class UserService {
   async deleteUser(id: number): Promise<any> {
     await this.usersRepository.delete(id);
     return {status: HttpStatus.OK, statusText: 'Deleted successfully'};
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(this.saltRounds);
+    return await bcrypt.hash(password, salt);
   }
 }
 

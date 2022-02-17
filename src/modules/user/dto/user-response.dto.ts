@@ -16,4 +16,7 @@ export class UserResponseDto {
 
   @ApiProperty({example: 'Список ролей', description: 'Список ролей, которыми обладает пользователь'})
   roles: Role[];
+
+  @ApiProperty({example: 'active', description: 'Статус пользователя'})
+  status?: string;
 }
