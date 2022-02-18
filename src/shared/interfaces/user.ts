@@ -1,7 +1,7 @@
 import {PermissionResponse} from "./permission";
 import { RoleResponse } from './role';
-import { TaskStates } from '../enums/task-states';
-import { Themes } from '../enums/themes';
+import { TaskStates } from '../enums/task/task-states';
+import { Themes } from '../enums/common/themes';
 
 export interface UserResponse {
   id: number;

@@ -1,17 +1,16 @@
 import {MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
-import {UserModule} from './modules/user/user.module';
-import {ConfigModule} from "@nestjs/config";
-import {AuthModule} from "./modules/auth/auth.module";
+import {UserModule} from './modules/common/user/user.module';
+import {AuthModule} from "./modules/common/auth/auth.module";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {Connection} from "typeorm";
-import {RoleModule} from './modules/role/role.module';
-import {PermissionModule} from "./modules/permission/permission.module";
+import {RoleModule} from './modules/common/role/role.module';
+import {PermissionModule} from "./modules/common/permission/permission.module";
 import {LoggingMiddleware} from "./middleware/logging-middleware";
 import { FilesService } from './files/files.service';
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
-import {TokenModule} from "./modules/token/token.module";
+import {TokenModule} from "./modules/common/token/token.module";
 import {configModule} from "./config/configure.root";
 
 

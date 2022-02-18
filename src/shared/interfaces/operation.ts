@@ -1,4 +1,4 @@
-import { OperationType } from "../enums/operation-types";
+import { OperationType } from "../enums/finance/operation-types";
 import { InvoiceResponse } from './invoice';
 import { UserResponse } from './user';
 import { CategoryResponse } from './category';

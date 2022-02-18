@@ -1,5 +1,5 @@
 import { UserResponse } from './user';
-import { TaskStates } from '../enums/task-states';
+import { TaskStates } from '../enums/task/task-states';
 import { RoleResponse } from './role';
 
 export interface TaskResponse {
