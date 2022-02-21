@@ -10,11 +10,11 @@ import {
   // HttpStatus,
 } from '@nestjs/common';
 import { UserRequestDto } from './dto/user-request.dto';
+import { UserGetParams, UserGetParamsData } from './interfaces/user-params';
 import { UserService } from './user.service';
 import { UserResponseDto } from './dto/user-response.dto';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "./schemas/user.entity";
-import {UserGetParams} from "./userRequestParams";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 import {RolesGuard} from "../auth/roles.guard";
 import { Roles } from '../auth/roles-auth.decorator';
@@ -42,16 +42,16 @@ export class UserController {
   @ApiResponse({status: 200, type: User})
   @UseGuards(JwtAuthGuard)
   @Get('user/:id')
-  getUserById(@Param() userRequestParams: UserGetParams): Promise<UserResponseDto> {
-    return this.userService.getById(userRequestParams);
+  getUserById(@Param('id') id: number): Promise<UserResponseDto> {
+    return this.userService.getByID(id);
   }
 
   @ApiOperation({summary: 'Получение пользователя полю'})
   @ApiResponse({status: 200, type: User})
   @UseGuards(JwtAuthGuard)
   @Get('user/')
-  getUserBy(@Query() userRequestParams: UserGetParams): Promise<UserResponseDto | any> {
-    return this.userService.getUserBy(userRequestParams);
+  getUserBy(@Query() userRequestParams: UserGetParamsData): Promise<UserResponseDto> {
+    return this.userService.getBy(userRequestParams);
   }
 
   @ApiOperation({summary: 'Обновление пользователя'})
@@ -82,7 +82,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Delete('user/:id')
   deleteUser(@Param('id') id: number): Promise<any> {
-    return this.userService.deleteUser(id);
+    return this.userService.delete(id);
   }
 
   @ApiOperation({summary: 'Назначение прав пользователю'})

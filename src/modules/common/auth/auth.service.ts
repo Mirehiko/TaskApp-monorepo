@@ -34,7 +34,10 @@ export class AuthService {
     }
 
     async signUp(userRequestDto: UserRequestDto): Promise<any> {
-        const candidate = await this.userService.getUserBy({email: userRequestDto.email}, true);
+        const candidate = await this.userService.getBy({
+            checkOnly: true,
+            params: {email: userRequestDto.email}
+        });
         if (candidate) {
             throw new HttpException("Такой email уже существует. Введите другой email", HttpStatus.CONFLICT);
         }
@@ -92,13 +95,13 @@ export class AuthService {
 
     async confirm(token: string): Promise<User> {
         const data = await this.verifyToken(token);
-        const user = await this.userService.getUserBy({id: data.id});
+        const user = await this.userService.getByID(data.id);
 
         await this.tokenService.delete(data.id, token);
 
         if (user && user.status === UserStatusEnum.PENDING) {
             user.status = UserStatusEnum.ACTIVE;
-            return await this.userService.usersRepository.save(user);
+            return await this.userService.repository.save(user);
         }
         throw new BadRequestException('Confirmation error');
     }
@@ -123,9 +126,12 @@ export class AuthService {
         return this.jwtService.sign(payload, options);
     }
 
-    private async validateUser(user: UserRequestDto): Promise<User> {
-        const candidate = await this.userService.getUserBy({email: user.email}, true);
-        const isPasswordEquals = await bcrypt.compare(user.password + '', candidate.password);
+    private async validateUser(userRequestDto: UserRequestDto): Promise<User> {
+        const candidate = await this.userService.getBy({
+            checkOnly: true,
+            params: {email: userRequestDto.email}
+        });
+        const isPasswordEquals = await bcrypt.compare(userRequestDto.password + '', candidate.password);
         if (candidate && isPasswordEquals) {
             return candidate;
         }
@@ -147,7 +153,9 @@ export class AuthService {
     }
 
     async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
-        const user = await this.userService.getUserBy({email: forgotPasswordDto.email});
+        const user = await this.userService.getBy({
+            params: {email: forgotPasswordDto.email}
+        });
         if (!user) {
             throw new BadRequestException('Invalid email');
         }

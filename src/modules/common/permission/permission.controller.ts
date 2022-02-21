@@ -1,5 +1,10 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, Res} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Res, UseGuards } from '@nestjs/common';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import { GetParamsData } from '../../base-service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles-auth.decorator';
+import { RolesGuard } from '../auth/roles.guard';
+import { RoleResponseDto } from '../role/dto/role-response.dto';
 import {PermissionService} from "./permission.service";
 import {Permission} from "./schemas/permission.entity";
 import {PermissionResponseDto} from "./dto/permission-response.dto";
@@ -24,9 +29,18 @@ export class PermissionController {
     getPermissionById(@Param('id') id: number): Promise<PermissionResponseDto> {
         return this.permissionService.getByID(id);
     }
-
+    
+    @ApiOperation({summary: 'Получение разрешения по полю'})
+    @ApiResponse({status: 200, type: Permission})
+    @Get('role/:id')
+    getPermissionBy(@Query() requestParams: GetParamsData): Promise<PermissionResponseDto> {
+        return this.permissionService.getBy(requestParams);
+    }
+    
     @ApiOperation({summary: 'Обновление разрешения'})
     @ApiResponse({status: 200, type: Permission})
+    @Roles("ADMIN")
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Patch('permission/:id')
     updatePermission(
         @Param('id') id: string,
@@ -35,15 +49,10 @@ export class PermissionController {
         return this.permissionService.updatePermission(id, permissionRequestDto);
     }
 
-    // @ApiOperation({summary: 'Получение роли'})
-    // @ApiResponse({status: 200, type: Role})
-    // @Get('role/:id')
-    // getPermissionBy(@Param() params: any, @Res() response): Promise<RoleResponseDto> {
-    //     return this.permissionService.getBy(params, response);
-    // }
-
     @ApiOperation({summary: 'Создание разрешения'})
     @ApiResponse({status: 201, type: Permission})
+    @Roles("ADMIN")
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Post('permission')
     createPermission(@Body() permissionRequestDto: PermissionRequestDto): Promise<any> {
         return this.permissionService.createPermission(permissionRequestDto);
@@ -51,9 +60,10 @@ export class PermissionController {
 
     @ApiOperation({summary: 'Удаление разрешения'})
     @ApiResponse({status: 200, type: Permission})
+    @Roles("ADMIN")
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Delete('permission/:id')
     deletePermission(@Param('id') id: number): Promise<any> {
-
-        return this.permissionService.deletePermission(id);
+        return this.permissionService.delete(id);
     }
 }

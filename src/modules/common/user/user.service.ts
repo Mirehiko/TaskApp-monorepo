@@ -1,72 +1,31 @@
 import {HttpException, HttpStatus, Injectable, Param} from '@nestjs/common';
-import { BaseService } from '../../base-service';
+import { BaseService, GetParamsData } from '../../base-service';
 import {UserRequestDto} from './dto/user-request.dto';
-import {UserResponseDto} from './dto/user-response.dto';
 import {InjectRepository} from "@nestjs/typeorm";
+import { UserGetParamsData } from './interfaces/user-params';
 import {User} from "./schemas/user.entity";
 import {FindOneOptions, Repository} from "typeorm";
 import {RoleService} from "../role/role.service";
-import {UserGetParams} from "./userRequestParams";
 import {UserRolesDto} from "./dto/assign-roles.dto";
 import {BanUserDto} from "./dto/ban-user.dto";
 import {FilesService} from "../../../files/files.service";
 import * as bcrypt from 'bcrypt';
+import { UserRepository } from './user-repository';
 
 
 @Injectable()
-export class UserService extends BaseService<User> {
+export class UserService extends BaseService<User, UserGetParamsData> {
   private readonly saltRounds = 10;
+  protected entityNotFoundMessage: string = 'Нет такого пользователя';
+  protected entityOrRelationNotFoundMessage: string = 'Пользователь или роль не найдены';
+  protected relations: string[] = ['roles', 'roles.permissions'];
 
   constructor(
-      @InjectRepository(User)
-      protected repository: Repository<User>,
+      public repository: UserRepository,
       private roleService: RoleService,
       private fileService: FilesService,
   ) {
     super();
-  }
-
-  async getById(@Param() userGetParams: UserGetParams): Promise<User | any> {
-    try {
-      const requestObject: FindOneOptions<User> = {
-        where: {id: userGetParams.id}
-      };
-      // if (params.withPermissions) {
-      requestObject.relations = ['roles', 'roles.permissions'];
-      // }
-      const user = await this.repository.findOne(requestObject);
-      if (user) {
-        return user; // 200
-      }
-      throw new HttpException('Нет такого пользователя', HttpStatus.NOT_FOUND);
-    }
-    catch (e) {
-      throw new Error(e);
-    }
-  }
-
-  async getUserBy(userGetParams: UserGetParams, checkOnly?: boolean): Promise<User> {
-    try {
-      const requestObject: FindOneOptions<User> = {
-        where: userGetParams
-      };
-
-      // if (userRequestParams.withPermissions) {
-        requestObject.relations = ['roles', 'roles.permissions'];
-      // }
-      const user = await this.repository.findOne(requestObject);
-      if (user) {
-        return user;
-      }
-
-      if (checkOnly) {
-        return;
-      }
-      throw new HttpException('Нет такого пользователя', HttpStatus.NOT_FOUND);
-    }
-    catch (e) {
-      throw new Error(e);
-    }
   }
 
   async createUser(@Param() userRequestDto: UserRequestDto): Promise<any> {
@@ -79,7 +38,7 @@ export class UserService extends BaseService<User> {
       const newUser = await this.repository.create({...userRequestDto});
       let role;
       if (!userRequestDto.roles || !userRequestDto.roles.length) {
-        role = await this.roleService.getByID({id: 8});
+        role = await this.roleService.getByID(8);
         newUser.roles = [role];
       }
 
@@ -92,7 +51,7 @@ export class UserService extends BaseService<User> {
   async updateUser(@Param() id: number, userRequestDto: UserRequestDto, avatar?: any): Promise<User> {
     let user = await this.repository.findOne(id);
     if (!user) {
-      throw new HttpException('Нет такого пользователя', HttpStatus.NOT_FOUND);
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
     user.email = userRequestDto.email ? userRequestDto.email : user.email;
     user.password = userRequestDto.password ? userRequestDto.password : user.password;
@@ -127,9 +86,9 @@ export class UserService extends BaseService<User> {
         user.roles = userRolesDto.roles.filter(r => !uRoles.includes(r.id)).concat(user.roles);
       }
       await this.repository.save(user);
-      return await this.getUserBy({id: user.id});
+      return await this.getBy({params: {id: user.id}});
     }
-    throw new HttpException('Пользователь или роль не найдены', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.entityOrRelationNotFoundMessage, HttpStatus.NOT_FOUND);
   }
 
   async removeUserRoles(userRolesDto: UserRolesDto): Promise<any> {
@@ -139,9 +98,9 @@ export class UserService extends BaseService<User> {
       const roles = userRolesDto.roles.map(r => r.id);
       user.roles = user.roles.filter(ur => !roles.includes(ur.id));
       await this.repository.save(user);
-      return await this.getUserBy({id: user.id});
+      return await this.getBy({params: {id: user.id}});
     }
-    throw new HttpException('Пользователь или роль не найдены', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.entityOrRelationNotFoundMessage, HttpStatus.NOT_FOUND);
   }
 
   async suspend(banUserDto: BanUserDto): Promise<any> {
@@ -177,9 +136,7 @@ export class UserService extends BaseService<User> {
     }
     throw new HttpException('Пользователи не найдены', HttpStatus.NOT_FOUND);
   }
-
-
-
+  
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(this.saltRounds);
     return await bcrypt.hash(password, salt);

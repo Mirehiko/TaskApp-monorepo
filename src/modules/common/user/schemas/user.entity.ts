@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {Entity, Column, ManyToMany, JoinTable, PrimaryGeneratedColumn, OneToOne} from 'typeorm';
 import {ApiProperty} from "@nestjs/swagger";
 import {BaseEntity} from '../../../base-entity';
@@ -15,6 +16,7 @@ export class User extends BaseEntity {
     email: string;
 
     @ApiProperty({example: 'asdfs12casd;', description: 'Пароль'})
+    @Exclude()
     @Column({ length: 150 })
     password: string = '';
 

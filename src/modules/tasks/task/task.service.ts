@@ -2,13 +2,16 @@ import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 import { FilesService } from '../../../files/files.service';
-import { TaskStates } from '../../../shared/enums/task/task-states';
-import { BaseService, GetParams } from '../../base-service';
+import { BaseService, GetParams, GetParamsData } from '../../base-service';
 import { TaskRequestDto } from './dto/task-request.dto';
+import { TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
 
 @Injectable()
-export class TaskService extends BaseService<Task> {
+export class TaskService extends BaseService<Task, TaskGetParamsData> {
+	protected entityNotFoundMessage: string = 'Нет такой задачи';
+	protected entityOrRelationNotFoundMessage: string = '';
+	protected relations: string[] = ['createdBy', 'createdBy.users'];
 	
 	constructor(
 		@InjectRepository(Task)
@@ -18,34 +21,9 @@ export class TaskService extends BaseService<Task> {
 		super();
 	}
 	
-	public async getBy(@Param() getParams: TaskGetParams): Promise<Task> {
-		try {
-			const requestObject: FindOneOptions<Task> = {
-				where: {...getParams}
-			};
-			// if (params.withPermissions) {
-			// requestObject.relations = ['roles', 'roles.permissions'];
-			// }
-			const user = await this.repository.findOne(requestObject);
-			if (user) {
-				return user; // 200
-			}
-			throw new HttpException('Нет такого пользователя', HttpStatus.NOT_FOUND);
-		}
-		catch (e) {
-			throw new Error(e);
-		}
-	}
-	
 	public async create(@Param() requestDto: TaskRequestDto): Promise<any> {
 		try {
 			const newTask = await this.repository.create({...requestDto});
-			// let role;
-			// if (!requestDto.roles || !requestDto.roles.length) {
-			// 	role = await this.roleService.getByID({id: 8});
-			// 	newUser.roles = [role];
-			// }
-
 			return await this.repository.save(newTask); // 200
 		} catch (e) {
 			throw new Error(e);
@@ -110,13 +88,4 @@ export class TaskService extends BaseService<Task> {
 	
 }
 
-export interface TaskGetParams extends GetParams {
-	state?: TaskStates;
-	createdBy?: number[];
-	reviewer?: number[];
-	assignee?: number[];
-	dateDue?: {
-		startDate: string;
-		endDate: string;
-	};
-}
+

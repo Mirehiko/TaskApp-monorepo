@@ -1,5 +1,5 @@
 import {HttpException, HttpStatus, Injectable, Param} from '@nestjs/common';
-import { BaseService } from '../../base-service';
+import { BaseService, GetParamsData } from '../../base-service';
 import {RoleRequestDto} from "./dto/role-request.dto";
 import { Role } from './schemas/role.entity';
 import {InjectRepository} from "@nestjs/typeorm";
@@ -9,43 +9,15 @@ import {RoleRequestParams} from "./roleRequestParams";
 
 
 @Injectable()
-export class RoleService extends BaseService<Role> {
+export class RoleService extends BaseService<Role, GetParamsData> {
+    protected entityNotFoundMessage: string = 'Нет такой роли';
+    protected relations: string[] = ['roles', 'roles.permissions'];
+    
     constructor(
         @InjectRepository(Role)
         protected repository: Repository<Role>,
     ) {
         super();
-    }
-
-    async getByID(@Param() params: RoleRequestParams): Promise<RoleResponseDto | any> {
-        try {
-            const requestObject: FindOneOptions<Role> = {
-                where: {id: params.id}
-            };
-            // if (params.withPermissions) {
-                requestObject.relations = ['permissions'];
-            // }
-
-            const role = await this.repository.findOne(requestObject);
-            if (role) {
-                return role;
-                // response
-                //     .status(HttpStatus.OK)
-                //     .json(role);
-            }
-            throw new HttpException('Нет такой роли', HttpStatus.NOT_FOUND);
-        }
-        catch (e) {
-            throw new Error(e);
-        }
-    }
-
-    async getBy(@Param() params): Promise<RoleResponseDto | any> {
-        const role = await this.repository.findOne(params);
-        if (role) {
-            return Object.assign(role, {permissions: []});
-        }
-        throw new HttpException('Нет такой роли', HttpStatus.NOT_FOUND);
     }
 
     async createRole(role: RoleRequestDto): Promise<any> {
@@ -67,7 +39,7 @@ export class RoleService extends BaseService<Role> {
         }
     }
 
-    async updateRole(@Param() id: number, roleRequestDto: RoleRequestDto): Promise<RoleResponseDto> {
+    async updateRole(@Param() id: number, roleRequestDto: RoleRequestDto): Promise<Role> {
         const role = await this.repository.findOne({where: {id}});
         role.name = roleRequestDto.name;
         role.displayName = roleRequestDto.displayName;

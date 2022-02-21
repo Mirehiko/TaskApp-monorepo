@@ -1,4 +1,5 @@
 import {forwardRef, Module} from '@nestjs/common';
+import { UserRepository } from './user-repository';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import {TypeOrmModule} from "@nestjs/typeorm";
@@ -11,7 +12,7 @@ import {FilesModule} from "../../../files/files.module";
 @Module({
     imports: [
         // DatabaseModule,
-        TypeOrmModule.forFeature(([User, Role])),
+        TypeOrmModule.forFeature(([UserRepository, Role])),
         RoleModule,
         FilesModule,
         forwardRef(() => AuthModule)

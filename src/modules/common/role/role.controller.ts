@@ -1,4 +1,22 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, Res, UseInterceptors} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Patch,
+    Post,
+    Query,
+    Res,
+    UseGuards,
+    UseInterceptors
+} from '@nestjs/common';
+import { GetParamsData } from '../../base-service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles-auth.decorator';
+import { RolesGuard } from '../auth/roles.guard';
+import { UserResponseDto } from '../user/dto/user-response.dto';
+import { UserGetParamsData } from '../user/interfaces/user-params';
 import {RoleService} from "./role.service";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {RoleRequestDto} from "./dto/role-request.dto";
@@ -25,19 +43,21 @@ export class RoleController {
     @ApiOperation({summary: 'Получение роли'})
     @ApiResponse({status: 200, type: Role})
     @Get('role/:id')
-    getRoleById(@Param() params: RoleRequestParams): Promise<RoleResponseDto> {
-        return this.roleService.getByID(params);
+    getRoleById(@Param('id') id: number): Promise<RoleResponseDto> {
+        return this.roleService.getByID(id);
     }
-
-    // @ApiOperation({summary: 'Получение роли'})
-    // @ApiResponse({status: 200, type: Role})
-    // @Get('role/:id')
-    // getRoleBy(@Param() params: any, @Res() response): Promise<RoleResponseDto> {
-    //     return this.roleService.getBy(params, response);
-    // }
+    
+    @ApiOperation({summary: 'Получение роли'})
+    @ApiResponse({status: 200, type: Role})
+    @Get('role/:id')
+    getRoleBy(@Query() requestParams: GetParamsData): Promise<RoleResponseDto> {
+        return this.roleService.getBy(requestParams);
+    }
 
     @ApiOperation({summary: 'Обновление роли'})
     @ApiResponse({status: 200, type: Role})
+    @Roles("ADMIN")
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Patch('role/:id')
     updateRole(
         @Param('id') id: number,
@@ -48,6 +68,8 @@ export class RoleController {
 
     @ApiOperation({summary: 'Создание роли'})
     @ApiResponse({status: 201, type: Role})
+    @Roles("ADMIN")
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Post('role')
     createRole(@Body() roleRequestDto: RoleRequestDto): Promise<any> {
         return this.roleService.createRole(roleRequestDto);
@@ -55,8 +77,10 @@ export class RoleController {
 
     @ApiOperation({summary: 'Удаление роли'})
     @ApiResponse({status: 200, type: Role})
+    @Roles("ADMIN")
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Delete('role/:id')
-    deleteRole(@Param('id') id: number, @Res() response): Promise<any> {
-        return this.roleService.deleteRole(id);
+    deleteRole(@Param('id') id: number): Promise<any> {
+        return this.roleService.delete(id);
     }
 }
