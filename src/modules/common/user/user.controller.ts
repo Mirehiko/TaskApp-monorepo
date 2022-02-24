@@ -26,7 +26,7 @@ import {FileInterceptor} from "@nestjs/platform-express";
 @ApiTags('Пользователи')
 @Controller('/api/main/')
 export class UserController {
-  constructor(private readonly userService: UserService) {
+  constructor(private readonly service: UserService) {
   }
 
   @ApiOperation({summary: 'Получение списка пользователей'})
@@ -35,7 +35,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('users')
   getUsers(): Promise<UserResponseDto[]> {
-    return this.userService.getAll();
+    return this.service.getAll();
   }
 
   @ApiOperation({summary: 'Получение пользователя'})
@@ -43,7 +43,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('user/:id')
   getUserById(@Param('id') id: number): Promise<UserResponseDto> {
-    return this.userService.getByID(id);
+    return this.service.getByID(id);
   }
 
   @ApiOperation({summary: 'Получение пользователя полю'})
@@ -51,7 +51,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('user/')
   getUserBy(@Query() userRequestParams: UserGetParamsData): Promise<UserResponseDto> {
-    return this.userService.getBy(userRequestParams);
+    return this.service.getBy(userRequestParams);
   }
 
   @ApiOperation({summary: 'Обновление пользователя'})
@@ -60,11 +60,11 @@ export class UserController {
   @UseInterceptors(FileInterceptor('avatar'))
   @Patch('user/:id')
   updateUser(
-    @Body() userRequestDto: UserRequestDto,
+    @Body() requestDto: UserRequestDto,
     @Param() id: number,
     @UploadedFile() avatar
   ): Promise<UserResponseDto> {
-    return this.userService.updateUser(id, userRequestDto, avatar);
+    return this.service.updateUser(id, requestDto, avatar);
   }
 
   @ApiOperation({summary: 'Создание пользователя'})
@@ -73,8 +73,8 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Post('user')
   // @HttpCode(HttpStatus.CREATED)
-  createUser(@Body() userRequestDto: UserRequestDto): Promise<any> {
-    return this.userService.createUser(userRequestDto);
+  createUser(@Body() requestDto: UserRequestDto): Promise<any> {
+    return this.service.createUser(requestDto);
   }
 
   @ApiOperation({summary: 'Удаление пользователя'})
@@ -82,7 +82,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Delete('user/:id')
   deleteUser(@Param('id') id: number): Promise<any> {
-    return this.userService.delete(id);
+    return this.service.delete(id);
   }
 
   @ApiOperation({summary: 'Назначение прав пользователю'})
@@ -90,7 +90,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Post('user/assignRoles')
   assignRolesToUser(@Body() userRolesDto: UserRolesDto): Promise<any> {
-    return this.userService.assignRolesToUser(userRolesDto);
+    return this.service.assignRolesToUser(userRolesDto);
   }
 
   @ApiOperation({summary: 'Удаление прав пользователя'})
@@ -98,7 +98,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Post('user/removeUserRoles')
   removeUserRoles(@Body() userRolesDto: UserRolesDto): Promise<any> {
-    return this.userService.removeUserRoles(userRolesDto);
+    return this.service.removeUserRoles(userRolesDto);
   }
 
   @ApiOperation({summary: 'Блокировка пользователя'})
@@ -106,7 +106,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Post('user/suspend')
   suspend(@Body() banUserDto: BanUserDto): Promise<any> {
-    return this.userService.suspend(banUserDto);
+    return this.service.suspend(banUserDto);
   }
 
   @ApiOperation({summary: 'Разблокировка пользователя'})
@@ -114,6 +114,6 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Post('user/unsuspend')
   unsuspend(@Body() banUserDto: BanUserDto): Promise<any> {
-    return this.userService.unsuspend(banUserDto);
+    return this.service.unsuspend(banUserDto);
   }
 }

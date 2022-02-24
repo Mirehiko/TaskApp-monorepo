@@ -28,7 +28,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     super();
   }
 
-  async createUser(@Param() userRequestDto: UserRequestDto): Promise<any> {
+  async createUser(@Param() requestDto: UserRequestDto): Promise<any> {
     const candidate = await this.repository.findOne({ email: userRequestDto.email });
     if (candidate) {
       throw new HttpException('Такой email уже существует. Введите другой email', HttpStatus.CONFLICT);
@@ -48,7 +48,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     }
   }
 
-  async updateUser(@Param() id: number, userRequestDto: UserRequestDto, avatar?: any): Promise<User> {
+  async updateUser(@Param() id: number, requestDto: UserRequestDto, avatar?: any): Promise<User> {
     let user = await this.repository.findOne(id);
     if (!user) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
