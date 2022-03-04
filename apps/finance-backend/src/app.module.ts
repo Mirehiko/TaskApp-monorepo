@@ -34,6 +34,7 @@ import { OperationModule } from './modules/finance/operation/operation.module';
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: true,
           // migrationsRun: true,
+          autoLoadEntities: true,
           charset: 'UTF8',
           // migrations: [
           //   "src/migration/**/*.ts"

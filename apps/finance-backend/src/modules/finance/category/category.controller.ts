@@ -10,9 +10,9 @@ import {
 	// HttpStatus,
 } from '@nestjs/common';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
-import { RolesGuard } from 'src/modules/common/auth/roles.guard';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { Roles } from '../../common/auth/roles-auth.decorator';
+import { RolesGuard } from '../../common/auth/roles.guard';
 import { CategoryService } from './category.service';
 import { CategoryResponseDto } from './dto/category-response.dto';
 import { CategoryRequestDto } from './dto/category-request.dto';
