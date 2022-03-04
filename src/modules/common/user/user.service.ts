@@ -29,15 +29,15 @@ export class UserService extends BaseService<User, UserGetParamsData> {
   }
 
   async createUser(@Param() requestDto: UserRequestDto): Promise<any> {
-    const candidate = await this.repository.findOne({ email: userRequestDto.email });
+    const candidate = await this.repository.findOne({ email: requestDto.email });
     if (candidate) {
       throw new HttpException('Такой email уже существует. Введите другой email', HttpStatus.CONFLICT);
     }
 
     try {
-      const newUser = await this.repository.create({...userRequestDto});
+      const newUser = await this.repository.create({...requestDto});
       let role;
-      if (!userRequestDto.roles || !userRequestDto.roles.length) {
+      if (!requestDto.roles || !requestDto.roles.length) {
         role = await this.roleService.getByID(8);
         newUser.roles = [role];
       }
@@ -53,10 +53,10 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     if (!user) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
-    user.email = userRequestDto.email ? userRequestDto.email : user.email;
-    user.password = userRequestDto.password ? userRequestDto.password : user.password;
+    user.email = requestDto.email ? requestDto.email : user.email;
+    user.password = requestDto.password ? requestDto.password : user.password;
     // user.avatar = userRequestDto.avatar ? userRequestDto.avatar : user.avatar;
-    user.name = userRequestDto.name ? userRequestDto.name : user.name;
+    user.name = requestDto.name ? requestDto.name : user.name;
 
     if(avatar) {
       user.avatar = await this.fileService.createFile(avatar);
@@ -64,8 +64,8 @@ export class UserService extends BaseService<User, UserGetParamsData> {
 
     try {
       await this.repository.save(user);
-      if (userRequestDto.roles) {
-        user = await this.assignRolesToUser({userId: user.id, roles: userRequestDto.roles} );
+      if (requestDto.roles) {
+        user = await this.assignRolesToUser({userId: user.id, roles: requestDto.roles} );
       }
       return user;
     }

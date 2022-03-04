@@ -3,6 +3,10 @@ import {Entity, Column, ManyToOne, ManyToMany, JoinTable, PrimaryGeneratedColumn
 import {ApiProperty} from "@nestjs/swagger";
 import {BaseEntity} from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
+import { Bill } from '../../bill/schemas/bill.entity';
+import { Category } from '../../category/schemas/category.entity';
+import { OperationStatus } from '../enum/operation-status';
+import { OperationType } from '../enum/operation-type';
 
 @Entity()
 export class Operation extends BaseEntity {
@@ -33,12 +37,12 @@ export class Operation extends BaseEntity {
 	status: string;
 	
 	@ApiProperty({ example: 'active', description: 'Тип операции'})
-	@Column({type: "enum", enum: Object.values(OperationType), default: OperationType.DEBIT})
+	@Column({type: "enum", enum: Object.values(OperationType)})
 	type: string;
 	
 	
 	@ApiProperty({ example: 'active', description: 'Категория операции'})
-	@ManyToMany(() => Category, category => operation.id)
+	@ManyToMany(() => Category, category => category.id)
 	@JoinTable()
 	category: Category;
 }

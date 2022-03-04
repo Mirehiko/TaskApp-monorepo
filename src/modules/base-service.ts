@@ -1,9 +1,5 @@
 import { HttpException, HttpStatus, Param } from '@nestjs/common';
 import { FindOneOptions, Repository } from 'typeorm';
-import { PermissionResponseDto } from './common/permission/dto/permission-response.dto';
-import { RoleResponseDto } from './common/role/dto/role-response.dto';
-import { RoleRequestParams } from './common/role/roleRequestParams';
-import { Role } from './common/role/schemas/role.entity';
 
 
 export class BaseService<T, U extends GetParamsData> {

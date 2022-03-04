@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 import { BaseService, GetParams, GetParamsData } from '../../base-service';
+import { BillRepository } from './bill-repository';
 import { BillRequestDto } from './dto/bill-request.dto';
 import { Bill } from './schemas/bill.entity';
 
@@ -13,8 +14,7 @@ export class BillService extends BaseService<Bill, GetParamsData> {
 	protected relations: string[] = ['createdBy', 'createdBy.users'];
 	
 	constructor(
-		@InjectRepository(Bill)
-		protected repository: Repository<Bill>,
+		protected repository: BillRepository,
 	) {
 		super();
 	}

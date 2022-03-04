@@ -1,9 +1,11 @@
 import { Exclude } from 'class-transformer';
-import {Entity, Column, ManyToOne, JoinTable, PrimaryGeneratedColumn, OneToOne} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinTable, PrimaryGeneratedColumn, OneToOne, ManyToMany } from 'typeorm';
 import {ApiProperty} from "@nestjs/swagger";
 import { UserResponse } from '../../../../shared/interfaces/user';
 import {BaseEntity} from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
+import { OperationStatus } from '../../operation/enum/operation-status';
+import { OperationType } from '../../operation/enum/operation-type';
 
 @Entity()
 export class Bill extends BaseEntity {
@@ -39,6 +41,6 @@ export class Bill extends BaseEntity {
 	status: string;
 	
 	@ApiProperty({ example: 'active', description: 'Тип операции'})
-	@Column({type: "enum", enum: Object.values(OperationType), default: OperationType.})
+	@Column({type: "enum", enum: Object.values(OperationType)})
 	type: string;
 }

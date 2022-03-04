@@ -12,6 +12,9 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
 import {TokenModule} from "./modules/common/token/token.module";
 import {configModule} from "./config/configure.root";
+import { BillModule } from './modules/finance/bill/bill.module';
+import { CategoryModule } from './modules/finance/category/category.module';
+import { OperationModule } from './modules/finance/operation/operation.module';
 
 
 @Module({

@@ -56,7 +56,7 @@ export class CategoryController {
 	update(
 		@Body() requestDto: CategoryRequestDto,
 		@Param() id: number,
-	): Promise<BillResponseDto> {
+	): Promise<CategoryResponseDto> {
 		return this.service.update(id, requestDto);
 	}
 	

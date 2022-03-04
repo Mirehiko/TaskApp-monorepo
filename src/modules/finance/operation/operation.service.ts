@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 import { BaseService, GetParams, GetParamsData } from '../../base-service';
 import { OperationRequestDto } from './dto/operation-request.dto';
+import { OperationRepository } from './operation-repository';
 import { Operation } from './schemas/operation.entity';
 
 
@@ -13,17 +14,17 @@ export class OperationService extends BaseService<Operation, GetParamsData> {
 	protected relations: string[] = ['createdBy', 'createdBy.users'];
 	
 	constructor(
-		@InjectRepository(Operation)
-		protected repository: Repository<Operation>,
+		protected repository: OperationRepository,
 	) {
 		super();
 	}
 	
 	async create(@Param() requestDto: OperationRequestDto): Promise<Operation> {
-	
+		return new Operation();
 	}
 	
 	async update(@Param() id: number, requestDto: OperationRequestDto): Promise<Operation> {
+		return new Operation();
 	}
 	
 }
