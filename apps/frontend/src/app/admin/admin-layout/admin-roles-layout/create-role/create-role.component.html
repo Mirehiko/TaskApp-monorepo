@@ -1,0 +1,26 @@
+<a [routerLink]="['/admin', 'roles']">Назад</a>
+
+<form class="form" [formGroup]="form">
+  <h3>Новая роль</h3>
+  <label for="" class="require">
+    Название *:
+    <input type="text" class="form-control" formControlName="name" />
+  </label>
+
+  <label for="" class="require">
+    Имя для базы *:
+    <input type="text" class="form-control" formControlName="code_name" />
+  </label>
+
+  <label for="">
+    Описание:
+    <textarea class="form-control" formControlName="desc"></textarea>
+  </label>
+  <input
+    [disabled]="form.invalid || form.disabled"
+    (click)="submit()"
+    type="submit"
+    class="form-btn form-btn-dark"
+    value="Создать"
+  />
+</form>

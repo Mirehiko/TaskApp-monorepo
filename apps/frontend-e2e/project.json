@@ -7,11 +7,11 @@
       "executor": "@nrwl/cypress:cypress",
       "options": {
         "cypressConfig": "apps/frontend-e2e/cypress.json",
-        "devServerTarget": "frontend:serve:development"
+        "devServerTarget": "frontend:serve:development --verbose"
       },
       "configurations": {
         "production": {
-          "devServerTarget": "frontend:serve:production"
+          "devServerTarget": "frontend:serve:production --verbose"
         }
       }
     },

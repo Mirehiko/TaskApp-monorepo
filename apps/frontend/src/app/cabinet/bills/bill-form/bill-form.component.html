@@ -1,0 +1,69 @@
+<div class="breadcrubs">
+  <a class="" routerLink="/cabinet/bills">Счета</a>
+</div>
+
+<div class="row" *ngIf="!isNew">
+  <div class="col s12">
+    <div class="card blue-grey darken-1">
+      <div class="card-content white-text">
+        <span class="card-title">{{form.value.name}}</span>
+        <p>Баланс: {{ form.value.balance || '0' }}</p>
+      </div>
+      <div class="card-action">
+        <a href="#">Закрыть</a>
+        <span class="right">
+          <a href="#">Снять</a>
+          <a href="#">Перевести</a>
+          <a href="#">Пополнить</a>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form class="form" [formGroup]="form" *ngIf="!isLoading; else loader">
+  <h1>
+    {{ isNew ? "Создание" : "Редактирование" }} счёта
+    <span>
+      <button
+        class="btn btn-small red"
+        *ngIf="bill"
+        (click)="deleteBill()">
+        <i class="material-icons">delete</i>
+      </button>
+    </span>
+  </h1>
+  <label for="">
+    Название
+    <input type="text" class="form-control" formControlName="name" />
+  </label>
+
+  <select name="" formControlName="type" class="form-control">
+    <option *ngFor="let type of billTypes" [ngValue]="type.key">
+      {{ type.value }}
+    </option>
+  </select>
+
+  <label for="" *ngIf="isNew">
+    Баланс:
+    <input type="text" class="form-control" formControlName="balance" />
+  </label>
+
+  <button
+    [disabled]="form.invalid || form.disabled"
+    (click)="submit()"
+    type="submit"
+    class="form-btn form-btn-dark"
+  >
+    {{ isNew ? "Создать" : "Сохранить изменения" }}
+  </button>
+</form>
+
+
+
+<app-operation-list [operations]="operations"></app-operation-list>
+
+
+<ng-template #loader>
+  <app-preloader></app-preloader>
+</ng-template>

@@ -1,0 +1,33 @@
+.item {
+  // display: flex;
+  // justify-content: space-between;
+  height: 40px;
+  border-bottom: 1px solid #eee;
+
+  td, th {
+    // align-self: center;
+    padding: 0 10px;
+  }
+
+  .name {
+    text-align: left;
+  }
+
+  &-list {
+    &:hover {
+      background-color: #eee;
+      cursor: pointer;
+    }
+    .balance {
+      text-align: right;
+    }
+  }
+
+  &-header {
+    font-weight: bold;
+  }
+}
+
+table {
+  border-collapse: collapse;
+}

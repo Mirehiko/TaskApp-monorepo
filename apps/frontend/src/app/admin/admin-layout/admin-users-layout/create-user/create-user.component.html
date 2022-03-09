@@ -1,0 +1,43 @@
+<a [routerLink]="['/admin', 'users']">Назад</a>
+
+<form class="form" [formGroup]="form">
+  <h3>Создание нового пользователя</h3>
+  <label for="" class="require">
+    Никнейм:
+    <input type="text" class="form-control" formControlName="name" />
+  </label>
+  <label for="" class="require">
+    Email:
+    <input type="email" class="form-control" formControlName="email" />
+  </label>
+  <label for="" class="require">
+    Пароль:
+    <input type="text" class="form-control" formControlName="password" />
+  </label>
+  <label for="" class="require">
+    Аватар:
+    <input type="text" class="form-control" formControlName="avatar" />
+  </label>
+  <label for="" class="require">
+    Роль:
+    <select class="form-control" name="role" formControlName="role">
+      <option
+        *ngFor="let role of roles"
+        [ngValue]="role._id"
+        [selected]="role.code_name === 'default'"
+      >
+        {{ role.name }}
+      </option>
+    </select>
+  </label>
+
+  <div class="form-footer">
+    <input
+      [disabled]="form.invalid || form.disabled"
+      (click)="submit()"
+      type="submit"
+      class="form-btn form-btn-dark"
+      value="Сохранить"
+    />
+  </div>
+</form>

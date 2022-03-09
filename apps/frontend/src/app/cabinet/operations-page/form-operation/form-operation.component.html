@@ -1,0 +1,37 @@
+<div>
+  <a class="" [routerLink]="['/cabinet', 'bills']">Назад</a>
+</div>
+
+<form class="form" [formGroup]="form" *ngIf="!isLoading; else loader">
+  <h1>Новая операция</h1>
+  <label for="">
+    Название
+    <input type="text" class="form-control" formControlName="name" />
+  </label>
+
+  <select name="" formControlName="type" class="form-control">
+    <option *ngFor="let type of operationTypes" [ngValue]="type.key">
+      {{ type.value }}
+    </option>
+  </select>
+
+  <label for="">
+    Сумма:
+    <input type="text" class="form-control" formControlName="value" />
+  </label>
+
+  <button
+    [disabled]="form.invalid || form.disabled"
+    (click)="submit()"
+    type="submit"
+    class="form-btn form-btn-dark"
+  >
+    Создать
+  </button>
+</form>
+
+
+
+<ng-template #loader>
+  <app-preloader></app-preloader>
+</ng-template>

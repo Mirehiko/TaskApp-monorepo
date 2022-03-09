@@ -1,0 +1,16 @@
+<table *ngIf="roles.length; else empty">
+  <tr>
+    <td>#</td>
+    <td>Название</td>
+    <td>Описание</td>
+  </tr>
+  <tr *ngFor="let role of roles" [routerLink]="['/admin', 'roles', role._id]">
+    <td>{{ role._id }}</td>
+    <td>{{ role.name }}</td>
+    <td>{{ role.desc }}</td>
+  </tr>
+</table>
+
+<ng-template #empty>
+  <div>Where are no roles</div>
+</ng-template>

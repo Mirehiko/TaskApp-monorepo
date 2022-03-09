@@ -1,0 +1,39 @@
+.form {
+    padding: 15px;
+    margin: 0 auto;
+    max-width: 400px;
+    background-color: #fff;
+
+    input {
+        width: 100%;
+    }
+    h1 {
+        text-align: center;
+        margin: 0 0 15px;
+    }
+}
+.form-control {
+    height: 40px;
+    display: block;
+    margin: 0 0 15px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+
+    &:focus {
+        border-color: yellowgreen;
+    }
+}
+
+.form-btn {
+    height: 40px;
+    padding: 0 10px;
+    cursor: pointer;
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #222;
+    
+    &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+}

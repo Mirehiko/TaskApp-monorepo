@@ -1,0 +1,31 @@
+<div class="breadcrubs">
+  <a class="" routerLink="/cabinet/cards">Карты</a>
+</div>
+
+<button
+class="form-btn"
+routerLink="/cabinet/cards/new">Создать</button>
+
+<section *ngIf="!isLoading; else preloader">
+  <table *ngIf="cards.length; else empty">
+    <tr class="item item-header">
+      <th class="name">Название</th>
+      <th class="type">Тип</th>
+      <!-- <th class="balance">Баланс</th> -->
+    </tr>
+    <tr class="item item-list" *ngFor="let card of cards" [routerLink]="['/cabinet', 'cards', card._id]"
+    routerLinkActive="router-link-active">
+      <td class="name">{{ card.name }}</td>
+      <td class="type">{{ card.type }}</td>
+    </tr>
+  </table>
+
+  <ng-template #empty>
+    <div class="empty">У вас пока нет карт</div>
+  </ng-template>
+
+</section>
+
+<ng-template #preloader>
+  <app-preloader></app-preloader>
+</ng-template>

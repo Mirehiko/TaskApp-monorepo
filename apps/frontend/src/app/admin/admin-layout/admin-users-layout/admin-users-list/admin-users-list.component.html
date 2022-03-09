@@ -1,0 +1,30 @@
+<button [routerLink]="['/admin', 'users', 'new']">Создать</button>
+
+<div class="content" *ngIf="!isLoading; else preloader">
+  <section *ngIf="users.length; else empty">
+    <div class="">тут будут фильтры</div>
+    <table class="user-list">
+      <tr>
+        <th>#</th>
+        <th>Никнейм</th>
+        <th>Email</th>
+        <th>Пароль</th>
+        <th>Роль</th>
+      </tr>
+      <tr *ngFor="let user of users" [routerLink]="['/admin', 'users', user._id]">
+        <td>{{ user._id }}</td>
+        <td>{{ user.name || "-" }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.password }}</td>
+        <td>{{ user.role }}</td>
+      </tr>
+    </table>
+  </section>
+  <ng-template #empty>
+    <div>Where are no users</div>
+  </ng-template>
+</div>
+
+<ng-template #preloader>
+  <app-preloader></app-preloader>
+</ng-template>

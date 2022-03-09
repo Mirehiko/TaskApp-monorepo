@@ -1,0 +1,14 @@
+<nav class="navbar navbar-fixedTop">
+  <a routerLink="/">MFBudget</a>
+  <ul>
+    <li *ngFor="let link of linkRoutes" routerLinkActive="">
+      <a [routerLink]="link.url">{{link.title}}</a>
+    </li>
+    <li><a (click)="logout()">Выйти</a></li>
+  </ul>
+</nav>
+
+<main>
+  <h1>Панель администратора</h1>
+  <router-outlet></router-outlet>
+</main>

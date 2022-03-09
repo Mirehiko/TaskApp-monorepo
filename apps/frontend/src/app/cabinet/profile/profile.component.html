@@ -1,0 +1,13 @@
+<div class="content" *ngIf="!isLoading; else preloader">
+  <section class="userProfile">
+    <h1>{{user.name || user.email}}</h1>
+    <p>Email:{{user.name}}</p>
+    <p>Role:{{user.role}}</p>
+    <p>Name:{{user.name}}</p>
+    <p>Avatar:{{user.avatar}}</p>
+  </section>
+</div>
+
+<ng-template #preloader>
+  <app-preloader></app-preloader>
+</ng-template>

@@ -1,0 +1,11 @@
+<div class="operation-list">
+  <section *ngIf="operations.length; else empty">
+  </section>
+
+  <ng-template #empty>
+    <div class="empty">
+      Нет операций по счету
+    </div>
+  </ng-template>
+</div>
+

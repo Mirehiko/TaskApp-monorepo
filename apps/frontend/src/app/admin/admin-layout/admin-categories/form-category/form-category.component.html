@@ -1,0 +1,91 @@
+<div class="page-title">
+  <h4>
+    <a routerLink="/admin/categories">Категории</a>
+    <i class="material-icons">keyboard_arrow_right</i>
+    {{ isNew ? "Добавление" : "Редактирование" }} категории
+  </h4>
+  <span>
+    <button
+      class="btn-flat red darken-2"
+      *ngIf="category"
+      (click)=deleteCategory()>
+      <i class="material-icons">delete</i>
+    </button>
+  </span>
+</div>
+
+<div class="row">
+  <form class="col s12 l6" [formGroup]="form" (ngSubmit)="submit()">
+
+    <div class="input-field s6">
+      <input
+        id="name" type="text"
+        class="validate"
+        formControlName="name"
+        [ngClass]="{
+          invalid: form.get('name').invalid && form.get('name').touched
+        }"
+        >
+      <label for="name">Название</label>
+      <span
+        *ngIf="form.get('name').invalid && form.get('name').touched"
+        class="helper-text red-text"
+        data-error="Название категории не может быть пустым">
+        <span *ngIf="form.get('name').errors['required']">
+          Название категории не может быть пустым</span>
+      </span>
+    </div>
+
+    <div class="input-field s6">
+      <input
+        id="url" type="text"
+        class="validate"
+        formControlName="url"
+        [ngClass]="{
+          invalid: form.get('url').invalid && form.get('url').touched
+        }"
+        >
+      <label for="url">Url</label>
+      <span
+        *ngIf="form.get('url').invalid && form.get('url').touched"
+        class="helper-text red-text"
+        data-error="Url категории не может быть пустым">
+        <span *ngIf="form.get('url').errors['required']">
+          Url категории не может быть пустым</span>
+      </span>
+    </div>
+
+    <!-- <div>
+      <input
+        type="file"
+        class="dn"
+        (change)="onFileUpload($event)"
+        #input
+      >
+      <button
+        (click)="triggerClick()"
+        [disabled]="form.disabled"
+        type="button"
+        class="waves-effect waves-light btn orange lighten-2 mb2">
+        <i class="material-icons left">backup</i>
+        Загрузить изображение
+      </button>
+    </div> -->
+
+    <div>
+      <button
+        type="submit"
+        [disabled]="form.invalid || form.disabled"
+        class="btn btn-primary">
+        {{ isNew ? "Создать" : "Сохранить изменения" }}
+      </button>
+    </div>
+  </form>
+
+  <!-- <div class="col s12 l4 center">
+    <img
+      *ngIf="imagePreview"
+      class="responsive-img h200"
+      [src]="imagePreview" />
+  </div> -->
+</div>

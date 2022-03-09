@@ -1,0 +1,38 @@
+<div class="breadcrubs">
+  <a class="" routerLink="/cabinet/bills">Счета</a>
+</div>
+
+<button
+class="form-btn"
+[routerLink]="['/cabinet', 'bills', 'new']">Создать</button>
+
+<section *ngIf="!isLoading; else preloader">
+  <table *ngIf="bills.length; else empty">
+    <tr class="item item-header">
+      <th class="name">Название</th>
+      <th class="type">Тип</th>
+      <th class="balance">Баланс</th>
+      <th class="">Статус</th>
+      <th class="">Дата открытия</th>
+      <th class="">Дата закрытия</th>
+    </tr>
+    <tr class="item item-list" *ngFor="let bill of bills" [routerLink]="['/cabinet', 'bills', bill._id]"
+    routerLinkActive="router-link-active">
+      <td class="name">{{ bill.name }}</td>
+      <td class="type">{{ bill.type }}</td>
+      <td class="balance">{{ bill.balance }}</td>
+      <td class="">{{ bill.status }}</td>
+      <td class="">{{ bill.opened | date:'dd-MM-yyyy' }}</td>
+      <td class="">{{ bill.closed || '-' }}</td>
+    </tr>
+  </table>
+
+  <ng-template #empty>
+    <div class="empty">У вас пока нет счетов</div>
+  </ng-template>
+
+</section>
+
+<ng-template #preloader>
+  <app-preloader></app-preloader>
+</ng-template>

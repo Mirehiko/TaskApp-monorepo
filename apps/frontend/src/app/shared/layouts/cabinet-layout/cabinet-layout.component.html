@@ -1,0 +1,24 @@
+<nav class="navbar navbar-fixedTop">
+  <a routerLink="/">MFBudget</a>
+  <ul>
+    <a [routerLink]="['/cabinet', 'profile']">Профиль</a>
+    <a [routerLink]="['/admin']" *ngIf="isAdmin">Admin</a>
+    <a (click)="logout()">Выход</a>
+  </ul>
+</nav>
+
+<div class="container">
+  <aside class="panel">
+    <nav>
+      <a [routerLink]="['/cabinet', 'dashboard']">Dashboard</a>
+      <a [routerLink]="['/cabinet', 'cards']">Карты</a>
+      <a [routerLink]="['/cabinet', 'bills']">Счета</a>
+      <a [routerLink]="['/cabinet', 'targets']">Цели</a>
+      <!-- <a [routerLink]="['/cabinet', 'operations']">Операции</a> -->
+      <a [routerLink]="['/cabinet', 'analytics']">Аналитика</a>
+    </nav>
+  </aside>
+  <main class="panel">
+    <router-outlet></router-outlet>
+  </main>
+</div>
