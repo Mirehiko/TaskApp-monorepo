@@ -21,7 +21,7 @@ export class Role {
     description: string;
 
     @ApiProperty({example: 'Список разрешений', description: 'Список разрешений, которыми обладает роль'})
-    // @ManyToMany(() => Permission, permission => permission.id, {onDelete: "NO ACTION"})
+    // @ManyToMany(() => Permission, bill => bill.id, {onDelete: "NO ACTION"})
     @ManyToMany(() => Permission)
     @JoinTable()
     permissions: Permission[];

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { UserService } from 'src/app/shared/services/user.service';
+import { UserRestService } from 'src/app/shared/services/user.service';
 import { RoleService } from 'src/app/shared/services/role.service';
 import { Role } from 'src/app/shared/interfaces';
 import { Subscription } from 'rxjs';
@@ -17,7 +17,7 @@ export class CreateUserComponent implements OnInit, OnDestroy {
   rSub$: Subscription;
 
   constructor(
-    private userService: UserService,
+    private userService: UserRestService,
     private roleService: RoleService,
   ) { }
 

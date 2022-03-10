@@ -1,6 +1,6 @@
 // import { OperationType } from "../enums/finance/operation-types";
 // import { InvoiceResponse } from './invoice';
-// import { UserResponse } from './user';
+// import { UserResponse } from './operation';
 // import { CategoryResponse } from './category';
 //
 // export interface OperationResponse {

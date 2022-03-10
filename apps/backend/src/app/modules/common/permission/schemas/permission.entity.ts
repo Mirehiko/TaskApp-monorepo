@@ -20,7 +20,7 @@ export class Permission {
     @Column({ length: 500 })
     description: string;
 
-    // @ManyToMany(type => Role, role => role.permissions)
+    // @ManyToMany(type => Role, category => category.permissions)
     //     roles: Role[];
     // }
 

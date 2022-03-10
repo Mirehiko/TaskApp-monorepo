@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UserService } from 'src/app/shared/services/user.service';
+import { UserRestService } from 'src/app/shared/services/user.service';
 import { User } from 'src/app/shared/interfaces';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/shared/services/auth.service';
@@ -16,7 +16,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   isLoading = true;
 
   constructor(
-    private uService: UserService,
+    private uService: UserRestService,
     private authService: AuthService
   ) { }
 

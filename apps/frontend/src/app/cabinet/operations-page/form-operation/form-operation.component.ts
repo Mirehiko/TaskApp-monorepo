@@ -7,7 +7,7 @@ import { Bill, Operation } from 'src/app/shared/interfaces';
 import { BillService } from 'src/app/shared/services/bill.service';
 import { OperationService } from 'src/app/shared/services/operation.service';
 import { UtilService } from 'src/app/shared/services/util.service';
-import { UserService } from 'src/app/shared/services/user.service';
+import { UserRestService } from 'src/app/shared/services/user.service';
 import { AuthService } from 'src/app/shared/services/auth.service';
 import { CategoryService } from 'src/app/shared/services/category.service';
 
@@ -31,7 +31,7 @@ export class FormOperationComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private billService: BillService,
     private operationService: OperationService,
-    private userService: UserService,
+    private userService: UserRestService,
   ) {}
 
   ngOnInit(): void {

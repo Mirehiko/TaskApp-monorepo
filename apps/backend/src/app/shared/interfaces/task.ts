@@ -1,6 +1,6 @@
-// import { UserResponse } from './user';
+// import { UserResponse } from './operation';
 // import { TaskStates } from '../enums/task/task-states';
-// import { RoleResponse } from './role';
+// import { RoleResponse } from './category';
 //
 // export interface TaskResponse {
 //   id: number;

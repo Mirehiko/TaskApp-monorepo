@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { User } from 'src/app/shared/interfaces';
-import { UserService } from 'src/app/shared/services/user.service';
+import { UserRestService } from 'src/app/shared/services/user.service';
 import { RoleService } from 'src/app/shared/services/role.service';
+import { UserResponseDto } from '../../../../../../../backend/src/app/modules/common/user/dto/user-response.dto';
 
 @Component({
   selector: 'app-admin-users-list',
@@ -11,19 +12,19 @@ import { RoleService } from 'src/app/shared/services/role.service';
 })
 export class AdminUsersListComponent implements OnInit, OnDestroy {
 
-  users: User[] = [];
+  users: UserResponseDto[] = [];
   uSub$: Subscription;
   isLoading = true;
 
   constructor(
-    private userService: UserService,
+    private userService: UserRestService,
   ) { }
 
   ngOnInit(): void {
 
-    this.uSub$ = this.userService.getUsers()
-      .subscribe(data => {
-        this.users = data.users;
+    this.uSub$ = this.userService.getAll()
+      .subscribe(users => {
+        this.users = users;
         this.users.forEach(user => {
           user.role = data.roles.filter(role => role._id === user.role)[0].name;
         });

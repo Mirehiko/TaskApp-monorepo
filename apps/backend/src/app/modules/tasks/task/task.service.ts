@@ -12,7 +12,7 @@ export class TaskService extends BaseService<Task, TaskGetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такой задачи';
 	protected entityOrRelationNotFoundMessage: string = '';
 	protected relations: string[] = ['createdBy', 'createdBy.users'];
-	
+
 	constructor(
 		@InjectRepository(Task)
 		protected repository: Repository<Task>,
@@ -20,7 +20,7 @@ export class TaskService extends BaseService<Task, TaskGetParamsData> {
 	) {
 		super();
 	}
-	
+
 	public async create(@Param() requestDto: TaskRequestDto): Promise<any> {
 		try {
 			const newTask = await this.repository.create({...requestDto});
@@ -30,26 +30,26 @@ export class TaskService extends BaseService<Task, TaskGetParamsData> {
 		}
 	}
 	//
-	// async updateUser(@Param() id: number, userRequestDto: UserRequestDto, avatar?: any): Promise<User> {
-	// 	let user = await this.usersRepository.findOne(id);
-	// 	if (!user) {
+	// async updateUser(@Param() id: number, userRequestDto: CategoryRequestDto, avatar?: any): Promise<User> {
+	// 	let operation = await this.usersRepository.findOne(id);
+	// 	if (!operation) {
 	// 		throw new HttpException('Нет такого пользователя', HttpStatus.NOT_FOUND);
 	// 	}
-	// 	user.email = userRequestDto.email ? userRequestDto.email : user.email;
-	// 	user.password = userRequestDto.password ? userRequestDto.password : user.password;
-	// 	// user.avatar = userRequestDto.avatar ? userRequestDto.avatar : user.avatar;
-	// 	user.name = userRequestDto.name ? userRequestDto.name : user.name;
+	// 	operation.email = userRequestDto.email ? userRequestDto.email : operation.email;
+	// 	operation.password = userRequestDto.password ? userRequestDto.password : operation.password;
+	// 	// operation.avatar = userRequestDto.avatar ? userRequestDto.avatar : operation.avatar;
+	// 	operation.name = userRequestDto.name ? userRequestDto.name : operation.name;
 	//
 	// 	if(avatar) {
-	// 		user.avatar = await this.fileService.createFile(avatar);
+	// 		operation.avatar = await this.fileService.createFile(avatar);
 	// 	}
 	//
 	// 	try {
-	// 		await this.usersRepository.save(user);
+	// 		await this.usersRepository.save(operation);
 	// 		if (userRequestDto.roles) {
-	// 			user = await this.assignRolesToUser({userId: user.id, roles: userRequestDto.roles} );
+	// 			operation = await this.assignRolesToUser({userId: operation.id, roles: userRequestDto.roles} );
 	// 		}
-	// 		return user;
+	// 		return operation;
 	// 	}
 	// 	catch (e) {
 	// 		throw new Error(e);
@@ -57,35 +57,35 @@ export class TaskService extends BaseService<Task, TaskGetParamsData> {
 	// }
 	//
 	// async assignRolesToUser(userRolesDto: UserRolesDto): Promise<any> {
-	// 	const user = await this.usersRepository.findOne({ where: { id: userRolesDto.userId}, relations: ['roles']});
+	// 	const operation = await this.usersRepository.findOne({ where: { id: userRolesDto.userId}, relations: ['roles']});
 	//
-	// 	if (userRolesDto.roles.length && user) {
+	// 	if (userRolesDto.roles.length && operation) {
 	// 		if (userRolesDto.replaceRoles) {
-	// 			user.roles = userRolesDto.roles;
+	// 			operation.roles = userRolesDto.roles;
 	// 		}
 	// 		else {
-	// 			const uRoles = user.roles.map(ur => ur.id);
-	// 			user.roles = userRolesDto.roles.filter(r => !uRoles.includes(r.id)).concat(user.roles);
+	// 			const uRoles = operation.roles.map(ur => ur.id);
+	// 			operation.roles = userRolesDto.roles.filter(r => !uRoles.includes(r.id)).concat(operation.roles);
 	// 		}
-	// 		await this.usersRepository.save(user);
-	// 		return await this.getUserBy({id: user.id});
+	// 		await this.usersRepository.save(operation);
+	// 		return await this.getUserBy({id: operation.id});
 	// 	}
 	// 	throw new HttpException('Пользователь или роль не найдены', HttpStatus.NOT_FOUND);
 	// }
 	//
 	// async removeUserRoles(userRolesDto: UserRolesDto): Promise<any> {
-	// 	const user = await this.usersRepository.findOne({ where: { id: userRolesDto.userId}, relations: ['roles']});
+	// 	const operation = await this.usersRepository.findOne({ where: { id: userRolesDto.userId}, relations: ['roles']});
 	//
-	// 	if (userRolesDto.roles.length && user) {
+	// 	if (userRolesDto.roles.length && operation) {
 	// 		const roles = userRolesDto.roles.map(r => r.id);
-	// 		user.roles = user.roles.filter(ur => !roles.includes(ur.id));
-	// 		await this.usersRepository.save(user);
-	// 		return await this.getUserBy({id: user.id});
+	// 		operation.roles = operation.roles.filter(ur => !roles.includes(ur.id));
+	// 		await this.usersRepository.save(operation);
+	// 		return await this.getUserBy({id: operation.id});
 	// 	}
 	// 	throw new HttpException('Пользователь или роль не найдены', HttpStatus.NOT_FOUND);
 	// }
 	//
-	
+
 }
 
 

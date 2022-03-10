@@ -55,7 +55,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     }
     user.email = requestDto.email ? requestDto.email : user.email;
     user.password = requestDto.password ? requestDto.password : user.password;
-    // user.avatar = userRequestDto.avatar ? userRequestDto.avatar : user.avatar;
+    // operation.avatar = userRequestDto.avatar ? userRequestDto.avatar : operation.avatar;
     user.name = requestDto.name ? requestDto.name : user.name;
 
     if(avatar) {
@@ -105,7 +105,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
 
   async suspend(banUserDto: BanUserDto): Promise<any> {
     const users = await this.repository.createQueryBuilder('user')
-        .where('user.id IN (:userIds)', {userIds: banUserDto.userIds})
+        .where('operation.id IN (:userIds)', {userIds: banUserDto.userIds})
         .getMany();
 
     if (users.length) {
@@ -122,7 +122,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
 
   async unsuspend(banUserDto: BanUserDto): Promise<any> {
     const users = await this.repository.createQueryBuilder('user')
-        .where('user.id IN (:userIds)', {userIds: banUserDto.userIds})
+        .where('operation.id IN (:userIds)', {userIds: banUserDto.userIds})
         .getMany();
 
     if (users.length) {
@@ -136,7 +136,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     }
     throw new HttpException('Пользователи не найдены', HttpStatus.NOT_FOUND);
   }
-  
+
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(this.saltRounds);
     return await bcrypt.hash(password, salt);

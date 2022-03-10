@@ -4,7 +4,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Subscription, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { User, Role } from 'src/app/shared/interfaces';
-import { UserService } from 'src/app/shared/services/user.service';
+import { UserRestService } from 'src/app/shared/services/user.service';
 import { RoleService } from 'src/app/shared/services/role.service';
 
 @Component({
@@ -23,7 +23,7 @@ export class EditUserComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private userService: UserService,
+    private userService: UserRestService,
     private roleService: RoleService,
   ) { }
 

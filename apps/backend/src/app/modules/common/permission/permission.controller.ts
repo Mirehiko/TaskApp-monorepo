@@ -25,14 +25,14 @@ export class PermissionController {
 
     @ApiOperation({summary: 'Получение разрешения'})
     @ApiResponse({status: 200, type: Permission})
-    @Get('permission/:id')
+    @Get('bill/:id')
     getPermissionById(@Param('id') id: number): Promise<PermissionResponseDto> {
         return this.permissionService.getByID(id);
     }
 
     @ApiOperation({summary: 'Получение разрешения по полю'})
     @ApiResponse({status: 200, type: Permission})
-    @Get('role/:id')
+    @Get('category/:id')
     getPermissionBy(@Query() requestParams: GetParamsData): Promise<PermissionResponseDto> {
         return this.permissionService.getBy(requestParams);
     }
@@ -41,7 +41,7 @@ export class PermissionController {
     @ApiResponse({status: 200, type: Permission})
     @Roles("ADMIN")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Patch('permission/:id')
+    @Patch('bill/:id')
     updatePermission(
         @Param('id') id: string,
         @Body() permissionRequestDto: PermissionRequestDto
@@ -62,7 +62,7 @@ export class PermissionController {
     @ApiResponse({status: 200, type: Permission})
     @Roles("ADMIN")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Delete('permission/:id')
+    @Delete('bill/:id')
     deletePermission(@Param('id') id: number): Promise<any> {
         return this.permissionService.delete(id);
     }

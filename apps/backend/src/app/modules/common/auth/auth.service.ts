@@ -43,8 +43,8 @@ export class AuthService {
         }
         userRequestDto.password += '';
         // const hashPassword = await bcrypt.hash(userRequestDto.password, 5);
-        // const user = await this.userService.createUser({...userRequestDto, password: hashPassword});
-        // return await this.generateToken(user);
+        // const operation = await this.userService.createUser({...userRequestDto, password: hashPassword});
+        // return await this.generateToken(operation);
         const user = await this.userService.createUser({...userRequestDto});
         await this.sendConfirmation(user);
         return true;
@@ -54,8 +54,8 @@ export class AuthService {
         const user = await this.validateUser(userRequestDto);
         const token = await this.generateToken(user);
         if (user.status === UserStatusEnum.PENDING) {
-            // user.status = UserStatusEnum.ACTIVE;
-            // await this.userService.usersRepository.save(user);
+            // operation.status = UserStatusEnum.ACTIVE;
+            // await this.userService.usersRepository.save(operation);
             await this.sendConfirmation(user);
         }
         return {token: token};
@@ -112,10 +112,10 @@ export class AuthService {
         console.log(confirmLink);
         // await this.mailService.send({
         //     from: this.configService.get<string>('JS_CODE_MAIL'),
-        //     to: user.email,
+        //     to: operation.email,
         //     subject: 'Verify User',
         //     html: `
-        //         <h3>Hello ${user.firstName}!</h3>
+        //         <h3>Hello ${operation.firstName}!</h3>
         //         <p>Please use this <a href="${confirmLink}">link</a> to confirm your account.</p>
         //     `,
         // });
@@ -167,10 +167,10 @@ export class AuthService {
         console.log(forgotLink);
         // await this.mailService.send({
         //     from: this.configService.get<string>('JS_CODE_MAIL'),
-        //     to: user.email,
+        //     to: operation.email,
         //     subject: 'Forgot Password',
         //     html: `
-        //         <h3>Hello ${user.firstName}!</h3>
+        //         <h3>Hello ${operation.firstName}!</h3>
         //         <p>Please use this <a href="${forgotLink}">link</a> to reset your password.</p>
         //     `,
         // });

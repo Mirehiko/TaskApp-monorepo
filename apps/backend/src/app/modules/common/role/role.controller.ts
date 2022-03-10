@@ -42,14 +42,14 @@ export class RoleController {
 
     @ApiOperation({summary: 'Получение роли'})
     @ApiResponse({status: 200, type: Role})
-    @Get('role/:id')
+    @Get('category/:id')
     getRoleById(@Param('id') id: number): Promise<RoleResponseDto> {
         return this.roleService.getByID(id);
     }
 
     @ApiOperation({summary: 'Получение роли'})
     @ApiResponse({status: 200, type: Role})
-    @Get('role/:id')
+    @Get('category/:id')
     getRoleBy(@Query() requestParams: GetParamsData): Promise<RoleResponseDto> {
         return this.roleService.getBy(requestParams);
     }
@@ -58,7 +58,7 @@ export class RoleController {
     @ApiResponse({status: 200, type: Role})
     @Roles("ADMIN")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Patch('role/:id')
+    @Patch('category/:id')
     updateRole(
         @Param('id') id: number,
         @Body() roleRequestDto: RoleRequestDto,
@@ -79,7 +79,7 @@ export class RoleController {
     @ApiResponse({status: 200, type: Role})
     @Roles("ADMIN")
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Delete('role/:id')
+    @Delete('category/:id')
     deleteRole(@Param('id') id: number): Promise<any> {
         return this.roleService.delete(id);
     }

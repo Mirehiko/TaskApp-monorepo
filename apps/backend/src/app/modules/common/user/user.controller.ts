@@ -41,7 +41,7 @@ export class UserController {
   @ApiOperation({summary: 'Получение пользователя'})
   @ApiResponse({status: 200, type: User})
   @UseGuards(JwtAuthGuard)
-  @Get('user/:id')
+  @Get('operation/:id')
   getUserById(@Param('id') id: number): Promise<UserResponseDto> {
     return this.service.getByID(id);
   }
@@ -49,7 +49,7 @@ export class UserController {
   @ApiOperation({summary: 'Получение пользователя полю'})
   @ApiResponse({status: 200, type: User})
   @UseGuards(JwtAuthGuard)
-  @Get('user/')
+  @Get('operation/')
   getUserBy(@Query() userRequestParams: UserGetParamsData): Promise<UserResponseDto> {
     return this.service.getBy(userRequestParams);
   }
@@ -58,7 +58,7 @@ export class UserController {
   @ApiResponse({status: 200, type: User})
   // @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('avatar'))
-  @Patch('user/:id')
+  @Patch('operation/:id')
   updateUser(
     @Body() requestDto: UserRequestDto,
     @Param() id: number,
@@ -80,7 +80,7 @@ export class UserController {
   @ApiOperation({summary: 'Удаление пользователя'})
   @ApiResponse({status: 200, type: User})
   @UseGuards(JwtAuthGuard)
-  @Delete('user/:id')
+  @Delete('operation/:id')
   deleteUser(@Param('id') id: number): Promise<any> {
     return this.service.delete(id);
   }
@@ -88,7 +88,7 @@ export class UserController {
   @ApiOperation({summary: 'Назначение прав пользователю'})
   @ApiResponse({status: 201, type: User})
   @UseGuards(JwtAuthGuard)
-  @Post('user/assignRoles')
+  @Post('operation/assignRoles')
   assignRolesToUser(@Body() userRolesDto: UserRolesDto): Promise<any> {
     return this.service.assignRolesToUser(userRolesDto);
   }
@@ -96,7 +96,7 @@ export class UserController {
   @ApiOperation({summary: 'Удаление прав пользователя'})
   @ApiResponse({status: 201, type: User})
   @UseGuards(JwtAuthGuard)
-  @Post('user/removeUserRoles')
+  @Post('operation/removeUserRoles')
   removeUserRoles(@Body() userRolesDto: UserRolesDto): Promise<any> {
     return this.service.removeUserRoles(userRolesDto);
   }
@@ -104,7 +104,7 @@ export class UserController {
   @ApiOperation({summary: 'Блокировка пользователя'})
   @ApiResponse({status: 201, type: User})
   @UseGuards(JwtAuthGuard)
-  @Post('user/suspend')
+  @Post('operation/suspend')
   suspend(@Body() banUserDto: BanUserDto): Promise<any> {
     return this.service.suspend(banUserDto);
   }
@@ -112,7 +112,7 @@ export class UserController {
   @ApiOperation({summary: 'Разблокировка пользователя'})
   @ApiResponse({status: 201, type: User})
   @UseGuards(JwtAuthGuard)
-  @Post('user/unsuspend')
+  @Post('operation/unsuspend')
   unsuspend(@Body() banUserDto: BanUserDto): Promise<any> {
     return this.service.unsuspend(banUserDto);
   }

@@ -10,7 +10,7 @@ export class RoleService {
   constructor(private http: HttpClient) {}
 
   fetch(params: any = {}): Observable<Role[]> {
-    return this.http.get<Role[]>('/api/role', {
+    return this.http.get<Role[]>('/api/category', {
       params: new HttpParams({
         fromObject: params,
       }),
@@ -22,7 +22,7 @@ export class RoleService {
   }
 
   create(role: Role): Observable<Role> {
-    return this.http.post<Role>('/api/role', role);
+    return this.http.post<Role>('/api/category', role);
   }
 
   update(roleId: string, data: Role): Observable<Role> {
