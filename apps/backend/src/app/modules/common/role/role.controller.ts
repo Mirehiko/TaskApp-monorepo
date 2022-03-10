@@ -15,43 +15,43 @@ import { GetParamsData } from '../../base-service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles-auth.decorator';
 import { RolesGuard } from '../auth/roles.guard';
-import { UserResponseDto } from '../user/dto/user-response.dto';
-import { UserGetParamsData } from '../user/interfaces/user-params';
 import {RoleService} from "./role.service";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {RoleRequestDto} from "./dto/role-request.dto";
-import {RoleResponseDto} from "./dto/role-response.dto";
 import { Role } from './schemas/role.entity';
-import {RoleRequestParams} from "./roleRequestParams";
 import {TransformInterceptor} from "../../../interceptors/transform.interceptor";
+import { RoleRequestDto, RoleResponseDto, UserResponseDto } from '@finapp/app-common';
+import { plainToClass } from 'class-transformer';
 
 @ApiTags('Роли')
 @Controller('main')
 @UseInterceptors(new TransformInterceptor())
 export class RoleController {
-    constructor(private readonly roleService: RoleService) {
+    constructor(private readonly service: RoleService) {
     }
 
     @ApiOperation({summary: 'Получение списка ролей'})
     @ApiResponse({status: 200, type: [Role]})
     @Get('roles')
-    getRoles(): Promise<RoleResponseDto[]> {
-        return this.roleService.getAll();
+    async getRoles(): Promise<RoleResponseDto[]> {
+      const roles = await this.service.getAll();
+      return plainToClass(RoleResponseDto, roles, { excludeExtraneousValues: true });
     }
 
 
     @ApiOperation({summary: 'Получение роли'})
     @ApiResponse({status: 200, type: Role})
     @Get('category/:id')
-    getRoleById(@Param('id') id: number): Promise<RoleResponseDto> {
-        return this.roleService.getByID(id);
+    async getRoleById(@Param('id') id: number): Promise<RoleResponseDto> {
+      const role = await this.service.getByID(id);
+      return plainToClass(RoleResponseDto, role, { excludeExtraneousValues: true });
     }
 
     @ApiOperation({summary: 'Получение роли'})
     @ApiResponse({status: 200, type: Role})
     @Get('category/:id')
-    getRoleBy(@Query() requestParams: GetParamsData): Promise<RoleResponseDto> {
-        return this.roleService.getBy(requestParams);
+    async getRoleBy(@Query() requestParams: GetParamsData): Promise<RoleResponseDto> {
+      const role = await this.service.getBy(requestParams);
+      return plainToClass(RoleResponseDto, role, { excludeExtraneousValues: true });
     }
 
     @ApiOperation({summary: 'Обновление роли'})
@@ -59,11 +59,12 @@ export class RoleController {
     @Roles("ADMIN")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Patch('category/:id')
-    updateRole(
+    async updateRole(
         @Param('id') id: number,
         @Body() roleRequestDto: RoleRequestDto,
-    ): Promise<RoleRequestDto> {
-        return this.roleService.updateRole(id, roleRequestDto);
+    ): Promise<RoleResponseDto> {
+      const role = await this.service.updateRole(id, roleRequestDto);
+      return plainToClass(RoleResponseDto, role, { excludeExtraneousValues: true });
     }
 
     @ApiOperation({summary: 'Создание роли'})
@@ -71,8 +72,9 @@ export class RoleController {
     @Roles("ADMIN")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Post('role')
-    createRole(@Body() roleRequestDto: RoleRequestDto): Promise<any> {
-        return this.roleService.createRole(roleRequestDto);
+    async createRole(@Body() roleRequestDto: RoleRequestDto): Promise<any> {
+      const role = await this.service.createRole(roleRequestDto);
+      return plainToClass(RoleResponseDto, role, { excludeExtraneousValues: true });
     }
 
     @ApiOperation({summary: 'Удаление роли'})
@@ -80,7 +82,7 @@ export class RoleController {
     @Roles("ADMIN")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Delete('category/:id')
-    deleteRole(@Param('id') id: number): Promise<any> {
-        return this.roleService.delete(id);
+    async deleteRole(@Param('id') id: number): Promise<any> {
+        return await this.service.delete(id);
     }
 }

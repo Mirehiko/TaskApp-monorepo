@@ -1,16 +1,14 @@
 import {HttpException, HttpStatus, Injectable, Param} from '@nestjs/common';
-import { BaseService, GetParamsData } from '../../base-service';
-import {UserRequestDto} from './dto/user-request.dto';
+import { BaseService, GetParams, GetParamsData } from '../../base-service';
 import {InjectRepository} from "@nestjs/typeorm";
 import { UserGetParamsData } from './interfaces/user-params';
 import {User} from "./schemas/user.entity";
 import {FindOneOptions, Repository} from "typeorm";
 import {RoleService} from "../role/role.service";
-import {UserRolesDto} from "./dto/assign-roles.dto";
-import {BanUserDto} from "./dto/ban-user.dto";
 import {FilesService} from "../../../files/files.service";
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from './user-repository';
+import { BanUserDto, UserRequestDto, UserRolesDto } from '@finapp/app-common';
 
 
 @Injectable()
@@ -21,9 +19,9 @@ export class UserService extends BaseService<User, UserGetParamsData> {
   protected relations: string[] = ['roles', 'roles.permissions'];
 
   constructor(
-      public repository: UserRepository,
-      private roleService: RoleService,
-      private fileService: FilesService,
+    public repository: UserRepository,
+    private roleService: RoleService,
+    private fileService: FilesService,
   ) {
     super();
   }
@@ -76,14 +74,17 @@ export class UserService extends BaseService<User, UserGetParamsData> {
 
   async assignRolesToUser(userRolesDto: UserRolesDto): Promise<any> {
     const user = await this.repository.findOne({ where: { id: userRolesDto.userId}, relations: ['roles']});
+    const roles = await this.roleService.getBy({
+      params: {}
+    })
 
     if (userRolesDto.roles.length && user) {
       if (userRolesDto.replaceRoles) {
-        user.roles = userRolesDto.roles;
+        user.roles = [roles];
       }
       else {
         const uRoles = user.roles.map(ur => ur.id);
-        user.roles = userRolesDto.roles.filter(r => !uRoles.includes(r.id)).concat(user.roles);
+        user.roles = [roles].filter(r => !uRoles.includes(r.id)).concat(user.roles);
       }
       await this.repository.save(user);
       return await this.getBy({params: {id: user.id}});

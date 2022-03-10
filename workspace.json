@@ -2,6 +2,8 @@
   "version": 2,
   "projects": {
     "backend": "apps/backend",
+    "common": "libs/common",
+    "app-common": "libs/app-common",
     "frontend": "apps/frontend",
     "frontend-e2e": "apps/frontend-e2e"
   }

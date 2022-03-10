@@ -1,5 +1,6 @@
 import {ApiProperty} from "@nestjs/swagger";
-import {Role} from "../../role/schemas/role.entity";
+import { RoleResponseDto } from '@finapp/app-common';
+
 
 export class UserResponseDto {
   @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
@@ -15,7 +16,7 @@ export class UserResponseDto {
   avatar?: string;
 
   @ApiProperty({example: 'Список ролей', description: 'Список ролей, которыми обладает пользователь'})
-  roles: Role[];
+  roles: RoleResponseDto[];
 
   @ApiProperty({example: 'active', description: 'Статус пользователя'})
   status?: string;

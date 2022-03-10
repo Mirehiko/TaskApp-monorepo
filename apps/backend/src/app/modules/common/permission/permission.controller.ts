@@ -4,11 +4,10 @@ import { GetParamsData } from '../../base-service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles-auth.decorator';
 import { RolesGuard } from '../auth/roles.guard';
-import { RoleResponseDto } from '../role/dto/role-response.dto';
 import {PermissionService} from "./permission.service";
 import {Permission} from "./schemas/permission.entity";
-import {PermissionResponseDto} from "./dto/permission-response.dto";
-import {PermissionRequestDto} from "./dto/permission-request.dto";
+import { PermissionRequestDto, PermissionResponseDto } from '@finapp/app-common';
+
 
 @ApiTags('Разрешения')
 @Controller('main')
@@ -19,21 +18,21 @@ export class PermissionController {
     @ApiOperation({summary: 'Получение списка разрешений'})
     @ApiResponse({status: 200, type: [Permission]})
     @Get('permissions')
-    getPermissions(): Promise<PermissionResponseDto[]> {
+    async getPermissions(): Promise<PermissionResponseDto[]> {
         return this.permissionService.getAll();
     }
 
     @ApiOperation({summary: 'Получение разрешения'})
     @ApiResponse({status: 200, type: Permission})
     @Get('bill/:id')
-    getPermissionById(@Param('id') id: number): Promise<PermissionResponseDto> {
+    async getPermissionById(@Param('id') id: number): Promise<PermissionResponseDto> {
         return this.permissionService.getByID(id);
     }
 
     @ApiOperation({summary: 'Получение разрешения по полю'})
     @ApiResponse({status: 200, type: Permission})
     @Get('category/:id')
-    getPermissionBy(@Query() requestParams: GetParamsData): Promise<PermissionResponseDto> {
+    async getPermissionBy(@Query() requestParams: GetParamsData): Promise<PermissionResponseDto> {
         return this.permissionService.getBy(requestParams);
     }
 
@@ -42,7 +41,7 @@ export class PermissionController {
     @Roles("ADMIN")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Patch('bill/:id')
-    updatePermission(
+    async updatePermission(
         @Param('id') id: string,
         @Body() permissionRequestDto: PermissionRequestDto
     ): Promise<PermissionRequestDto> {
@@ -54,7 +53,7 @@ export class PermissionController {
     @Roles("ADMIN")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Post('permission')
-    createPermission(@Body() permissionRequestDto: PermissionRequestDto): Promise<any> {
+    async createPermission(@Body() permissionRequestDto: PermissionRequestDto): Promise<any> {
         return this.permissionService.createPermission(permissionRequestDto);
     }
 
@@ -63,7 +62,7 @@ export class PermissionController {
     @Roles("ADMIN")
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Delete('bill/:id')
-    deletePermission(@Param('id') id: number): Promise<any> {
-        return this.permissionService.delete(id);
+    async deletePermission(@Param('id') id: number): Promise<any> {
+        return await this.permissionService.delete(id);
     }
 }

@@ -1,5 +1,5 @@
-import {UserResponseDto} from "./dto/user-response.dto";
 import {User} from "./schemas/user.entity";
+import { UserResponseDto } from '@finapp/app-common';
 
 export class UserHelper {
     public static mapEntitiesToDto(data: User[]): UserResponseDto[] {

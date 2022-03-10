@@ -3,13 +3,11 @@ import {
     Controller, Get, Patch,
     Post, Query, Res,
 } from '@nestjs/common';
-import { ID } from '../../../shared/types/id.type';
 import {AuthService} from "./auth.service";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "../user/schemas/user.entity";
-import {UserRequestDto} from "../user/dto/user-request.dto";
-import {ForgotPasswordDto} from "./dto/forgot-password.dto";
-import {ChangePasswordDto} from "./dto/change-password.dto";
+import { ChangePasswordDto, ForgotPasswordDto, UserRequestDto } from '@finapp/app-common';
+
 
 @ApiTags('Авторизация')
 @Controller('auth')
@@ -20,14 +18,14 @@ export class AuthController {
     @ApiOperation({summary: 'Регистрация пользователя'})
     @ApiResponse({status: 201, type: User})
     @Post('registration')
-    register(@Body() userRequestDto: UserRequestDto): Promise<any> {
+    async register(@Body() userRequestDto: UserRequestDto): Promise<any> {
         return this.authService.signUp(userRequestDto);
     }
 
     @ApiOperation({summary: 'Вход в систему'})
     @ApiResponse({status: 200, type: User})
     @Post('login')
-    login(@Body() userRequestDto: UserRequestDto): Promise<any> {
+    async login(@Body() userRequestDto: UserRequestDto): Promise<any> {
         return this.authService.signIn(userRequestDto);
     }
 
@@ -36,7 +34,6 @@ export class AuthController {
     @Post('logout')
     async logout(@Body() query: { token: string }): Promise<any> {
         return this.authService.logout(query.token);
-        return;
     }
 
     @Get('/confirm')

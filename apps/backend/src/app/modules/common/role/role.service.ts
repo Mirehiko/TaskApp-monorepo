@@ -1,21 +1,23 @@
 import {HttpException, HttpStatus, Injectable, Param} from '@nestjs/common';
 import { BaseService, GetParamsData } from '../../base-service';
-import {RoleRequestDto} from "./dto/role-request.dto";
 import { Role } from './schemas/role.entity';
 import {InjectRepository} from "@nestjs/typeorm";
 import {FindOneOptions, Repository} from 'typeorm';
-import {RoleResponseDto} from "./dto/role-response.dto";
 import {RoleRequestParams} from "./roleRequestParams";
+import { RoleRequestDto } from '@finapp/app-common';
+import { Permission } from '../permission/schemas/permission.entity';
+import { PermissionService } from '../permission/permission.service';
 
 
 @Injectable()
 export class RoleService extends BaseService<Role, GetParamsData> {
     protected entityNotFoundMessage: string = 'Нет такой роли';
     protected relations: string[] = ['roles', 'roles.permissions'];
-    
+
     constructor(
         @InjectRepository(Role)
         protected repository: Repository<Role>,
+        private permissionService: PermissionService
     ) {
         super();
     }
@@ -25,12 +27,14 @@ export class RoleService extends BaseService<Role, GetParamsData> {
         if (candidate) {
             throw new HttpException('Такая роль уже существует. Введите другое имя роли', HttpStatus.CONFLICT);
         }
+        const permissions = await this.permissionService.getAll();
+
         try {
             const newRole = new Role();
             newRole.name = role.name;
             newRole.displayName = role.displayName;
             newRole.description = role.description;
-            newRole.permissions = role.permissions
+            newRole.permissions = permissions;
             await this.repository.save(newRole);
             return newRole; // 201
 
@@ -41,10 +45,11 @@ export class RoleService extends BaseService<Role, GetParamsData> {
 
     async updateRole(@Param() id: number, roleRequestDto: RoleRequestDto): Promise<Role> {
         const role = await this.repository.findOne({where: {id}});
+        const permissions = await this.permissionService.getAll();
         role.name = roleRequestDto.name;
         role.displayName = roleRequestDto.displayName;
         role.description = roleRequestDto.description;
-        role.permissions = roleRequestDto.permissions;
+        role.permissions = permissions;
 
         try {
             return await this.repository.save(role);

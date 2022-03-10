@@ -1,5 +1,5 @@
 import {ApiOperation, ApiProperty} from "@nestjs/swagger";
-import {RequestObjectWithId} from "../../../../interfaces/objectWithId";
+import { RequestObjectWithId } from '@finapp/app-common';
 
 export class PermissionRequestDto implements RequestObjectWithId {
     @ApiProperty({example: '1', description: 'Уникальный идентификатор'})

@@ -1,10 +1,10 @@
 import {ApiOperation, ApiProperty} from "@nestjs/swagger";
-import {PermissionResponseDto} from "../../permission/dto/permission-response.dto";
-import {RequestObjectWithId} from "../../../../interfaces/objectWithId";
+import { PermissionResponseDto } from '../permission';
 
-export class RoleRequestDto implements RequestObjectWithId {
+
+export class RoleResponseDto {
   @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
-  id?: number;
+  id: number;
 
   @ApiProperty({example: 'ADMIN', description: 'Уникальное название роли'})
   name: string;
@@ -13,7 +13,7 @@ export class RoleRequestDto implements RequestObjectWithId {
   displayName: string;
 
   @ApiProperty({example: 'Description here ....', description: 'Описание роли'})
-  description?: string;
+  description: string;
 
   @ApiProperty({example: 'Список разрешений', description: 'Список разрешений, которыми обладает роль'})
   permissions: PermissionResponseDto[];

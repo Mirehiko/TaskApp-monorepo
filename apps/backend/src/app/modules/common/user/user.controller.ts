@@ -9,19 +9,18 @@ import {
   // HttpCode,
   // HttpStatus,
 } from '@nestjs/common';
-import { UserRequestDto } from './dto/user-request.dto';
 import { UserGetParams, UserGetParamsData } from './interfaces/user-params';
 import { UserService } from './user.service';
-import { UserResponseDto } from './dto/user-response.dto';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "./schemas/user.entity";
 import {JwtAuthGuard} from "../auth/jwt-auth.guard";
 import {RolesGuard} from "../auth/roles.guard";
 import { Roles } from '../auth/roles-auth.decorator';
-import {UserRolesDto} from "./dto/assign-roles.dto";
-import {BanUserDto} from "./dto/ban-user.dto";
 import {ValidationPipe} from "../../../pipes/validation.pipe";
 import {FileInterceptor} from "@nestjs/platform-express";
+import { BanUserDto, UserRequestDto, UserResponseDto, UserRolesDto } from '@finapp/app-common';
+import { plainToClass } from 'class-transformer';
+
 
 @ApiTags('Пользователи')
 @Controller('main')
@@ -34,24 +33,27 @@ export class UserController {
   @Roles("ADMIN")
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('users')
-  getUsers(): Promise<UserResponseDto[]> {
-    return this.service.getAll();
+  async getUsers(): Promise<UserResponseDto[]> {
+    const users = await this.service.getAll();
+    return plainToClass(UserResponseDto, users, { excludeExtraneousValues: true });
   }
 
   @ApiOperation({summary: 'Получение пользователя'})
   @ApiResponse({status: 200, type: User})
   @UseGuards(JwtAuthGuard)
   @Get('operation/:id')
-  getUserById(@Param('id') id: number): Promise<UserResponseDto> {
-    return this.service.getByID(id);
+  async getUserById(@Param('id') id: number): Promise<UserResponseDto> {
+    const user = await this.service.getByID(id);
+    return plainToClass(UserResponseDto, user, { excludeExtraneousValues: true });
   }
 
   @ApiOperation({summary: 'Получение пользователя полю'})
   @ApiResponse({status: 200, type: User})
   @UseGuards(JwtAuthGuard)
   @Get('operation/')
-  getUserBy(@Query() userRequestParams: UserGetParamsData): Promise<UserResponseDto> {
-    return this.service.getBy(userRequestParams);
+  async getUserBy(@Query() userRequestParams: UserGetParamsData): Promise<UserResponseDto> {
+    const user = await this.service.getBy(userRequestParams);
+    return plainToClass(UserResponseDto, user, { excludeExtraneousValues: true });
   }
 
   @ApiOperation({summary: 'Обновление пользователя'})
@@ -59,12 +61,13 @@ export class UserController {
   // @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('avatar'))
   @Patch('operation/:id')
-  updateUser(
+  async updateUser(
     @Body() requestDto: UserRequestDto,
     @Param() id: number,
     @UploadedFile() avatar
   ): Promise<UserResponseDto> {
-    return this.service.updateUser(id, requestDto, avatar);
+    const user = await this.service.updateUser(id, requestDto, avatar);
+    return plainToClass(UserResponseDto, user, { excludeExtraneousValues: true });
   }
 
   @ApiOperation({summary: 'Создание пользователя'})
@@ -73,47 +76,48 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Post('user')
   // @HttpCode(HttpStatus.CREATED)
-  createUser(@Body() requestDto: UserRequestDto): Promise<any> {
-    return this.service.createUser(requestDto);
+  async createUser(@Body() requestDto: UserRequestDto): Promise<any> {
+    const user = await this.service.createUser(requestDto);
+    return plainToClass(UserResponseDto, user, { excludeExtraneousValues: true });
   }
 
   @ApiOperation({summary: 'Удаление пользователя'})
   @ApiResponse({status: 200, type: User})
   @UseGuards(JwtAuthGuard)
   @Delete('operation/:id')
-  deleteUser(@Param('id') id: number): Promise<any> {
-    return this.service.delete(id);
+  async deleteUser(@Param('id') id: number): Promise<any> {
+    return await this.service.delete(id);
   }
 
   @ApiOperation({summary: 'Назначение прав пользователю'})
   @ApiResponse({status: 201, type: User})
   @UseGuards(JwtAuthGuard)
   @Post('operation/assignRoles')
-  assignRolesToUser(@Body() userRolesDto: UserRolesDto): Promise<any> {
-    return this.service.assignRolesToUser(userRolesDto);
+  async assignRolesToUser(@Body() userRolesDto: UserRolesDto): Promise<any> {
+    return await this.service.assignRolesToUser(userRolesDto);
   }
 
   @ApiOperation({summary: 'Удаление прав пользователя'})
   @ApiResponse({status: 201, type: User})
   @UseGuards(JwtAuthGuard)
   @Post('operation/removeUserRoles')
-  removeUserRoles(@Body() userRolesDto: UserRolesDto): Promise<any> {
-    return this.service.removeUserRoles(userRolesDto);
+  async removeUserRoles(@Body() userRolesDto: UserRolesDto): Promise<any> {
+    return await this.service.removeUserRoles(userRolesDto);
   }
 
   @ApiOperation({summary: 'Блокировка пользователя'})
   @ApiResponse({status: 201, type: User})
   @UseGuards(JwtAuthGuard)
   @Post('operation/suspend')
-  suspend(@Body() banUserDto: BanUserDto): Promise<any> {
-    return this.service.suspend(banUserDto);
+  async suspend(@Body() banUserDto: BanUserDto): Promise<any> {
+    return await this.service.suspend(banUserDto);
   }
 
   @ApiOperation({summary: 'Разблокировка пользователя'})
   @ApiResponse({status: 201, type: User})
   @UseGuards(JwtAuthGuard)
   @Post('operation/unsuspend')
-  unsuspend(@Body() banUserDto: BanUserDto): Promise<any> {
-    return this.service.unsuspend(banUserDto);
+  async unsuspend(@Body() banUserDto: BanUserDto): Promise<any> {
+    return await this.service.unsuspend(banUserDto);
   }
 }

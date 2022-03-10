@@ -7,18 +7,16 @@ import {
     UnauthorizedException
 } from '@nestjs/common';
 import {User} from "../user/schemas/user.entity";
-import {UserRequestDto} from "../user/dto/user-request.dto";
 import {UserService} from "../user/user.service";
 import {JwtService} from "@nestjs/jwt";
 import * as bcrypt from 'bcrypt';
 import {TokenService} from "../token/token.service";
-import {CreateUserTokenDto} from "../token/dto/user-token-dto";
 import {ConfigService} from "@nestjs/config";
 import {UserStatusEnum} from "../user/user-status.enum";
-import {ChangePasswordDto} from "./dto/change-password.dto";
-import {ForgotPasswordDto} from "./dto/forgot-password.dto";
 import {SignOptions} from "jsonwebtoken";
 import * as moment from 'moment';
+import { CreateUserTokenDto, ChangePasswordDto, ForgotPasswordDto, UserRequestDto } from '@finapp/app-common';
+
 
 @Injectable()
 export class AuthService {
@@ -137,7 +135,6 @@ export class AuthService {
         }
         throw new UnauthorizedException({message: 'Incorrect email or password'});
     }
-
 
     private async verifyToken(token): Promise<any> {
         const data = this.jwtService.verify(token);
