@@ -1,10 +1,10 @@
 {
   "version": 2,
   "projects": {
-    "backend": "apps/backend",
+    "backend": "apps/finapp/backend",
     "common": "libs/common",
     "app-common": "libs/app-common",
-    "frontend": "apps/frontend",
-    "frontend-e2e": "apps/frontend-e2e"
+    "frontend": "apps/finapp/frontend",
+    "frontend-e2e": "apps/finapp/frontend-e2e"
   }
 }

@@ -34,8 +34,8 @@
   },
   "projects": {
     "backend": {
-      "root": "apps/backend",
-      "sourceRoot": "apps/backend/src",
+      "root": "apps/finapp/backend",
+      "sourceRoot": "apps/finapp/backend/src",
       "projectType": "application",
       "prefix": "backend",
       "architect": {
@@ -43,10 +43,10 @@
           "builder": "@nrwl/node:build",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/apps/backend",
-            "main": "apps/backend/src/main.ts",
-            "tsConfig": "apps/backend/tsconfig.app.json",
-            "assets": ["apps/backend/src/assets"]
+            "outputPath": "dist/apps/finapp/backend",
+            "main": "apps/finapp/backend/src/main.ts",
+            "tsConfig": "apps/finapp/backend/tsconfig.app.json",
+            "assets": ["apps/finapp/backend/src/assets"]
           },
           "configurations": {
             "production": {
@@ -55,16 +55,16 @@
               "inspect": false,
               "fileReplacements": [
                 {
-                  "replace": "apps/backend/src/environments/environment.ts",
-                  "with": "apps/backend/src/environments/environment.prod.ts"
+                  "replace": "apps/finapp/backend/src/environments/environment.ts",
+                  "with": "apps/finapp/backend/src/environments/environment.prod.ts"
                 }
               ]
             },
             "staging": {
               "fileReplacements": [
                 {
-                  "replace": "apps/backend/src/environments/environment.ts",
-                  "with": "apps/backend/src/environments/environment.staging.ts"
+                  "replace": "apps/finapp/backend/src/environments/environment.ts",
+                  "with": "apps/finapp/backend/src/environments/environment.staging.ts"
                 }
               ]
             }
@@ -79,14 +79,14 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/backend/**/*.ts"]
+            "lintFilePatterns": ["apps/finapp/backend/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/backend"],
+          "outputs": ["coverage/apps/finapp/backend"],
           "options": {
-            "jestConfig": "apps/backend/jest.config.js",
+            "jestConfig": "apps/finapp/backend/jest.config.js",
             "passWithNoTests": true
           }
         },
@@ -104,28 +104,28 @@
     },
     "frontend": {
       "projectType": "application",
-      "root": "apps/frontend",
-      "sourceRoot": "apps/frontend/src",
+      "root": "apps/finapp/frontend",
+      "sourceRoot": "apps/finapp/frontend/src",
       "prefix": "frontend",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/frontend",
-            "index": "apps/frontend/src/index.html",
-            "main": "apps/frontend/src/main.ts",
-            "polyfills": "apps/frontend/src/polyfills.ts",
-            "tsConfig": "apps/frontend/tsconfig.app.json",
+            "outputPath": "dist/apps/finapp/frontend",
+            "index": "apps/finapp/frontend/src/index.html",
+            "main": "apps/finapp/frontend/src/main.ts",
+            "polyfills": "apps/finapp/frontend/src/polyfills.ts",
+            "tsConfig": "apps/finapp/frontend/tsconfig.app.json",
             "assets": [
-              "apps/frontend/src/favicon.ico",
-              "apps/frontend/src/assets"
+              "apps/finapp/frontend/src/favicon.ico",
+              "apps/finapp/frontend/src/assets"
             ],
             "styles": [
-              "apps/frontend/src/styles/styles.scss"
+              "apps/finapp/frontend/src/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "apps/frontend/src/styles"
+                "apps/finapp/frontend/src/styles"
               ]
             },
             "scripts": []
@@ -134,8 +134,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "apps/frontend/src/environments/environment.ts",
-                  "with": "apps/frontend/src/environments/environment.prod.ts"
+                  "replace": "apps/finapp/frontend/src/environments/environment.ts",
+                  "with": "apps/finapp/frontend/src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -161,8 +161,8 @@
             "staging": {
               "fileReplacements": [
                 {
-                  "replace": "apps/frontend/src/environments/environment.ts",
-                  "with": "apps/frontend/src/environments/environment.staging.ts"
+                  "replace": "apps/finapp/frontend/src/environments/environment.ts",
+                  "with": "apps/finapp/frontend/src/environments/environment.staging.ts"
                 }
               ],
               "optimization": true,
@@ -200,16 +200,16 @@
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
-              "apps/frontend/src/**/*.ts",
-              "apps/frontend/src/**/*.html"
+              "apps/finapp/frontend/src/**/*.ts",
+              "apps/finapp/frontend/src/**/*.html"
             ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/frontend"],
+          "outputs": ["coverage/apps/finapp/frontend"],
           "options": {
-            "jestConfig": "apps/frontend/jest.config.js",
+            "jestConfig": "apps/finapp/frontend/jest.config.js",
             "passWithNoTests": true
           }
         }

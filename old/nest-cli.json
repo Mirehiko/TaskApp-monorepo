@@ -1,20 +1,20 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/backend/src",
+  "sourceRoot": "apps/finapp/backend/src",
   "monorepo": true,
-  "root": "apps/backend",
+  "root": "apps/finapp/backend",
   "compilerOptions": {
     "webpack": true,
-    "tsConfigPath": "apps/backend/tsconfig.app.json"
+    "tsConfigPath": "apps/finapp/backend/tsconfig.app.json"
   },
   "projects": {
     "backend": {
       "type": "application",
-      "root": "apps/backend",
+      "root": "apps/finapp/backend",
       "entryFile": "main",
-      "sourceRoot": "apps/backend/src",
+      "sourceRoot": "apps/finapp/backend/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/backend/tsconfig.app.json"
+        "tsConfigPath": "apps/finapp/backend/tsconfig.app.json"
       }
     },
     "finapp": {
