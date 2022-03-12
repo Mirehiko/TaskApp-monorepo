@@ -1,7 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Message, Role } from 'src/app/shared/interfaces';
+import { Message, Role } from '../interfaces';
+
 
 @Injectable({
   providedIn: 'root',

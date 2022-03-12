@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { of, Subscription } from 'rxjs';
-import { RoleService } from 'src/app/shared/services/role.service';
-import { Role } from 'src/app/shared/interfaces';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
+import { Role } from '../../../../shared/interfaces';
+import { RoleService } from '../../../../shared/services/role.service';
+
 
 @Component({
   selector: 'app-edit-role',
@@ -61,12 +62,12 @@ export class EditRoleComponent implements OnInit, OnDestroy {
   submit(): void {
     this.form.disable();
     if (!this.form.invalid) {
-      this.roleService.update(this.role._id, this.form.value)
-        .subscribe(role => {
-          console.log('Role was updated', role);
-          this.role = role;
-          this.form.enable();
-        });
+      // this.roleService.update(this.role._id, this.form.value)
+      //   .subscribe(role => {
+      //     console.log('Role was updated', role);
+      //     this.role = role;
+      //     this.form.enable();
+      //   });
     }
   }
 

@@ -2,8 +2,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Message, User } from '../interfaces';
-import { AuthService } from 'src/app/shared/services/auth.service';
 import { UserResponseDto } from '@finapp/app-common';
+import { AuthService } from './auth.service';
 
 
 @Injectable({

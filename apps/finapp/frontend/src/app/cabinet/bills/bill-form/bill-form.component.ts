@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { of, Subscription } from 'rxjs';
-import { UtilService } from 'src/app/shared/services/util.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { BillService } from 'src/app/shared/services/bill.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Bill, Operation } from 'src/app/shared/interfaces';
 import { switchMap } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
+import { UtilService } from '../../../shared/services/util.service';
+import { BillService } from '../../../shared/services/bill.service';
+import { Bill, Operation } from '../../../shared/interfaces';
+
 
 @Component({
   selector: 'app-bill-form',
@@ -15,7 +16,7 @@ import { combineLatest } from 'rxjs';
 })
 export class BillFormComponent implements OnInit, OnDestroy {
   isNew = true;
-  billTypes = [];
+  // billTypes = [];
   form: FormGroup;
   bill: Bill;
   wholeSub$: Subscription;
@@ -54,21 +55,21 @@ export class BillFormComponent implements OnInit, OnDestroy {
         console.log('billTypes:', billTypes);
         console.log('bill:', bill);
 
-        this.billTypes = billTypes;
-        this.form.patchValue({
-          type: this.billTypes.filter((type) => type.key === 'checking')[0]
-            .key,
-        });
+        // this.billTypes = billTypes;
+        // this.form.patchValue({
+        //   type: this.billTypes.filter((type) => type.key === 'checking')[0]
+        //     .key,
+        // });
 
 
         if (bill) {
           this.bill = bill;
-          this.form.patchValue({
-            name: bill.name,
-            balance: bill.balance,
-            type: this.billTypes.filter((type) => type.key === this.bill.type)[0]
-              .key,
-          });
+          // this.form.patchValue({
+          //   name: bill.name,
+          //   balance: bill.balance,
+          //   type: this.billTypes.filter((type) => type.key === this.bill.type)[0]
+          //     .key,
+          // });
         }
         this.form.enable();
         this.isLoading = false;
@@ -88,40 +89,40 @@ export class BillFormComponent implements OnInit, OnDestroy {
     let obs$;
 
     if (!this.form.invalid) {
-      if (this.isNew) {
-        obs$ = this.billService.create(this.form.value);
-      } else {
-        obs$ = this.billService.update(this.bill._id, this.form.value);
-      }
-      obs$.subscribe(
-        (bill) => {
-          if (this.isNew) {
-            console.log('Bill was created', bill);
-            this.form.patchValue({
-              name: '',
-              balance: 0,
-              type: this.billTypes.filter(
-                (type) => type.key === 'checking'
-              )[0].key,
-            });
-          } else {
-            this.bill = bill;
-            console.log('Изменения сохранены');
-            this.form.patchValue({
-              name: bill.name,
-              balance: bill.balance,
-              type: this.billTypes.filter(
-                (type) => type.key === this.bill.type
-              )[0].key,
-            });
-          }
-          this.form.enable();
-        },
-        (err) => console.log(err),
-        () => {
-          this.form.enable();
-        }
-      );
+      // if (this.isNew) {
+      //   obs$ = this.billService.create(this.form.value);
+      // } else {
+      //   obs$ = this.billService.update(this.bill._id, this.form.value);
+      // }
+      // obs$.subscribe(
+      //   (bill) => {
+      //     if (this.isNew) {
+      //       console.log('Bill was created', bill);
+      //       this.form.patchValue({
+      //         name: '',
+      //         balance: 0,
+      //         type: this.billTypes.filter(
+      //           (type) => type.key === 'checking'
+      //         )[0].key,
+      //       });
+      //     } else {
+      //       this.bill = bill;
+      //       console.log('Изменения сохранены');
+      //       this.form.patchValue({
+      //         name: bill.name,
+      //         balance: bill.balance,
+      //         type: this.billTypes.filter(
+      //           (type) => type.key === this.bill.type
+      //         )[0].key,
+      //       });
+      //     }
+      //     this.form.enable();
+      //   },
+      //   (err) => console.log(err),
+      //   () => {
+      //     this.form.enable();
+      //   }
+      // );
     }
   }
 
@@ -129,12 +130,12 @@ export class BillFormComponent implements OnInit, OnDestroy {
     const decision = window.confirm(`Вы уверены, что хотите удалить категорию ${this.bill.name}?`);
 
     if (decision) {
-      this.billService.delete(this.bill._id)
-        .subscribe(
-          response => console.log(response.message),
-          error => console.log(error.error.message),
-          () => this.router.navigate(['/cabinet', 'bills'])
-        );
+      // this.billService.delete(this.bill._id)
+      //   .subscribe(
+      //     response => console.log(response.message),
+      //     error => console.log(error.error.message),
+      //     () => this.router.navigate(['/cabinet', 'bills'])
+      //   );
     }
   }
 }

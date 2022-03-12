@@ -3,13 +3,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { Subscription, combineLatest, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { Bill, Operation } from 'src/app/shared/interfaces';
-import { BillService } from 'src/app/shared/services/bill.service';
-import { OperationService } from 'src/app/shared/services/operation.service';
-import { UtilService } from 'src/app/shared/services/util.service';
-import { UserRestService } from 'src/app/shared/services/user.service';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { CategoryService } from 'src/app/shared/services/category.service';
+import { UtilService } from '../../../shared/services/util.service';
+import { UserRestService } from '../../../shared/services/user.service';
+import { BillService } from '../../../shared/services/bill.service';
+import { AuthService } from '../../../shared/services/auth.service';
+import { OperationService } from '../../../shared/services/operation.service';
+import { CategoryService } from '../../../shared/services/category.service';
+
 
 @Component({
   selector: 'app-form-operation',
@@ -18,7 +18,7 @@ import { CategoryService } from 'src/app/shared/services/category.service';
 })
 export class FormOperationComponent implements OnInit, OnDestroy {
 
-  operationTypes = [];
+  // operationTypes = [];
   form: FormGroup;
   wholeSub$: Subscription;
   isLoading = true;
@@ -60,11 +60,11 @@ export class FormOperationComponent implements OnInit, OnDestroy {
         console.log('operationTypes:', operationTypes);
         console.log('billList:', billList);
 
-        this.operationTypes = operationTypes;
-        this.form.patchValue({
-          type: this.operationTypes.filter((type) => type.key === 'checking')[0]
-            .key,
-        });
+        // this.operationTypes = operationTypes;
+        // this.form.patchValue({
+        //   type: this.operationTypes.filter((type) => type.key === 'checking')[0]
+        //     .key,
+        // });
 
         this.form.enable();
         this.isLoading = false;

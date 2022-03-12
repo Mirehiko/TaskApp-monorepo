@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { AuthService } from '../../../app/shared/services/auth.service';
+
 
 @Component({
   selector: 'app-register-page',
@@ -36,18 +37,17 @@ export class RegisterPageComponent implements OnInit, OnDestroy {
 
   submit(): void {
     if ( !this.form.invalid ) {
-      this.form.disable();
-      const user = this.form.value;
-      this.aSub = this.authService.register(user)
-        .subscribe(() => {
-          this.router.navigate(['/cabinet']);
-        },
-        err => {
-          console.log('ERROR');
-          console.log(err);
-          this.form.enable();
-        });
+    //   this.form.disable();
+    //   const user = this.form.value;
+    //   this.aSub = this.authService.register(user)
+    //     .subscribe(() => {
+    //       this.router.navigate(['/cabinet']);
+    //     },
+    //     err => {
+    //       console.log('ERROR');
+    //       console.log(err);
+    //       this.form.enable();
+    //     });
     }
   }
-
 }

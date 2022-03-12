@@ -1,10 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { Category } from 'src/app/shared/interfaces';
-import { CategoryService } from 'src/app/shared/services/category.service';
 import { switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { CategoryService } from '../../../../shared/services/category.service';
+import { Category } from '../../../../shared/interfaces';
+
 
 @Component({
   selector: 'app-form-category',
@@ -63,12 +64,12 @@ export class FormCategoryComponent implements OnInit {
     const decision = window.confirm(`Вы уверены, что хотите удалить категорию ${this.category.name}?`);
 
     if (decision) {
-      this.categoryService.delete(this.category._id)
-        .subscribe(
-          response => console.log(response.message),
-          error => console.log(error.error.message),
-          () => this.router.navigate(['/admin', 'categories'])
-        );
+      // this.categoryService.delete(this.category._id)
+      //   .subscribe(
+      //     response => console.log(response.message),
+      //     error => console.log(error.error.message),
+      //     () => this.router.navigate(['/admin', 'categories'])
+      //   );
     }
   }
 
@@ -76,33 +77,33 @@ export class FormCategoryComponent implements OnInit {
     this.form.disable();
     let obs$;
 
-    if (this.isNew) {
+    // if (this.isNew) {
+    //
+    //   obs$ = this.categoryService.create(this.form.value);
+    //   // obs$ = this.categoryService.create(this.form.value.name, this.image);
+    // }
+    // else {
+    //   obs$ = this.categoryService.update(this.category._id, this.form.value);
+    //   // obs$ = this.categoryService.update(this.category._id, this.form.value.name, this.image);
+    // }
 
-      obs$ = this.categoryService.create(this.form.value);
-      // obs$ = this.categoryService.create(this.form.value.name, this.image);
-    }
-    else {
-      obs$ = this.categoryService.update(this.category._id, this.form.value);
-      // obs$ = this.categoryService.update(this.category._id, this.form.value.name, this.image);
-    }
-
-    obs$.subscribe(
-      category => {
-        if (this.isNew) {
-          console.log('Категория создана');
-          this.form.reset();
-        }
-        else {
-          this.category = category;
-          console.log('Изменения сохранены');
-        }
-        this.form.enable();
-      },
-      error => {
-        console.log(error.error.message);
-        this.form.enable();
-      }
-    );
+    // obs$.subscribe(
+    //   category => {
+    //     if (this.isNew) {
+    //       console.log('Категория создана');
+    //       this.form.reset();
+    //     }
+    //     else {
+    //       this.category = category;
+    //       console.log('Изменения сохранены');
+    //     }
+    //     this.form.enable();
+    //   },
+    //   error => {
+    //     console.log(error.error.message);
+    //     this.form.enable();
+    //   }
+    // );
   }
 
   // triggerClick() {

@@ -3,10 +3,11 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { Subscription, combineLatest, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { Target, Bill, Operation } from 'src/app/shared/interfaces';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { TargetService } from 'src/app/shared/services/target.service';
-import { UtilService } from 'src/app/shared/services/util.service';
+import { Bill, Operation, Target } from '../../../shared/interfaces';
+import { UtilService } from '../../../shared/services/util.service';
+import { TargetService } from '../../../shared/services/target.service';
+import { AuthService } from '../../../shared/services/auth.service';
+
 
 @Component({
   selector: 'app-form-target',
@@ -18,7 +19,7 @@ export class FormTargetComponent implements OnInit, OnDestroy {
   action = 'create';
   isLoading = true;
 
-  targetTypes = [];
+  // targetTypes: any = [];
   form: FormGroup;
   target: Target;
   bill: Bill;
@@ -58,21 +59,21 @@ export class FormTargetComponent implements OnInit, OnDestroy {
       this.utilService.getTargetStatus(),
     ).subscribe(
       ([data, targetTypes, targetStatus]) => {
-        this.targetTypes = targetTypes;
+        // this.targetTypes = targetTypes;
         console.log(targetTypes);
-        this.form.patchValue({
-          type: this.targetTypes.filter((type) => type.key === 'personal')[0]
-            .key,
-        });
+        // this.form.patchValue({
+        //   type: this.targetTypes.filter((type) => type.key === 'personal')[0]
+        //     .key,
+        // });
         console.log(data);
         if (data) {
-          this.target = data.target;
-          this.target.status = targetStatus.filter(status => status.key === this.target.status)[0].value;
+          // this.target = data.target;
+          // this.target.status = targetStatus.filter(status => status.key === this.target.status)[0].value;
           console.log(data.target);
           console.log(this.target);
           this.form.patchValue({
             name: data.target.name,
-            type: this.targetTypes.filter((type) => type.key === this.target.type)[0].key,
+            // type: this.targetTypes.filter((type) => type.key === this.target.type)[0].key,
             targetValue: data.target.targetValue,
             cover: data.target.cover,
           });
@@ -98,44 +99,44 @@ export class FormTargetComponent implements OnInit, OnDestroy {
     if (!this.form.invalid) {
       const sendTarget = this.form.value;
       sendTarget.user = this.authService.user._id;
-      if (this.action === 'create') {
-        obs$ = this.targetService.create(sendTarget);
-      } else {
-        obs$ = this.targetService.update(this.target._id, sendTarget);
-      }
-      obs$.subscribe(
-        (target) => {
-          if (this.action === 'create') {
-            console.log('Target was created', target);
-            this.form.patchValue({
-              name: '',
-              type: this.targetTypes.filter(
-                (type) => type.key === 'personal'
-              )[0].key,
-              targetValue: 0,
-              startedValue: 0,
-              cover: null,
-            });
-          } else {
-            this.target = target;
-            console.log('Изменения сохранены');
-            this.form.patchValue({
-              name: target.name,
-              type: this.targetTypes.filter(
-                (type) => type.key === this.target.type
-              )[0].key,
-              targetValue: target.targetValue,
-              cover: target.cover,
-            });
-            this.action = 'show'
-          }
-          this.form.enable();
-        },
-        (err) => console.log(err),
-        () => {
-          this.form.enable();
-        }
-      );
+      // if (this.action === 'create') {
+      //   obs$ = this.targetService.create(sendTarget);
+      // } else {
+      //   obs$ = this.targetService.update(this.target._id, sendTarget);
+      // }
+      // obs$.subscribe(
+      //   (target) => {
+      //     if (this.action === 'create') {
+      //       console.log('Target was created', target);
+      //       this.form.patchValue({
+      //         name: '',
+      //         type: this.targetTypes.filter(
+      //           (type) => type.key === 'personal'
+      //         )[0].key,
+      //         targetValue: 0,
+      //         startedValue: 0,
+      //         cover: null,
+      //       });
+      //     } else {
+      //       this.target = target;
+      //       console.log('Изменения сохранены');
+      //       this.form.patchValue({
+      //         name: target.name,
+      //         type: this.targetTypes.filter(
+      //           (type) => type.key === this.target.type
+      //         )[0].key,
+      //         targetValue: target.targetValue,
+      //         cover: target.cover,
+      //       });
+      //       this.action = 'show'
+      //     }
+      //     this.form.enable();
+      //   },
+      //   (err) => console.log(err),
+      //   () => {
+      //     this.form.enable();
+      //   }
+      // );
     }
   }
 

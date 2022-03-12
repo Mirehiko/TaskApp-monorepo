@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Role } from 'src/app/shared/interfaces';
-import { RoleService } from 'src/app/shared/services/role.service';
+import { RoleService } from '../../../../shared/services/role.service';
+import { Role } from '../../../../shared/interfaces';
+
 
 @Component({
   selector: 'app-admin-roles-list',

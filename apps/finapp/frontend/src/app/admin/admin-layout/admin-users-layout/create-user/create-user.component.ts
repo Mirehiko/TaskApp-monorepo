@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { UserRestService } from 'src/app/shared/services/user.service';
-import { RoleService } from 'src/app/shared/services/role.service';
-import { Role } from 'src/app/shared/interfaces';
 import { Subscription } from 'rxjs';
+import { Role } from '../../../../shared/interfaces';
+import { UserRestService } from '../../../../shared/services/user.service';
+import { RoleService } from '../../../../shared/services/role.service';
+
 
 @Component({
   selector: 'app-create-user',

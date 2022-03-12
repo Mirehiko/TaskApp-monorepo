@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Category } from 'src/app/shared/interfaces';
-import { CategoryService } from 'src/app/shared/services/category.service';
+import { Category } from '../../../shared/interfaces';
+import { CategoryService } from '../../../shared/services/category.service';
+
 
 @Component({
   selector: 'app-admin-categories',

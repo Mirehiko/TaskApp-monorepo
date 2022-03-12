@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Operation } from 'src/app/shared/interfaces';
+import { Operation } from '../../../shared/interfaces';
+
 
 @Component({
   selector: 'app-operation-list',

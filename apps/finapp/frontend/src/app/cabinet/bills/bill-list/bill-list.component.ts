@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Bill } from 'src/app/shared/interfaces';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { BillService } from 'src/app/shared/services/bill.service';
+import { BillService } from '../../../shared/services/bill.service';
+import { AuthService } from '../../../shared/services/auth.service';
+import { Bill } from '../../../shared/interfaces';
+
 
 @Component({
   selector: 'app-bill-list',
@@ -23,11 +24,11 @@ export class BillListComponent implements OnInit, OnDestroy {
     this.bSub = this.billService.getBillsByUserId(this.authService.user._id)
       .subscribe(data => {
         console.log(data)
-        data.bills.forEach(bill => {
-          bill.type = data.billTypes.filter(type => type.key === bill.type)[0].value;
-          bill.status = data.billStatus.filter(status => status.key === bill.status)[0].value;
-          delete bill.user;
-        });
+        // data.bills.forEach(bill => {
+        //   bill.type = data.billTypes.filter(type => type.key === bill.type)[0].value;
+        //   bill.status = data.billStatus.filter(status => status.key === bill.status)[0].value;
+        //   delete bill.user;
+        // });
         this.bills = data.bills;
         this.isLoading = false;
       }, err => console.log(err));

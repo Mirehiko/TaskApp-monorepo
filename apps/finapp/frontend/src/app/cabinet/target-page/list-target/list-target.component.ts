@@ -1,8 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { Target } from 'src/app/shared/interfaces';
-import { AuthService } from 'src/app/shared/services/auth.service';
-import { TargetService } from 'src/app/shared/services/target.service';
+import { Target } from '../../../shared/interfaces';
+import { TargetService } from '../../../shared/services/target.service';
+import { AuthService } from '../../../shared/services/auth.service';
+
 
 @Component({
   selector: 'app-list-target',
@@ -20,17 +21,17 @@ export class ListTargetComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.cSub = this.targetService.getTargetsByUserId(this.authService.user._id)
-      .subscribe(data => {
-        data.targets.forEach(target => {
-          console.log(data.targetTypes)
-          console.log(target)
-          target.type = data.targetTypes.filter(type => type.key === target.type)[0].value;
-          delete target.user;
-        });
-        this.targets = data.targets;
-        this.isLoading = false;
-      }, err => console.log(err));
+    // this.cSub = this.targetService.getTargetsByUserId(this.authService.user._id)
+    //   .subscribe(data => {
+    //     data.targets.forEach(target => {
+    //       console.log(data.targetTypes)
+    //       console.log(target)
+    //       target.type = data.targetTypes.filter(type => type.key === target.type)[0].value;
+    //       delete target.user;
+    //     });
+    //     this.targets = data.targets;
+    //     this.isLoading = false;
+    //   }, err => console.log(err));
   }
 
   ngOnDestroy(): void {

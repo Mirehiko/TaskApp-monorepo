@@ -3,10 +3,11 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { Subscription, combineLatest, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { Card, Operation } from 'src/app/shared/interfaces';
-import { CardService } from 'src/app/shared/services/card.service';
-import { UtilService } from 'src/app/shared/services/util.service';
-import { AuthService } from 'src/app/shared/services/auth.service';
+import { UtilService } from '../../../shared/services/util.service';
+import { AuthService } from '../../../shared/services/auth.service';
+import { Card, Operation } from '../../../shared/interfaces';
+import { CardService } from '../../../shared/services/card.service';
+
 
 @Component({
   selector: 'app-form-card',
@@ -19,7 +20,7 @@ export class FormCardComponent implements OnInit, OnDestroy {
   isLoading = true;
   form: FormGroup;
 
-  cardTypes = [];
+  // cardTypes = [];
   card: Card;
   operations: Operation[] = [];
   wholeSub$: Subscription;
@@ -54,21 +55,21 @@ export class FormCardComponent implements OnInit, OnDestroy {
       this.utilService.getCardTypes()
     ).subscribe(
       ([card, cardTypes]) => {
-        this.cardTypes = cardTypes;
+        // this.cardTypes = cardTypes;
         console.log(cardTypes);
-        this.form.patchValue({
-          type: this.cardTypes.filter((type) => type.key === 'debit')[0]
-            .key,
-        });
+        // this.form.patchValue({
+        //   type: this.cardTypes.filter((type) => type.key === 'debit')[0]
+        //     .key,
+        // });
 
         if (card) {
           this.card = card;
           console.log(card);
-          this.form.patchValue({
-            name: card.name,
-            balance: card.balance,
-            type: this.cardTypes.filter((type) => type.key === this.card.type)[0].key
-          });
+          // this.form.patchValue({
+          //   name: card.name,
+          //   balance: card.balance,
+          //   type: this.cardTypes.filter((type) => type.key === this.card.type)[0].key
+          // });
         }
         this.form.enable();
         this.isLoading = false;
@@ -90,38 +91,38 @@ export class FormCardComponent implements OnInit, OnDestroy {
     if (!this.form.invalid) {
       const sendCard = this.form.value;
       sendCard.user = this.authService.user._id;
-      if (this.isNew) {
-        obs$ = this.cardService.create(sendCard);
-      } else {
-        obs$ = this.cardService.update(this.card._id, sendCard);
-      }
-      obs$.subscribe(
-        (card) => {
-          if (this.isNew) {
-            console.log('Card was created', card);
-            this.form.patchValue({
-              name: '',
-              type: this.cardTypes.filter(
-                (type) => type.key === 'debit'
-              )[0].key,
-            });
-          } else {
-            this.card = card;
-            console.log('Изменения сохранены');
-            this.form.patchValue({
-              name: card.name,
-              type: this.cardTypes.filter(
-                (type) => type.key === this.card.type
-              )[0].key,
-            });
-          }
-          this.form.enable();
-        },
-        (err) => console.log(err),
-        () => {
-          this.form.enable();
-        }
-      );
+      // if (this.isNew) {
+      //   obs$ = this.cardService.create(sendCard);
+      // } else {
+      //   obs$ = this.cardService.update(this.card._id, sendCard);
+      // }
+      // obs$.subscribe(
+      //   (card) => {
+      //     if (this.isNew) {
+      //       console.log('Card was created', card);
+      //       this.form.patchValue({
+      //         name: '',
+      //         type: this.cardTypes.filter(
+      //           (type) => type.key === 'debit'
+      //         )[0].key,
+      //       });
+      //     } else {
+      //       this.card = card;
+      //       console.log('Изменения сохранены');
+      //       this.form.patchValue({
+      //         name: card.name,
+      //         type: this.cardTypes.filter(
+      //           (type) => type.key === this.card.type
+      //         )[0].key,
+      //       });
+      //     }
+      //     this.form.enable();
+      //   },
+      //   (err) => console.log(err),
+      //   () => {
+      //     this.form.enable();
+      //   }
+      // );
     }
   }
 
@@ -129,12 +130,12 @@ export class FormCardComponent implements OnInit, OnDestroy {
     const decision = window.confirm(`Вы уверены, что хотите удалить карту ${this.card.name}?`);
 
     if (decision) {
-      this.cardService.delete(this.card._id)
-        .subscribe(
-          response => console.log(response.message),
-          error => console.log(error.error.message),
-          () => this.router.navigate(['/cabinet', 'cards'])
-        );
+      // this.cardService.delete(this.card._id)
+      //   .subscribe(
+      //     response => console.log(response.message),
+      //     error => console.log(error.error.message),
+      //     () => this.router.navigate(['/cabinet', 'cards'])
+      //   );
     }
   }
 }

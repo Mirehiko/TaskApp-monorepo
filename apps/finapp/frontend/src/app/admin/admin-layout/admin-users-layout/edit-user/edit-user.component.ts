@@ -3,9 +3,10 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Subscription, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { User, Role } from 'src/app/shared/interfaces';
-import { UserRestService } from 'src/app/shared/services/user.service';
-import { RoleService } from 'src/app/shared/services/role.service';
+import { Role, User } from '../../../../shared/interfaces';
+import { UserRestService } from '../../../../shared/services/user.service';
+import { RoleService } from '../../../../shared/services/role.service';
+
 
 @Component({
   selector: 'app-edit-user',
@@ -38,26 +39,26 @@ export class EditUserComponent implements OnInit, OnDestroy {
 
     this.form.disable();
 
-    this.route.params.pipe(
-      switchMap((params: Params) => {
-        if (params.id) {
-          return this.userService.getUserById(params.id);
-        }
-        return of(null);
-      })
-    ).subscribe((user: User) => {
-      if (user) {
-        this.user = user;
-        this.form.patchValue({
-          email: user.email,
-          password: user.password,
-          name: user.name,
-          avatar: user.avatar,
-          role: user.role
-        });
-      }
-      this.form.enable();
-    }, err => console.log(err));
+    // this.route.params.pipe(
+    //   switchMap((params: Params) => {
+    //     if (params.id) {
+    //       return this.userService.getUserById(params.id);
+    //     }
+    //     return of(null);
+    //   })
+    // ).subscribe((user: User) => {
+    //   if (user) {
+    //     this.user = user;
+    //     this.form.patchValue({
+    //       email: user.email,
+    //       password: user.password,
+    //       name: user.name,
+    //       avatar: user.avatar,
+    //       role: user.role
+    //     });
+    //   }
+    //   this.form.enable();
+    // }, err => console.log(err));
 
     this.rSub$ = this.roleService.fetch().subscribe(
       roles => {
@@ -82,19 +83,19 @@ export class EditUserComponent implements OnInit, OnDestroy {
   submit(): void {
     this.form.disable();
     if (!this.form.invalid) {
-      this.userService.update(this.user._id, this.form.value)
-        .subscribe(user => {
-          console.log('User was updated', user);
-          this.user = user;
-          this.form.enable();
-        });
+      // this.userService.update(this.user._id, this.form.value)
+      //   .subscribe(user => {
+      //     console.log('User was updated', user);
+      //     this.user = user;
+      //     this.form.enable();
+      //   });
     }
   }
 
   remove(): void {
-    this.uSub$ = this.userService.delete(this.user._id)
-      .subscribe(() => {
-        this.router.navigate(['/admin', 'users']);
-      });
+    // this.uSub$ = this.userService.delete(this.user._id)
+    //   .subscribe(() => {
+    //     this.router.navigate(['/admin', 'users']);
+    //   });
   }
 }

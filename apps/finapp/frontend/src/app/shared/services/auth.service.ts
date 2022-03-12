@@ -9,7 +9,7 @@ import { tap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class AuthService {
-  private token = null;
+  private token = '';
   public user: any;
 
   constructor(private http: HttpClient) {}
@@ -30,13 +30,13 @@ export class AuthService {
   }
 
   logout(): void {
-    this.setToken(null);
+    // this.setToken(null);
     this.user = null;
     localStorage.clear();
   }
 
   setToken(token: string): void {
-    this.token = token;
+    // this.token = token;
   }
 
   getToken(): string {
