@@ -14,8 +14,8 @@ import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { Roles } from '../../common/auth/roles-auth.decorator';
 import { RolesGuard } from '../../common/auth/roles.guard';
 import { CategoryService } from './category.service';
-import { CategoryResponseDto } from './dto/category-response.dto';
-import { CategoryRequestDto } from './dto/category-request.dto';
+import { CategoryRequestDto, CategoryResponseDto } from '@finapp/app-common';
+import { BillGetParamsData } from '../bill/interfaces/bill-params';
 
 
 @ApiTags('Категории')
@@ -31,7 +31,8 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Get('bills')
   async getAll(): Promise<CategoryResponseDto[]> {
-		return await this.service.getAll();
+		// return await this.service.getAll();
+    return [new CategoryResponseDto()];
 	}
 
 	@ApiOperation({summary: 'Получение категории'})
@@ -40,15 +41,17 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/:id')
   async getByID(@Param('id') id: number): Promise<CategoryResponseDto> {
-		return await this.service.getByID(id);
+		// return await this.service.getByID(id);
+    return new CategoryResponseDto();
 	}
 
 	@ApiOperation({summary: 'Получение категории по полю'})
 	// @ApiResponse({status: 200, type: User})
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/')
-  async getBy(@Query() requestDto: CategoryRequestDto): Promise<CategoryResponseDto> {
-		return await this.service.getBy(requestDto);
+  async getBy(@Query() requestDto: BillGetParamsData): Promise<CategoryResponseDto> {
+    return new CategoryResponseDto();
+		// return await this.service.getBy(requestDto);
 	}
 
 	@ApiOperation({summary: 'Обновление категории'})
@@ -60,7 +63,8 @@ export class CategoryController {
 		@Body() requestDto: CategoryRequestDto,
 		@Param() id: number,
 	): Promise<CategoryResponseDto> {
-		return await this.service.update(id, requestDto);
+	  return new CategoryResponseDto();
+		// return await this.service.update(id, requestDto);
 	}
 
 	@ApiOperation({summary: 'Создание категории'})

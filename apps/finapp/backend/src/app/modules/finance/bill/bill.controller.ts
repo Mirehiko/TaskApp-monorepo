@@ -14,8 +14,8 @@ import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { Roles } from '../../common/auth/roles-auth.decorator';
 import { RolesGuard } from '../../common/auth/roles.guard';
 import { BillService } from './bill.service';
-import { BillRequestDto } from './dto/bill-request.dto';
-import { BillResponseDto } from './dto/bill-response.dto';
+import { BillRequestDto, BillResponseDto } from '@finapp/app-common';
+import { BillGetParamsData } from './interfaces/bill-params';
 
 
 @ApiTags('Счета')
@@ -31,7 +31,8 @@ export class BillController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Get('bills')
   async getAll(): Promise<BillResponseDto[]> {
-		return await this.service.getAll();
+		// return await this.service.getAll();
+    return [new BillResponseDto()];
 	}
 
 	@ApiOperation({summary: 'Получение пользователя'})
@@ -40,7 +41,8 @@ export class BillController {
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/:id')
   async getByID(@Param('id') id: number): Promise<BillResponseDto> {
-		return await this.service.getByID(id);
+		// return await this.service.getByID(id);
+    return new BillResponseDto();
 	}
 
 	@ApiOperation({summary: 'Получение пользователя полю'})
@@ -48,8 +50,9 @@ export class BillController {
   @UseInterceptors(ClassSerializerInterceptor)
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/')
-  async getBy(@Query() requestDto: BillRequestDto): Promise<BillResponseDto> {
-		return await this.service.getBy(requestDto);
+  async getBy(@Body() requestParams: BillGetParamsData): Promise<BillResponseDto> {
+		// return await this.service.getBy(requestParams);
+    return new BillResponseDto();
 	}
 
 	@ApiOperation({summary: 'Обновление пользователя'})
@@ -61,7 +64,8 @@ export class BillController {
 		@Body() requestDto: BillRequestDto,
 		@Param() id: number,
 	): Promise<BillResponseDto> {
-		return await this.service.update(id, requestDto);
+	  return new BillResponseDto();
+		// return await this.service.update(id, requestDto);
 	}
 
 	@ApiOperation({summary: 'Создание пользователя'})
