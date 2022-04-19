@@ -1,3 +1,5 @@
 export enum OperationStatus {
-	COMPLETE, PENDING
+	COMPLETED = 'completed',
+  PENDING = 'pending',
+  CANCELED = 'canceled'
 }

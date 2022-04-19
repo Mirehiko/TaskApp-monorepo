@@ -1,17 +1,17 @@
-import {MiddlewareConsumer, Module, NestModule, RequestMethod} from '@nestjs/common';
-import {UserModule} from './modules/common/user/user.module';
-import {AuthModule} from "./modules/common/auth/auth.module";
-import {TypeOrmModule} from "@nestjs/typeorm";
-import {Connection} from "typeorm";
-import {RoleModule} from './modules/common/role/role.module';
-import {PermissionModule} from "./modules/common/permission/permission.module";
-import {LoggingMiddleware} from "./middleware/logging-middleware";
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { UserModule } from './modules/common/user/user.module';
+import { AuthModule } from "./modules/common/auth/auth.module";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Connection } from "typeorm";
+import { RoleModule } from './modules/common/role/role.module';
+import { PermissionModule } from "./modules/common/permission/permission.module";
+import { LoggingMiddleware } from "./middleware/logging-middleware";
 import { FilesService } from './files/files.service';
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import * as path from 'path';
-import {TokenModule} from "./modules/common/token/token.module";
-import {configModule} from "./config/configure.root";
+import { TokenModule } from "./modules/common/token/token.module";
+import { configModule } from "./config/configure.root";
 import { BillModule } from './modules/finance/bill/bill.module';
 import { CategoryModule } from './modules/finance/category/category.module';
 import { OperationModule } from './modules/finance/operation/operation.module';
@@ -51,8 +51,8 @@ import { OperationModule } from './modules/finance/operation/operation.module';
     FilesModule,
     TokenModule,
     BillModule,
-    // OperationModule,
-    // CategoryModule,
+    OperationModule,
+    CategoryModule,
   ],
   providers: [FilesService],
   // controllers: [AppController],
@@ -61,9 +61,9 @@ export class AppModule implements NestModule {
   constructor(private connection: Connection) {
   }
 
-    configure(consumer: MiddlewareConsumer): any {
-        consumer
-            .apply(LoggingMiddleware)
-            .forRoutes({path: '*', method: RequestMethod.ALL})
-    }
+  configure(consumer: MiddlewareConsumer): any {
+    consumer
+      .apply(LoggingMiddleware)
+      .forRoutes({path: '*', method: RequestMethod.ALL})
+  }
 }

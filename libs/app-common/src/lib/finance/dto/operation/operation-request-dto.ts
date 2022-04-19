@@ -1,20 +1,27 @@
-import { IsEmail, IsNotEmpty, IsOptional } from "class-validator";
+import { OperationStatus, OperationType } from '@finapp/app-common';
+import { IsNotEmpty, IsOptional } from "class-validator";
+import { Expose } from 'class-transformer';
+
 
 export class OperationRequestDto {
   @IsOptional()
   id?: number;
 
-  @IsNotEmpty()
-  firstName: string;
+  billId: number;
 
-  @IsNotEmpty()
-  lastName: string;
+  @Expose()
+  comment: string;
 
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
+  @Expose()
+  status: OperationStatus;
 
-  @IsOptional()
-  @IsNotEmpty()
-  password?: string;
+  @Expose()
+  type: OperationType;
+
+  @Expose()
+  value: number;
+
+  @Expose()
+  metadata: string;
+//   metadata?: OperationMetadata;
 }

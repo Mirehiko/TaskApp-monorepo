@@ -24,6 +24,9 @@ export class Category extends BaseEntity {
 	@JoinTable()
 	children: Category[];
 
-	// TODO: Catecory color, icon, parent
+  @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
+  @Column({ nullable: true })
+  parent_id: number;
+	// TODO: Category color, icon, parent
 	// TODO: made as tree?
 }

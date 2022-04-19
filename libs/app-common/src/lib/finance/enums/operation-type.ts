@@ -1,5 +1,6 @@
 export enum OperationType {
-	REPLENISH = 'replenish', // +
-	DEBIT = 'debit', // -
-	TRANSACTION = 'transaction'
+	INC = 'increment', // +
+	DEC = 'decrement', // -
+  TRANS_TO = 'decTransaction',
+  TRANS_FROM = 'incTransaction',
 }

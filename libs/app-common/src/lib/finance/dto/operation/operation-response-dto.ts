@@ -1,23 +1,26 @@
-import {IsEmail, IsNotEmpty} from "class-validator";
+import { IsOptional } from 'class-validator';
 import {Expose} from "class-transformer";
+import { OperationStatus, OperationType } from '../../enums';
+import { UserResponseDto } from '../../../common';
+
 
 export class OperationResponseDto {
-  @Expose()
+  @IsOptional()
   id: number;
 
-  @IsNotEmpty()
   @Expose()
-  firstName: string;
+  comment: string;
 
-  @IsNotEmpty()
   @Expose()
-  lastName: string;
+  status: OperationStatus;
 
-  @IsEmail()
-  @IsNotEmpty()
   @Expose()
-  email: string;
+  type: OperationType;
 
-  // @IsNotEmpty()
-  // password: string;
+  @Expose()
+  value: number;
+
+  @Expose()
+  metadata: string;
+//   metadata?: OperationMetadata;
 }

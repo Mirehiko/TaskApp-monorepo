@@ -5,17 +5,16 @@ import {
   Get,
   Param,
   Patch,
-  Post, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes
-  // HttpCode,
-  // HttpStatus,
+  Post, Query, UseGuards, UseInterceptors,
 } from '@nestjs/common';
-import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiOperation, ApiTags} from "@nestjs/swagger";
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { Roles } from '../../common/auth/roles-auth.decorator';
 import { RolesGuard } from '../../common/auth/roles.guard';
 import { CategoryService } from './category.service';
 import { CategoryRequestDto, CategoryResponseDto } from '@finapp/app-common';
 import { BillGetParamsData } from '../bill/interfaces/bill-params';
+import { plainToClass } from 'class-transformer';
 
 
 @ApiTags('Категории')
@@ -31,8 +30,8 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Get('bills')
   async getAll(): Promise<CategoryResponseDto[]> {
-		// return await this.service.getAll();
-    return [new CategoryResponseDto()];
+    const category = await this.service.getAll();
+    return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Получение категории'})
@@ -41,8 +40,8 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/:id')
   async getByID(@Param('id') id: number): Promise<CategoryResponseDto> {
-		// return await this.service.getByID(id);
-    return new CategoryResponseDto();
+    const category = await this.service.getByID(id);
+    return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Получение категории по полю'})
@@ -50,8 +49,8 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/')
   async getBy(@Query() requestDto: BillGetParamsData): Promise<CategoryResponseDto> {
-    return new CategoryResponseDto();
-		// return await this.service.getBy(requestDto);
+		const category = await this.service.getBy(requestDto);
+    return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Обновление категории'})
@@ -63,8 +62,8 @@ export class CategoryController {
 		@Body() requestDto: CategoryRequestDto,
 		@Param() id: number,
 	): Promise<CategoryResponseDto> {
-	  return new CategoryResponseDto();
-		// return await this.service.update(id, requestDto);
+    const category = await this.service.update(id, requestDto);
+    return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Создание категории'})
@@ -74,8 +73,9 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard)
 	@Post('bill')
 	// @HttpCode(HttpStatus.CREATED)
-  async create(@Body() requestDto: CategoryRequestDto): Promise<any> {
-		return await this.service.create(requestDto);
+  async create(@Body() requestDto: CategoryRequestDto): Promise<CategoryResponseDto> {
+    const category = await this.service.create(requestDto);
+    return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Удаление категории'})

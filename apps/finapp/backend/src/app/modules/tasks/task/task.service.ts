@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 import { FilesService } from '../../../files/files.service';
 import { BaseService, GetParams, GetParamsData } from '../../base-service';
-import { TaskRequestDto } from './dto/task-request.dto';
+import { TaskRequestDto } from '../../../../../../../../libs/app-common/src/lib/tasks/dto/task/task-request.dto';
 import { TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
 

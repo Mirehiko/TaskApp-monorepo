@@ -6,12 +6,13 @@ import { UserRepository } from '../../common/user/user-repository';
 import { OperationRepository } from './operation-repository';
 import { OperationController } from './operation.controller';
 import { OperationService } from './operation.service';
+import { BillRepository } from '../bill/bill-repository';
 
 
 @Module({
 	imports: [
 		// DatabaseModule,
-		TypeOrmModule.forFeature(([UserRepository, OperationRepository, Role])),
+		TypeOrmModule.forFeature(([UserRepository, OperationRepository, BillRepository, Role])),
 		forwardRef(() => AuthModule)
 	],
 	providers: [OperationService],

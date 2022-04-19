@@ -6,7 +6,6 @@ import { UserRepository } from '../../common/user/user-repository';
 import { BillRepository } from './bill-repository';
 import { BillController } from './bill.controller';
 import { BillService } from './bill.service';
-import { User } from '../../common/user/schemas/user.entity';
 
 
 @Module({

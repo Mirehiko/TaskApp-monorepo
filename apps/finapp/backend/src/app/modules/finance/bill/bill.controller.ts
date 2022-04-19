@@ -5,17 +5,16 @@ import {
   Get,
   Param,
   Patch,
-  Post, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes
-  // HttpCode,
-  // HttpStatus,
+  Post, UseGuards, UseInterceptors
 } from '@nestjs/common';
-import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiOperation, ApiTags} from "@nestjs/swagger";
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { Roles } from '../../common/auth/roles-auth.decorator';
 import { RolesGuard } from '../../common/auth/roles.guard';
 import { BillService } from './bill.service';
-import { BillRequestDto, BillResponseDto } from '@finapp/app-common';
+import { BillRequestDto, BillResponseDto, CategoryResponseDto } from '@finapp/app-common';
 import { BillGetParamsData } from './interfaces/bill-params';
+import { plainToClass } from 'class-transformer';
 
 
 @ApiTags('Счета')
@@ -31,8 +30,8 @@ export class BillController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Get('bills')
   async getAll(): Promise<BillResponseDto[]> {
-		// return await this.service.getAll();
-    return [new BillResponseDto()];
+    const bill = await this.service.getAll();
+    return plainToClass(BillResponseDto, bill, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Получение пользователя'})
@@ -41,8 +40,8 @@ export class BillController {
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/:id')
   async getByID(@Param('id') id: number): Promise<BillResponseDto> {
-		// return await this.service.getByID(id);
-    return new BillResponseDto();
+    const bill = await this.service.getByID(id);
+    return plainToClass(BillResponseDto, bill, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Получение пользователя полю'})
@@ -51,8 +50,8 @@ export class BillController {
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/')
   async getBy(@Body() requestParams: BillGetParamsData): Promise<BillResponseDto> {
-		// return await this.service.getBy(requestParams);
-    return new BillResponseDto();
+    const bill = await this.service.getBy(requestParams);
+    return plainToClass(BillResponseDto, bill, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Обновление пользователя'})
@@ -64,8 +63,8 @@ export class BillController {
 		@Body() requestDto: BillRequestDto,
 		@Param() id: number,
 	): Promise<BillResponseDto> {
-	  return new BillResponseDto();
-		// return await this.service.update(id, requestDto);
+    const bill = await this.service.update(id, requestDto);
+    return plainToClass(BillResponseDto, bill, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Создание пользователя'})
@@ -76,7 +75,8 @@ export class BillController {
 	@Post('bill')
 	// @HttpCode(HttpStatus.CREATED)
   async create(@Body() requestDto: BillRequestDto): Promise<any> {
-		return await this.service.create(requestDto);
+    const bill = await this.service.create(requestDto);
+    return plainToClass(BillResponseDto, bill, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Удаление пользователя'})

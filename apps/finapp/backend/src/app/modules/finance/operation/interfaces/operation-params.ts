@@ -1,10 +1,10 @@
 import { GetParams, GetParamsData } from '../../../base-service';
 
-export interface BillGetParamsData extends GetParamsData {
-  params: BillGetParams;
+export interface OperationGetParamsData extends GetParamsData {
+  params: OperationGetParams;
 }
 
-export interface BillGetParams extends GetParams {
+export interface OperationGetParams extends GetParams {
   types?: string[];
   userIds?: number[];
   createdBy?: number[];

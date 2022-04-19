@@ -5,17 +5,16 @@ import {
   Get,
   Param,
   Patch,
-  Post, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes
-  // HttpCode,
-  // HttpStatus,
+  Post, Query, UseGuards, UseInterceptors
 } from '@nestjs/common';
-import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiOperation, ApiTags} from "@nestjs/swagger";
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { Roles } from '../../common/auth/roles-auth.decorator';
 import { RolesGuard } from '../../common/auth/roles.guard';
-import { OperationRequestDto } from './dto/operation-request.dto';
-import { OperationResponseDto } from './dto/operation-response.dto';
 import { OperationService } from './operation.service';
+import { OperationRequestDto, OperationResponseDto } from '@finapp/app-common';
+import { plainToClass } from 'class-transformer';
+import { OperationGetParamsData } from './interfaces/operation-params';
 
 
 @ApiTags('Операции')
@@ -31,7 +30,8 @@ export class OperationController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Get('bills')
   async getAll(): Promise<OperationResponseDto[]> {
-		return await this.service.getAll();
+    const operation = await this.service.getAll();
+    return plainToClass(OperationResponseDto, operation, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Получение операции'})
@@ -40,7 +40,8 @@ export class OperationController {
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/:id')
   async getByID(@Param('id') id: number): Promise<OperationResponseDto> {
-		return await this.service.getByID(id);
+    const operation = await this.service.getByID(id);
+    return plainToClass(OperationResponseDto, operation, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Получение операции по полю'})
@@ -48,8 +49,9 @@ export class OperationController {
   @UseInterceptors(ClassSerializerInterceptor)
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/')
-  async getBy(@Query() requestDto: OperationRequestDto): Promise<OperationResponseDto> {
-		return await this.service.getBy(requestDto);
+  async getBy(@Query() requestDto: OperationGetParamsData): Promise<OperationResponseDto> {
+    const operation = await this.service.getBy(requestDto);
+    return plainToClass(OperationResponseDto, operation, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Обновление операции'})
@@ -61,7 +63,8 @@ export class OperationController {
 		@Body() requestDto: OperationRequestDto,
 		@Param() id: number,
 	): Promise<OperationResponseDto> {
-		return await this.service.update(id, requestDto);
+		const operation = await this.service.update(id, requestDto);
+    return plainToClass(OperationResponseDto, operation, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Создание операции'})
@@ -71,8 +74,9 @@ export class OperationController {
 	@UseGuards(JwtAuthGuard)
 	@Post('bill')
 	// @HttpCode(HttpStatus.CREATED)
-  async create(@Body() requestDto: OperationRequestDto): Promise<any> {
-		return await this.service.create(requestDto);
+  async create(@Body() requestDto: OperationRequestDto): Promise<OperationResponseDto> {
+    const operation = await this.service.create(requestDto);
+    return plainToClass(OperationResponseDto, operation, { excludeExtraneousValues: true });
 	}
 
 	@ApiOperation({summary: 'Удаление операции'})

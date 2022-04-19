@@ -1,9 +1,7 @@
 import {HttpException, HttpStatus, Injectable, Param} from '@nestjs/common';
-import { BaseService, GetParams, GetParamsData } from '../../base-service';
-import {InjectRepository} from "@nestjs/typeorm";
+import { BaseService } from '../../base-service';
 import { UserGetParamsData } from './interfaces/user-params';
 import {User} from "./schemas/user.entity";
-import {FindOneOptions, Repository} from "typeorm";
 import {RoleService} from "../role/role.service";
 import {FilesService} from "../../../files/files.service";
 import * as bcrypt from 'bcrypt';

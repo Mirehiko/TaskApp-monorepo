@@ -1,6 +1,6 @@
 import {PermissionResponse} from "./permission";
 import { RoleResponse } from './role';
-import { TaskStates } from '../enums/task/task-states';
+import { TaskStates } from '../../../../../../../libs/app-common/src/lib/tasks/enums/task-states';
 import { Themes } from '../enums/common/themes';
 
 export interface UserResponse {

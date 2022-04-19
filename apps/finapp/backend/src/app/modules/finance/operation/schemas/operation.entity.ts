@@ -6,6 +6,7 @@ import { User } from '../../../common/user/schemas/user.entity';
 import { Bill } from '../../bill/schemas/bill.entity';
 import { Category } from '../../category/schemas/category.entity';
 import { OperationStatus, OperationType } from '@finapp/app-common';
+import { OperationMetadata } from './operation-metadata';
 
 
 @Entity()
@@ -26,11 +27,7 @@ export class Operation extends BaseEntity {
 	@ApiProperty({ example: 'Данные счета', description: 'Счет'})
 	@ManyToOne(() => Bill)
 	@JoinTable()
-	invoice: Bill;
-
-	@ApiProperty({ example: '2022.01.21', description: 'Дата проведения операции'})
-	@Column({type: "timestamp", nullable: true})
-	providedAt: Date = null;
+	bill: Bill;
 
 	@ApiProperty({ example: 'active', description: 'Статус операции'})
 	@Column({type: "enum", enum: Object.values(OperationStatus), default: OperationStatus.PENDING})
@@ -38,10 +35,12 @@ export class Operation extends BaseEntity {
 
 	@ApiProperty({ example: 'active', description: 'Тип операции'})
 	@Column({type: "enum", enum: Object.values(OperationType)})
-	type: string;
+	type: OperationType;
 
 	@ApiProperty({ example: 'active', description: 'Категория операции'})
 	@ManyToMany(() => Category, category => category.id)
 	@JoinTable()
-	category: Category;
+	metadata: OperationMetadata;
+
+	// metadata: string;
 }

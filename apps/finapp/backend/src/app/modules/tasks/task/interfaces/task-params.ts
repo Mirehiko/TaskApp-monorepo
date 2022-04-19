@@ -1,4 +1,4 @@
-import { TaskStates } from '../../../../shared/enums/task/task-states';
+import { TaskStates } from '../../../../../../../../../libs/app-common/src/lib/tasks/enums/task-states';
 import { GetParams, GetParamsData } from '../../../base-service';
 
 
