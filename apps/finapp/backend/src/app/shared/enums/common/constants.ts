@@ -7,4 +7,6 @@ export enum Constants {
   BILL_REPOSITORY = "billRepository",
   OPERATION_REPOSITORY = "operationRepository",
   TASK_REPOSITORY = "taskRepository",
+  TAG_REPOSITORY = 'tagRepository',
+  LIST_REPOSITORY = 'listRepository',
 }

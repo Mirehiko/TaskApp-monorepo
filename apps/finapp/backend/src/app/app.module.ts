@@ -15,6 +15,9 @@ import { configModule } from "./config/configure.root";
 import { BillModule } from './modules/finance/bill/bill.module';
 import { CategoryModule } from './modules/finance/category/category.module';
 import { OperationModule } from './modules/finance/operation/operation.module';
+import { TaskModule } from './modules/tasks/task/task.module';
+import { TagModule } from './modules/tasks/tags/tag.module';
+import { ListModule } from './modules/tasks/lists/list.module';
 
 
 @Module({
@@ -53,6 +56,9 @@ import { OperationModule } from './modules/finance/operation/operation.module';
     BillModule,
     OperationModule,
     CategoryModule,
+    TaskModule,
+    TagModule,
+    ListModule,
   ],
   providers: [FilesService],
   // controllers: [AppController],

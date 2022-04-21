@@ -1,11 +1,12 @@
-import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, Repository } from 'typeorm';
-import { FilesService } from '../../../files/files.service';
-import { BaseService, GetParams, GetParamsData } from '../../base-service';
-import { TaskRequestDto } from '../../../../../../../../libs/app-common/src/lib/tasks/dto/task/task-request.dto';
+import { Injectable, Param } from '@nestjs/common';
+import { BaseService } from '../../base-service';
 import { TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
+import { TaskRequestDto } from '@finapp/app-common';
+import { TaskRepository } from './task-repository';
+import { TagRepository } from '../tags/tag-repository';
+import { ListRepository } from '../lists/list-repository';
+
 
 @Injectable()
 export class TaskService extends BaseService<Task, TaskGetParamsData> {
@@ -14,20 +15,21 @@ export class TaskService extends BaseService<Task, TaskGetParamsData> {
 	protected relations: string[] = ['createdBy', 'createdBy.users'];
 
 	constructor(
-		@InjectRepository(Task)
-		protected repository: Repository<Task>,
-		private fileService: FilesService,
+    protected repository: TaskRepository,
+    protected folderRepository: ListRepository,
+    protected tagRepository: TagRepository,
 	) {
 		super();
 	}
 
-	public async create(@Param() requestDto: TaskRequestDto): Promise<any> {
-		try {
-			const newTask = await this.repository.create({...requestDto});
-			return await this.repository.save(newTask); // 200
-		} catch (e) {
-			throw new Error(e);
-		}
+	public async create(@Param() requestDto: TaskRequestDto): Promise<Task> {
+		// try {
+		// 	const newTask = await this.repository.create({...requestDto});
+		// 	return await this.repository.save(newTask); // 200
+		// } catch (e) {
+		// 	throw new Error(e);
+		// }
+    return new Task();
 	}
 	//
 	// async updateUser(@Param() id: number, userRequestDto: CategoryRequestDto, avatar?: any): Promise<User> {

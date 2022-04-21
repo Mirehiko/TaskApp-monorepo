@@ -1,8 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, JoinTable, ManyToMany, OneToOne } from 'typeorm';
-import { TaskStates } from '../../../../../../../../../libs/app-common/src/lib/tasks/enums/task-states';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
+import { TaskStates } from '@finapp/app-common';
+import { Tag } from '../../tags/schemas/tag.entity';
+import { List } from '../../lists/schemas/list.entity';
 
 
 @Entity()
@@ -47,6 +49,25 @@ export class Task extends BaseEntity {
 	@ApiProperty({ example: 'draft', description: 'Статус задачи'})
 	@Column({type: "enum", enum: Object.values(TaskStates), default: TaskStates.DRAFT})
 	status: string;
+
+  @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
+  @ManyToOne(() => Task, task => task.id)
+  @JoinTable()
+  children: Task[];
+
+  @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
+  @ManyToMany(() => Tag)
+  @JoinTable()
+  tags: Tag[];
+
+  @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
+  @ManyToMany(() => List)
+  @JoinTable()
+  folders: List[];
+
+  @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
+  @Column({ nullable: false })
+  parent_id: number;
 
 	// config?: TaskConfig;
 }

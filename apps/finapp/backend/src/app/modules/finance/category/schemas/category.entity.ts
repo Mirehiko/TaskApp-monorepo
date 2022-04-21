@@ -1,8 +1,7 @@
-import { Exclude } from 'class-transformer';
-import {Entity, Column, ManyToOne, JoinTable, PrimaryGeneratedColumn, OneToOne} from 'typeorm';
+import {Entity, Column, ManyToOne, JoinTable} from 'typeorm';
 import {ApiProperty} from "@nestjs/swagger";
 import {BaseEntity} from '../../../base-entity';
-import { User } from '../../../common/user/schemas/user.entity';
+
 
 @Entity()
 export class Category extends BaseEntity {
@@ -25,7 +24,7 @@ export class Category extends BaseEntity {
 	children: Category[];
 
   @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   parent_id: number;
 	// TODO: Category color, icon, parent
 	// TODO: made as tree?
