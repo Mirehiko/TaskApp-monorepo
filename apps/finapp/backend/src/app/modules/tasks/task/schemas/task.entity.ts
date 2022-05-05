@@ -30,7 +30,7 @@ export class Task extends BaseEntity {
 	@ApiProperty({ example: '2022.01.21', description: 'Список пользователей проверяющих задачю'})
 	@ManyToMany(() => User, user => user.id)
 	@JoinTable()
-	reviewer: User[];
+	reviewer: User;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Создатель задачи'})
 	@OneToOne(() => User, user => user.id)
@@ -51,7 +51,7 @@ export class Task extends BaseEntity {
 	status: string;
 
   @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
-  @ManyToOne(() => Task, task => task.id)
+  @ManyToOne(() => Task, task => task.id, { onDelete: 'CASCADE' })
   @JoinTable()
   children: Task[];
 
@@ -63,7 +63,7 @@ export class Task extends BaseEntity {
   @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
   @ManyToMany(() => List)
   @JoinTable()
-  folders: List[];
+  lists: List[];
 
   @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
   @Column({ nullable: false })

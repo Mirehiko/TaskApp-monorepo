@@ -1,4 +1,4 @@
 export class BanUserDto {
-    readonly userIds: number[];
-    readonly reason?: string;
+  readonly userIds: number[];
+  readonly reason?: string;
 }

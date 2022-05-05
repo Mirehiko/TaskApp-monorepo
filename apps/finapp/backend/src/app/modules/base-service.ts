@@ -11,6 +11,10 @@ export class BaseService<T, U extends GetParamsData> {
 		return await this.repository.find();
 	}
 
+  public async getAllRelations(): Promise<T[]> {
+    return await this.repository.find({relations: this.relations});
+  }
+
 	public async getByID(id: number): Promise<T> {
 		const entity = await this.repository.findOne({where: {id}, relations: this.relations});
 		if (entity) {
@@ -22,7 +26,7 @@ export class BaseService<T, U extends GetParamsData> {
 	public async getBy(@Param() paramsData: U): Promise<T> {
 		try {
 			const requestObject: FindOneOptions<T> = {
-				where: {...paramsData.params}
+        where: {...paramsData.params}
 			};
 
 			if (paramsData.withRelations) {

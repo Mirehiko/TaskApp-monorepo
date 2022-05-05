@@ -7,8 +7,6 @@ import {
   Param,
   Patch,
   Post, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes,
-  // HttpCode,
-  // HttpStatus,
 } from '@nestjs/common';
 import { UserGetParams, UserGetParamsData } from './interfaces/user-params';
 import { UserService } from './user.service';
@@ -20,22 +18,26 @@ import { Roles } from '../auth/roles-auth.decorator';
 import {ValidationPipe} from "../../../pipes/validation.pipe";
 import {FileInterceptor} from "@nestjs/platform-express";
 import { BanUserDto, RoleResponseDto, UserRequestDto, UserResponseDto, UserRolesDto } from '@finapp/app-common';
+import { TransformInterceptor } from '../../../interceptors/transform.interceptor';
+import { plainToClass } from 'class-transformer';
 
 
 @ApiTags('Пользователи')
 @Controller('main')
+@UseInterceptors(new TransformInterceptor())
 export class UserController {
   constructor(private readonly service: UserService) {
   }
 
   @ApiOperation({summary: 'Получение списка пользователей'})
-  @ApiResponse({status: 200, type: [UserResponseDto]})
+  // @ApiResponse({status: 200, type: [UserResponseDto]})
   @Roles("ADMIN")
-  @UseInterceptors(ClassSerializerInterceptor)
+  // @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('users')
   async getUsers(): Promise<UserResponseDto[]> {
-    return await this.service.getAll();
+    const users = await this.service.getAllRelations();
+    return plainToClass(UserResponseDto, users, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Получение пользователя'})
@@ -44,7 +46,9 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('user/:id')
   async getUserById(@Param('id') id: number): Promise<UserResponseDto> {
-    return await this.service.getByID(id);
+    const user = await this.service.getByID(id);
+    return plainToClass(UserResponseDto, user, { enableCircularCheck: true });
+    // return plainToClass(UserResponseDto, user, { enableCircularCheck: true, excludeExtraneousValues: true });
   }
 
   @ApiOperation({summary: 'Получение пользователя полю'})
@@ -53,12 +57,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('user/')
   async getUserBy(@Body() userRequestParams: UserGetParamsData): Promise<UserResponseDto> {
-    return await this.service.getBy(userRequestParams);
+    const user = await this.service.getBy(userRequestParams);
+    return plainToClass(UserResponseDto, user, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Обновление пользователя'})
   @ApiResponse({status: 200, type: UserResponseDto})
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @UseInterceptors(FileInterceptor('avatar'))
   @Patch('user/:id')
@@ -67,7 +72,8 @@ export class UserController {
     @Param() id: number,
     @UploadedFile() avatar
   ): Promise<UserResponseDto> {
-    return await this.service.updateUser(id, requestDto, avatar);
+    const user = await this.service.updateUser(id, requestDto, avatar);
+    return plainToClass(UserResponseDto, user, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Создание пользователя'})
@@ -78,7 +84,8 @@ export class UserController {
   @Post('user')
   // @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() requestDto: UserRequestDto): Promise<UserResponseDto> {
-    return await this.service.createUser(requestDto);
+    const user = await this.service.createUser(requestDto);
+    return plainToClass(UserResponseDto, user, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Удаление пользователя'})

@@ -13,10 +13,13 @@ export class Category extends BaseEntity {
 	@Column({ length: 500 })
 	description: string;
 
-	// @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
-	// @OneToOne(() => User, operation => operation.id)
-	// @JoinTable()
-	// parent: Category[];
+  @ApiProperty({example: 'file', description: 'Иконка задачи'})
+  @Column('text')
+  icon: string = '';
+
+  @ApiProperty({example: 'file', description: 'Иконка задачи'})
+  @Column('text')
+  color: string = '';
 
 	@ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
 	@ManyToOne(() => Category, category => category.id)

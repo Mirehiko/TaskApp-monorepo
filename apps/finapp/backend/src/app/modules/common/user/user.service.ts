@@ -34,7 +34,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
       const newUser = await this.repository.create({...requestDto});
       let role;
       if (!requestDto.roles || !requestDto.roles.length) {
-        role = await this.roleService.getByID(8);
+        role = await this.roleService.getByID(1); // TODO: roles
         newUser.roles = [role];
       }
 
@@ -68,6 +68,15 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     catch (e) {
       throw new Error(e);
     }
+  }
+
+  async updateUserPass(@Param() id: number, password: string): Promise<void> {
+    let user = await this.repository.findOne(id);
+    if (!user) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+    user.password = password ? password : user.password;
+    await this.repository.save(user);
   }
 
   async assignRolesToUser(userRolesDto: UserRolesDto): Promise<any> {
@@ -104,8 +113,8 @@ export class UserService extends BaseService<User, UserGetParamsData> {
 
   async suspend(banUserDto: BanUserDto): Promise<any> {
     const users = await this.repository.createQueryBuilder('user')
-        .where('operation.id IN (:userIds)', {userIds: banUserDto.userIds})
-        .getMany();
+      .where('operation.id IN (:userIds)', {userIds: banUserDto.userIds})
+      .getMany();
 
     if (users.length) {
       users.forEach(user => {
@@ -121,8 +130,8 @@ export class UserService extends BaseService<User, UserGetParamsData> {
 
   async unsuspend(banUserDto: BanUserDto): Promise<any> {
     const users = await this.repository.createQueryBuilder('user')
-        .where('operation.id IN (:userIds)', {userIds: banUserDto.userIds})
-        .getMany();
+      .where('operation.id IN (:userIds)', {userIds: banUserDto.userIds})
+      .getMany();
 
     if (users.length) {
       users.forEach(user => {

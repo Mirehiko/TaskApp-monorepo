@@ -5,16 +5,16 @@ export class CategoryRequestDto {
   id?: number;
 
   @IsNotEmpty()
-  firstName: string;
+  name: string;
 
   @IsNotEmpty()
-  lastName: string;
+  description: string;
 
   @IsEmail()
   @IsNotEmpty()
-  email: string;
+  icon?: string;
 
   @IsOptional()
   @IsNotEmpty()
-  password?: string;
+  color?: string;
 }

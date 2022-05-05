@@ -1,11 +1,13 @@
-import { Injectable, Param } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { BaseService } from '../../base-service';
 import { TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
-import { TaskRequestDto } from '@finapp/app-common';
+import { OperationType, TaskRequestDto } from '@finapp/app-common';
 import { TaskRepository } from './task-repository';
 import { TagRepository } from '../tags/tag-repository';
 import { ListRepository } from '../lists/list-repository';
+import { UserRepository } from '../../common/user/user-repository';
+import { In } from 'typeorm';
 
 
 @Injectable()
@@ -16,20 +18,40 @@ export class TaskService extends BaseService<Task, TaskGetParamsData> {
 
 	constructor(
     protected repository: TaskRepository,
-    protected folderRepository: ListRepository,
+    protected listRepository: ListRepository,
     protected tagRepository: TagRepository,
+    protected userRepository: UserRepository,
 	) {
 		super();
 	}
 
 	public async create(@Param() requestDto: TaskRequestDto): Promise<Task> {
-		// try {
-		// 	const newTask = await this.repository.create({...requestDto});
-		// 	return await this.repository.save(newTask); // 200
-		// } catch (e) {
-		// 	throw new Error(e);
-		// }
-    return new Task();
+    const newTask = new Task();
+    newTask.dateDue = requestDto.dateDue;
+    newTask.description = requestDto.description;
+    newTask.icon = requestDto.icon;
+    newTask.name = requestDto.name;
+    newTask.status = requestDto.status;
+
+	  if (requestDto.assignee) {
+      newTask.assignee = await this.userRepository.find({id: In(requestDto.assignee)});
+    }
+    if (requestDto.reviewer) {
+      newTask.reviewer = await this.userRepository.findOneOrFail({id: requestDto.reviewer});
+    }
+    if (requestDto.tags) {
+      newTask.tags = await this.tagRepository.find({id: In(requestDto.tags)});
+    }
+    if (requestDto.lists) {
+      newTask.lists = await this.listRepository.find({id: In(requestDto.lists)});
+    }
+
+    // TODO: Set current users as author
+    // newTask.createdBy = requestDto.status;
+    // newTask.updatedBy = requestDto.status;
+
+    const createdTask = await this.repository.create(newTask);
+    return await this.repository.save(createdTask); // 200
 	}
 	//
 	// async updateUser(@Param() id: number, userRequestDto: CategoryRequestDto, avatar?: any): Promise<User> {
@@ -58,35 +80,22 @@ export class TaskService extends BaseService<Task, TaskGetParamsData> {
 	// 	}
 	// }
 	//
-	// async assignRolesToUser(userRolesDto: UserRolesDto): Promise<any> {
-	// 	const operation = await this.usersRepository.findOne({ where: { id: userRolesDto.userId}, relations: ['roles']});
-	//
-	// 	if (userRolesDto.roles.length && operation) {
-	// 		if (userRolesDto.replaceRoles) {
-	// 			operation.roles = userRolesDto.roles;
-	// 		}
-	// 		else {
-	// 			const uRoles = operation.roles.map(ur => ur.id);
-	// 			operation.roles = userRolesDto.roles.filter(r => !uRoles.includes(r.id)).concat(operation.roles);
-	// 		}
-	// 		await this.usersRepository.save(operation);
-	// 		return await this.getUserBy({id: operation.id});
-	// 	}
-	// 	throw new HttpException('Пользователь или роль не найдены', HttpStatus.NOT_FOUND);
-	// }
-	//
-	// async removeUserRoles(userRolesDto: UserRolesDto): Promise<any> {
-	// 	const operation = await this.usersRepository.findOne({ where: { id: userRolesDto.userId}, relations: ['roles']});
-	//
-	// 	if (userRolesDto.roles.length && operation) {
-	// 		const roles = userRolesDto.roles.map(r => r.id);
-	// 		operation.roles = operation.roles.filter(ur => !roles.includes(ur.id));
-	// 		await this.usersRepository.save(operation);
-	// 		return await this.getUserBy({id: operation.id});
-	// 	}
-	// 	throw new HttpException('Пользователь или роль не найдены', HttpStatus.NOT_FOUND);
-	// }
-	//
+
+  async delete(@Param() id: number): Promise<any> {
+    const entity = await this.repository.findOne({where: {id}});
+    if (!entity) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+    try {
+      const childrens = await this.repository.find({parent_id: id});
+      childrens.forEach(child => this.delete(child.id));
+      await this.repository.remove(entity);
+      return {status: HttpStatus.OK, statusText: 'Deleted successfully'};
+    }
+    catch (e) {
+      throw new Error(e);
+    }
+  }
 
 }
 
