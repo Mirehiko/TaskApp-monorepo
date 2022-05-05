@@ -11,12 +11,12 @@ export class TaskRequestDto implements RequestObjectWithId {
 
 	@ApiProperty({example: 'Do homework', description: 'Task name'})
   @IsString()
-	name: string = '';
+	name: string;
 
 	@ApiProperty({example: 'Description here', description: 'Описание задачи'})
   @IsString()
   @IsOptional()
-	description?: string;
+	description?: string = '';
 
 	@ApiProperty({example: 'file', description: 'Иконка задачи'})
   @IsString()
@@ -37,7 +37,7 @@ export class TaskRequestDto implements RequestObjectWithId {
 
 	@ApiProperty({description: 'Id родительской ноды'})
   @IsNumber()
-  parent_id: number;
+  parent_id?: number = -1;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Дата завершения'})
 	dateDue?: Date = null;

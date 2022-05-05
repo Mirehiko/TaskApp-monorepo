@@ -27,7 +27,7 @@ export class User extends BaseEntity {
   avatar: string = '';
 
   @ApiProperty({ example: '', description: 'Роли'})
-  @ManyToMany(() => Role, x => x.id)
+  @ManyToMany(() => Role, role => role.id)
   @JoinTable()
   roles: Role[];
 

@@ -1,13 +1,13 @@
 import {IsString, IsDateString, IsNumber} from 'class-validator';
-import {UserToken} from "../schemas/user-token.entity";
+
 
 export class CreateUserTokenDto {
-    @IsString()
-    token: string;
+  @IsString()
+  token: string;
 
-    @IsNumber()
-    userId: number;
+  @IsNumber()
+  userId: number;
 
-    @IsDateString()
-    expireAt: string;
+  @IsDateString()
+  expireAt: string;
 }

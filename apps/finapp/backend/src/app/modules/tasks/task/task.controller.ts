@@ -1,22 +1,32 @@
-import { Controller } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, UseInterceptors } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TaskService } from './task.service';
+import { UserRepository } from '../../common/user/user-repository';
+import { plainToClass } from 'class-transformer';
+import { RoleResponseDto, TaskRequestDto, TaskResponseDto, UserResponseDto } from '@finapp/app-common';
+import { TransformInterceptor } from '../../../interceptors/transform.interceptor';
+import { Role } from '../../common/role/schemas/role.entity';
+import { Roles } from '../../common/auth/roles-auth.decorator';
 
 
 @ApiTags('Задачи')
-@Controller('/api/main/')
+@Controller('main')
+@UseInterceptors(new TransformInterceptor())
 export class TaskController {
-	constructor(private readonly service: TaskService) {
+	constructor(
+	  private readonly service: TaskService,
+  ) {
 	}
 	//
-	// @ApiOperation({summary: 'Получение списка пользователей'})
-	// @ApiResponse({status: 200, type: [User]})
+	@ApiOperation({summary: 'Получение списка задач'})
+	@ApiResponse({status: 200, type: [TaskResponseDto]})
 	// @Roles("ADMIN")
 	// @UseGuards(JwtAuthGuard, RolesGuard)
-	// @Get('users')
-	// getUsers(): Promise<CategoryResponseDto[]> {
-	// 	return this.userService.getAll();
-	// }
+	@Get('tasks')
+	async getTasks(): Promise<TaskResponseDto[]> {
+    const tasks = await this.service.getAll();
+    return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
+	}
 	//
 	// @ApiOperation({summary: 'Получение пользователя'})
 	// @ApiResponse({status: 200, type: User})
@@ -47,53 +57,25 @@ export class TaskController {
 	// 	return this.userService.updateUser(id, userRequestDto, avatar);
 	// }
 	//
-	// @ApiOperation({summary: 'Создание пользователя'})
-	// @ApiResponse({status: 201, type: User})
-	// // @UsePipes(ValidationPipe)
-	// @UseGuards(JwtAuthGuard)
-	// @Post('operation')
-	// // @HttpCode(HttpStatus.CREATED)
-	// createUser(@Body() userRequestDto: CategoryRequestDto): Promise<any> {
-	// 	return this.userService.createUser(userRequestDto);
-	// }
-	//
-	// @ApiOperation({summary: 'Удаление пользователя'})
-	// @ApiResponse({status: 200, type: User})
-	// @UseGuards(JwtAuthGuard)
-	// @Delete('operation/:id')
-	// deleteUser(@Param('id') id: number): Promise<any> {
-	// 	return this.userService.deleteUser(id);
-	// }
-	//
-	// @ApiOperation({summary: 'Назначение прав пользователю'})
-	// @ApiResponse({status: 201, type: User})
-	// @UseGuards(JwtAuthGuard)
-	// @Post('operation/assignRoles')
-	// assignRolesToUser(@Body() userRolesDto: UserRolesDto): Promise<any> {
-	// 	return this.userService.assignRolesToUser(userRolesDto);
-	// }
-	//
-	// @ApiOperation({summary: 'Удаление прав пользователя'})
-	// @ApiResponse({status: 201, type: User})
-	// @UseGuards(JwtAuthGuard)
-	// @Post('operation/removeUserRoles')
-	// removeUserRoles(@Body() userRolesDto: UserRolesDto): Promise<any> {
-	// 	return this.userService.removeUserRoles(userRolesDto);
-	// }
-	//
-	// @ApiOperation({summary: 'Блокировка пользователя'})
-	// @ApiResponse({status: 201, type: User})
-	// @UseGuards(JwtAuthGuard)
-	// @Post('operation/suspend')
-	// suspend(@Body() banUserDto: BanUserDto): Promise<any> {
-	// 	return this.userService.suspend(banUserDto);
-	// }
-	//
-	// @ApiOperation({summary: 'Разблокировка пользователя'})
-	// @ApiResponse({status: 201, type: User})
-	// @UseGuards(JwtAuthGuard)
-	// @Post('operation/unsuspend')
-	// unsuspend(@Body() banUserDto: BanUserDto): Promise<any> {
-	// 	return this.userService.unsuspend(banUserDto);
-	// }
+  @ApiOperation({summary: 'Получение задачи'})
+  @ApiResponse({status: 200, type: Role})
+  // @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get('task/:id')
+  async getTaskById(@Param('id') id: number): Promise<TaskResponseDto> {
+    const task = await this.service.getByID(id);
+    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
+  }
+
+	@ApiOperation({summary: 'Создание задачи'})
+	@Post('task')
+	async createTask(@Body() taskRequestDto: TaskRequestDto): Promise<TaskResponseDto> {
+    const task = await this.service.create(taskRequestDto);
+    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
+	}
+
+  @ApiOperation({summary: 'Удаление задачи'})
+  @Delete('task/:id')
+  async deleteTask(@Param('id') id: number): Promise<any> {
+    return await this.service.delete(id);
+  }
 }

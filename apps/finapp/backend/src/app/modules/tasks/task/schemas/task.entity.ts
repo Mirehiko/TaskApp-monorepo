@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
 import { TaskStates } from '@finapp/app-common';
@@ -48,12 +48,15 @@ export class Task extends BaseEntity {
 
 	@ApiProperty({ example: 'draft', description: 'Статус задачи'})
 	@Column({type: "enum", enum: Object.values(TaskStates), default: TaskStates.DRAFT})
-	status: string;
+	status: TaskStates;
 
   @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
-  @ManyToOne(() => Task, task => task.id, { onDelete: 'CASCADE' })
+  @OneToMany(() => Task, service => service.parent, { onDelete: 'CASCADE' })
   @JoinTable()
   children: Task[];
+
+  @ManyToOne(() => Task, service => service.children)
+  parent: Task;
 
   @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
   @ManyToMany(() => Tag)
@@ -67,7 +70,7 @@ export class Task extends BaseEntity {
 
   @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
   @Column({ nullable: false })
-  parent_id: number;
+  parent_id: number = -1;
 
 	// config?: TaskConfig;
 }

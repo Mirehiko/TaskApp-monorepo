@@ -8,6 +8,7 @@ import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "../user/schemas/user.entity";
 import { AuthUserDto, ChangePasswordDto, ForgotPasswordDto, UserRequestDto } from '@finapp/app-common';
 
+
 // TODO: Use class-transformer
 @ApiTags('Авторизация')
 @Controller('auth')

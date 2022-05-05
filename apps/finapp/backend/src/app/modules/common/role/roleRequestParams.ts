@@ -1,4 +1,4 @@
 export interface RoleRequestParams {
-    id: number;
-    withPermissions?: boolean;
+  id: number;
+  withPermissions?: boolean;
 }

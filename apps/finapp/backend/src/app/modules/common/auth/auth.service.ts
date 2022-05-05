@@ -160,14 +160,14 @@ export class AuthService {
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
     const user = await this.userService.getBy({
-        params: {email: forgotPasswordDto.email}
+      params: {email: forgotPasswordDto.email}
     });
     if (!user) {
-        throw new BadRequestException('Invalid email');
+      throw new BadRequestException('Invalid email');
     }
     const token = await this.signUser(user);
     if (user.status === UserStatusEnum.PENDING) {
-        await this.confirm(token);
+      await this.confirm(token);
     }
     const forgotLink = `${this.clientAppUrl}/auth/change-password?token=${token}`;
     console.log(forgotLink);

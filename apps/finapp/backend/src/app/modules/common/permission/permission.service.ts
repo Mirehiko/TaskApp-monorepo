@@ -8,42 +8,45 @@ import { PermissionRequestDto } from '@finapp/app-common';
 
 @Injectable()
 export class PermissionService extends BaseService<Permission, GetParamsData> {
-    protected entityNotFoundMessage: string = 'Нет такого пермишена';
-    protected relations: string[];
+  protected entityNotFoundMessage: string = 'Нет такого пермишена';
+  protected relations: string[];
 
-    constructor(
-        @InjectRepository(Permission)
-        protected repository: Repository<Permission>,
-    ) {
-        super();
+  constructor(
+    @InjectRepository(Permission)
+    protected repository: Repository<Permission>,
+  ) {
+    super();
+  }
+
+  async createPermission(permission: PermissionRequestDto): Promise<Permission> {
+    const candidate = await this.repository.findOne({ name: permission.name });
+    if (candidate) {
+      throw new HttpException('Такой пермишен уже существует. Введите другое имя пермишена', HttpStatus.CONFLICT);
     }
 
-    async createPermission(permission: PermissionRequestDto): Promise<Permission> {
-        const candidate = await this.repository.findOne({ name: permission.name });
-        if (candidate) {
-            throw new HttpException('Такой пермишен уже существует. Введите другое имя пермишена', HttpStatus.CONFLICT);
-        }
-
-        try {
-            const newPermission = await this.repository.create({...permission});
-            await this.repository.save(newPermission);
-            return newPermission; // 201
-        } catch (e) {
-            throw new Error(e);
-        }
+    try {
+      const newPermission = await this.repository.create({...permission});
+      await this.repository.save(newPermission);
+      return newPermission; // 201
+    } catch (e) {
+      throw new Error(e);
     }
+  }
 
-    async updatePermission(@Param() id: string, permissionRequestDto: PermissionRequestDto): Promise<Permission> {
-        const permission = await this.repository.findOne({where: {id}});
-        permission.name = permissionRequestDto.name;
-        permission.displayName = permissionRequestDto.displayName;
-        permission.description = permissionRequestDto.description;
-
-        try {
-            return await this.repository.save(permission);
-        }
-        catch (e) {
-            throw new Error(e);
-        }
+  async updatePermission(@Param() id: string, permissionRequestDto: PermissionRequestDto): Promise<Permission> {
+    const permission = await this.repository.findOne({where: {id}});
+    if (!permission) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
+    permission.name = permissionRequestDto.name;
+    permission.displayName = permissionRequestDto.displayName;
+    permission.description = permissionRequestDto.description;
+
+    try {
+      return await this.repository.save(permission);
+    }
+    catch (e) {
+      throw new Error(e);
+    }
+  }
 }

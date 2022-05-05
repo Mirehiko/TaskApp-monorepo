@@ -28,21 +28,21 @@ import { ListModule } from './modules/tasks/lists/list.module';
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
-          type: 'mysql',
-          host: process.env.DB_HOST,
-          port: parseInt(process.env.DB_PORT) || 3306,
-          username: process.env.DB_USER,
-          password: process.env.DB_PASSWORD,
-          database: process.env.DB_NAME,
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: true,
-          // migrationsRun: true,
-          autoLoadEntities: true,
-          charset: 'UTF8',
-          // migrations: [
-          //   "src/migration/**/*.ts"
-          // ],
-        })
+        type: 'mysql',
+        host: process.env.DB_HOST,
+        port: parseInt(process.env.DB_PORT) || 3306,
+        username: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        synchronize: true,
+        // migrationsRun: true,
+        autoLoadEntities: true,
+        charset: 'UTF8',
+        // migrations: [
+        //   "src/migration/**/*.ts"
+        // ],
+      })
       // subscribers: [
       //   "src/subscriber/**/*.ts"
       // ],

@@ -8,6 +8,7 @@ import { TaskRepository } from './task-repository';
 import { UserRepository } from '../../common/user/user-repository';
 import { TagRepository } from '../tags/tag-repository';
 import { ListRepository } from '../lists/list-repository';
+import { AuthModule } from '../../common/auth/auth.module';
 
 
 @Module({
@@ -15,6 +16,7 @@ import { ListRepository } from '../lists/list-repository';
 		// DatabaseModule,
 		TypeOrmModule.forFeature(([TaskRepository, UserRepository, TagRepository, ListRepository])),
 		// forwardRef(() => AuthModule)
+    AuthModule,
 	],
 	providers: [TaskService],
 	controllers: [TaskController],

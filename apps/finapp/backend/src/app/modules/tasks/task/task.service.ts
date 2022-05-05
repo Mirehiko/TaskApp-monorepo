@@ -14,7 +14,7 @@ import { In } from 'typeorm';
 export class TaskService extends BaseService<Task, TaskGetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такой задачи';
 	protected entityOrRelationNotFoundMessage: string = '';
-	protected relations: string[] = ['createdBy', 'createdBy.users'];
+	protected relations: string[] = ['parent', 'children'];
 
 	constructor(
     protected repository: TaskRepository,
@@ -32,6 +32,7 @@ export class TaskService extends BaseService<Task, TaskGetParamsData> {
     newTask.icon = requestDto.icon;
     newTask.name = requestDto.name;
     newTask.status = requestDto.status;
+    newTask.parent_id = requestDto.parent_id || newTask.parent_id;
 
 	  if (requestDto.assignee) {
       newTask.assignee = await this.userRepository.find({id: In(requestDto.assignee)});
@@ -51,6 +52,16 @@ export class TaskService extends BaseService<Task, TaskGetParamsData> {
     // newTask.updatedBy = requestDto.status;
 
     const createdTask = await this.repository.create(newTask);
+    if (createdTask.parent_id !== -1) {
+      const parentTask = await this.repository.findOne({where: {id: createdTask.parent_id}, relations: ['children']});
+      if (parentTask) {
+        createdTask.parent = parentTask;
+        // // throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+        // parentTask.children = parentTask.children ? parentTask.children : [];
+        // parentTask.children = [...parentTask.children, createdTask];
+        // await this.repository.save(parentTask);
+      }
+    }
     return await this.repository.save(createdTask); // 200
 	}
 	//
