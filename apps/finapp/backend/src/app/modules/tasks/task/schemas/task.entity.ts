@@ -35,12 +35,12 @@ export class Task extends BaseEntity {
 	icon: string = '';
 
 	@ApiProperty({ example: '2022.01.21', description: 'Список пользователей работающих над задачей'})
-	@ManyToMany(() => User, user => user.id)
+	@ManyToOne(() => User, user => user.id)
 	@JoinTable()
-	assignee: User[];
+	assignee: User;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Список пользователей проверяющих задачю'})
-	@ManyToMany(() => User, user => user.id)
+	@ManyToOne(() => User, user => user.id)
 	@JoinTable()
 	reviewer: User;
 

@@ -16,7 +16,7 @@ import { User } from '../../common/user/schemas/user.entity';
 export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такой задачи';
 	protected entityOrRelationNotFoundMessage: string = '';
-  protected relations: string[] = ['parent', 'children', 'createdBy', 'updatedBy'];
+  protected relations: string[] = ['parent', 'children', 'createdBy', 'updatedBy', 'assignee', 'reviewer'];
 
 	constructor(
     protected listRepository: ListRepository,
@@ -41,7 +41,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     newTask.parent_id = requestDto.parent_id || newTask.parent_id;
 
     if (requestDto.assignee) {
-      newTask.assignee = await this.userRepository.find({id: In(requestDto.assignee)});
+      newTask.assignee = await this.userRepository.findOneOrFail({id: requestDto.assignee});
     }
     if (requestDto.reviewer) {
       newTask.reviewer = await this.userRepository.findOneOrFail({id: requestDto.reviewer});
@@ -131,7 +131,26 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param id
    * @param tagIds
    */
-  async setReviewer(id: number, assignTo: number | null): Promise<void> {
+  async setReviewer(id: number, reviewerId: number | null, editor: User): Promise<Task> {
+    const task = await this.repository.findOne(id);
+    if (!task) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+
+    const candidate = await this.userRepository.findOne(reviewerId);
+    if (!candidate) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+
+    task.reviewer = candidate.id !== editor.id ? candidate : null;
+    task.updatedBy = editor;
+
+    try {
+      return await this.repository.save(task);
+    }
+    catch (e) {
+      throw new Error(e);
+    }
   }
 
   /**
@@ -139,7 +158,25 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param id
    * @param tagIds
    */
-  async assignTaskTo(id: number, assignTo: number | null): Promise<void> {
+  async assignTaskTo(id: number, assignTo: number | null, editor: User): Promise<Task> {
+    const task = await this.repository.findOne(id);
+    if (!task) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+    const candidate = await this.userRepository.findOne(assignTo);
+    if (!candidate) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+
+    task.assignee = candidate.id !== editor.id ? candidate : null;
+    task.updatedBy = editor;
+
+    try {
+      return await this.repository.save(task);
+    }
+    catch (e) {
+      throw new Error(e);
+    }
   }
 
   /**
@@ -171,7 +208,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param id
    */
   public async getTreeByID(id: number): Promise<Task> {
-    const entity = await this.repository.findOne({where: {id}});
+    const entity = await this.repository.findOne({where: {id}, relations: ['assignee', 'reviewer', 'createdBy']});
     if (entity) {
       await this.repository.findDescendantsTree(entity, {depth: 2 });
       return entity;

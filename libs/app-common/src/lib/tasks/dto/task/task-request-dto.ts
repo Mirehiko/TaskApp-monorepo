@@ -25,7 +25,7 @@ export class TaskRequestDto implements RequestObjectWithId {
 
 	@ApiProperty({ example: '2022.01.21', description: 'Список пользователей работающих над задачей'})
   @IsOptional()
-	assignee?: number[];
+	assignee?: number;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Список пользователей проверяющих задачю'})
   @IsOptional()

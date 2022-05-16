@@ -63,6 +63,26 @@ export class TaskController {
 	  return await this.getTasks();
   }
 
+  @ApiOperation({summary: 'Назначить исполнителя для задачи'})
+  @Post('task/:id/assign')
+  async assignTaskTo(
+    @Body('assigneeId') assigneeId: number,
+    @Param() id: number,
+    @Req() req): Promise<TaskResponseDto> {
+    const task = await this.service.assignTaskTo(id, assigneeId, req.user);
+    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
+  }
+
+  @ApiOperation({summary: 'Назначить проверяющего для задачи'})
+  @Post('task/:id/reviewer')
+  async setReviewer(
+    @Body('reviewerId') reviewerId: number,
+    @Param() id: number,
+    @Req() req): Promise<TaskResponseDto> {
+    const task = await this.service.setReviewer(id, reviewerId, req.user);
+    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
+  }
+
   @ApiOperation({summary: 'Обновление задачи'})
   @Patch('task/:id')
   async update(
