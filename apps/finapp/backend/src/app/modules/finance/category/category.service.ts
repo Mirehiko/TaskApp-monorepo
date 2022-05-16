@@ -37,7 +37,25 @@ export class CategoryService extends BaseService<Category, GetParamsData> {
   }
 
 	async update(@Param() id: number, requestDto: CategoryRequestDto): Promise<Category> {
-		return new Category();
+    const category = new Category();
+    if (!category) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+
+    category.description = requestDto.description || requestDto.description;
+    category.name = requestDto.name || category.name;
+    category.icon = requestDto.icon || category.icon;
+    category.color = requestDto.color || category.color;
+
+    return await this.repository.save(category); // 200
 	}
+
+	async moveTasksTo(id: number, ids: number[]): Promise<void> {
+
+  }
+
+  async deleteMultiple(ids: number): Promise<any> {
+
+  }
 
 }

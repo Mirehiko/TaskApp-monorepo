@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Param } from '@nestjs/common';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, getManager, Repository, TreeRepository } from 'typeorm';
 
 
 export class BaseService<T, U extends GetParamsData> {
@@ -62,6 +62,43 @@ export class BaseService<T, U extends GetParamsData> {
     }
     throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
 	}
+}
+
+export class BaseTreeService<T, U extends GetParamsData> {
+  protected repository: TreeRepository<T>;
+  protected relations: string[];
+  protected entityNotFoundMessage: string;
+
+  public async getAllTrees(): Promise<T[]> {
+    return await this.repository.findTrees();
+  }
+
+  public async getTreesBy(): Promise<T[]> {
+    return [];
+  }
+
+  public async getTreeByID(id: number): Promise<T> {
+    const entity = await this.repository.findOne({where: {id}});
+    if (entity) {
+      await this.repository.findDescendantsTree(entity, {depth: 2 });
+      return entity;
+    }
+    throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+  }
+
+  public async delete(id: number): Promise<any> {
+    const entity = await this.repository.findOne({where: {id}});
+    if (entity) {
+      try {
+        await this.repository.remove(entity);
+        return {status: HttpStatus.OK, statusText: 'Deleted successfully'};
+      }
+      catch (e) {
+        throw new Error(e);
+      }
+    }
+    throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+  }
 }
 
 export interface GetParamsData {

@@ -1,35 +1,46 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
 
 
 export class TaskResponseDto {
 	@ApiProperty({example: '1', description: 'Уникальный идентификатор'})
+  @Expose()
 	id: number;
 
 	@ApiProperty({example: 'Do homework', description: 'Task name'})
-	name: string = '';
+  @Expose()
+	name: string;
 
 	@ApiProperty({example: 'Description here', description: 'Описание задачи'})
+  @Expose()
 	description?: string;
 
 	@ApiProperty({example: 'file', description: 'Иконка задачи'})
-	icon?: string = '';
+  @Expose()
+	icon?: string;
 
 	// @ApiProperty({ example: '2022.01.21', description: 'Список пользователей работающих над задачей'})
+  // @Expose()
 	// assignee?: User[];
 
 	// @ApiProperty({ example: '2022.01.21', description: 'Список пользователей проверяющих задачю'})
-	// reviewer?: User[];
+  // @Expose()
+  // reviewer?: User[];
 
 	// @ApiProperty({ example: '2022.01.21', description: 'Создатель задачи'})
+  // @Expose()
 	// createdBy: User;
 
 	// @ApiProperty({ example: '2022.01.21', description: 'Человек, который последним обновил задачу'})
-	// updatedBy: User;
+  // @Expose()
+  // updatedBy: User;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Дата завершения'})
-	dateDue?: Date = null;
+  @Expose()
+	dateDue?: Date;
 
 	@ApiProperty({ example: 'draft', description: 'Статус задачи'})
+  @Expose()
 	status: string;
 
 	// config

@@ -1,40 +1,41 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { BaseService } from '../../base-service';
+import { BaseTreeService } from '../../base-service';
 import { TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
-import { OperationType, TaskRequestDto } from '@finapp/app-common';
-import { TaskRepository } from './task-repository';
+import { TaskRequestDto, TaskStates } from '@finapp/app-common';
+import { TaskTreeRepository } from './task-repository';
 import { TagRepository } from '../tags/tag-repository';
 import { ListRepository } from '../lists/list-repository';
 import { UserRepository } from '../../common/user/user-repository';
 import { In } from 'typeorm';
+import { Tag } from '../tags/schemas/tag.entity';
 
 
 @Injectable()
-export class TaskService extends BaseService<Task, TaskGetParamsData> {
+export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такой задачи';
 	protected entityOrRelationNotFoundMessage: string = '';
-	protected relations: string[] = ['parent', 'children'];
+  protected relations: string[] = ['parent', 'children'];
 
 	constructor(
-    protected repository: TaskRepository,
     protected listRepository: ListRepository,
     protected tagRepository: TagRepository,
     protected userRepository: UserRepository,
+    protected repository: TaskTreeRepository
 	) {
 		super();
 	}
 
-	public async create(@Param() requestDto: TaskRequestDto): Promise<Task> {
+  public async createTree(@Param() requestDto: TaskRequestDto): Promise<Task> {
     const newTask = new Task();
     newTask.dateDue = requestDto.dateDue;
     newTask.description = requestDto.description;
     newTask.icon = requestDto.icon;
     newTask.name = requestDto.name;
-    newTask.status = requestDto.status;
+    newTask.status = requestDto.status || TaskStates.DRAFT;
     newTask.parent_id = requestDto.parent_id || newTask.parent_id;
 
-	  if (requestDto.assignee) {
+    if (requestDto.assignee) {
       newTask.assignee = await this.userRepository.find({id: In(requestDto.assignee)});
     }
     if (requestDto.reviewer) {
@@ -48,58 +49,89 @@ export class TaskService extends BaseService<Task, TaskGetParamsData> {
     }
 
     // TODO: Set current users as author
-    // newTask.createdBy = requestDto.status;
-    // newTask.updatedBy = requestDto.status;
-
-    const createdTask = await this.repository.create(newTask);
-    if (createdTask.parent_id !== -1) {
-      const parentTask = await this.repository.findOne({where: {id: createdTask.parent_id}, relations: ['children']});
-      if (parentTask) {
-        createdTask.parent = parentTask;
-        // // throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
-        // parentTask.children = parentTask.children ? parentTask.children : [];
-        // parentTask.children = [...parentTask.children, createdTask];
-        // await this.repository.save(parentTask);
-      }
+    if (requestDto.parent_id !== -1) {
+      newTask.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
+      return await this.repository.save(newTask);
     }
+    const createdTask = await this.repository.create(newTask);
     return await this.repository.save(createdTask); // 200
-	}
-	//
-	// async updateUser(@Param() id: number, userRequestDto: CategoryRequestDto, avatar?: any): Promise<User> {
-	// 	let operation = await this.usersRepository.findOne(id);
-	// 	if (!operation) {
-	// 		throw new HttpException('Нет такого пользователя', HttpStatus.NOT_FOUND);
-	// 	}
-	// 	operation.email = userRequestDto.email ? userRequestDto.email : operation.email;
-	// 	operation.password = userRequestDto.password ? userRequestDto.password : operation.password;
-	// 	// operation.avatar = userRequestDto.avatar ? userRequestDto.avatar : operation.avatar;
-	// 	operation.name = userRequestDto.name ? userRequestDto.name : operation.name;
-	//
-	// 	if(avatar) {
-	// 		operation.avatar = await this.fileService.createFile(avatar);
-	// 	}
-	//
-	// 	try {
-	// 		await this.usersRepository.save(operation);
-	// 		if (userRequestDto.roles) {
-	// 			operation = await this.assignRolesToUser({userId: operation.id, roles: userRequestDto.roles} );
-	// 		}
-	// 		return operation;
-	// 	}
-	// 	catch (e) {
-	// 		throw new Error(e);
-	// 	}
-	// }
-	//
+  }
+
+  async update(@Param() id: number, requestDto: TaskRequestDto): Promise<Task> {
+    const task = await this.repository.findOne(id);
+    if (!task) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+
+    task.description = requestDto.description || requestDto.description;
+    task.name = requestDto.name || task.name;
+    task.icon = requestDto.icon || task.icon;
+    task.dateDue = requestDto.dateDue || task.dateDue;
+    task.status = requestDto.status || task.status || TaskStates.DRAFT;
+
+    try {
+      return await this.repository.save(task);
+    }
+    catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  async addTags(): Promise<Tag[]> {
+	  return [];
+  }
+
+  async removeTags(): Promise<any> {
+    return;
+  }
+
+  async addLists(): Promise<Tag[]> {
+    return [];
+  }
+
+  async removeLists(): Promise<any> {
+    return;
+  }
+
+  async setReviewer(): Promise<void> {
+  }
+
+  async unsetReviewer(): Promise<void> {
+  }
+
+  async assignTaskTo(): Promise<any> {
+    return;
+  }
+
+  async unAssignTask(): Promise<any> {
+    return;
+  }
+
+  async moveTasksTo(id: number, ids: number[]): Promise<void> {
+
+  }
+
+  async deleteMultiple(ids: number): Promise<any> {
+
+  }
+
+  public async getTreeByID(id: number): Promise<Task> {
+    const entity = await this.repository.findOne({where: {id}});
+    if (entity) {
+      await this.repository.findDescendantsTree(entity, {depth: 2 });
+      return entity;
+    }
+    throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+  }
+
 
   async delete(@Param() id: number): Promise<any> {
     const entity = await this.repository.findOne({where: {id}});
     if (!entity) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
+
     try {
-      const childrens = await this.repository.find({parent_id: id});
-      childrens.forEach(child => this.delete(child.id));
       await this.repository.remove(entity);
       return {status: HttpStatus.OK, statusText: 'Deleted successfully'};
     }
@@ -107,7 +139,6 @@ export class TaskService extends BaseService<Task, TaskGetParamsData> {
       throw new Error(e);
     }
   }
-
 }
 
 

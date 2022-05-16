@@ -1,4 +1,4 @@
-import {Entity, Column, ManyToOne, JoinTable} from 'typeorm';
+import { Entity, Column, ManyToOne, JoinTable, OneToMany } from 'typeorm';
 import {ApiProperty} from "@nestjs/swagger";
 import {BaseEntity} from '../../../base-entity';
 
@@ -21,10 +21,14 @@ export class Category extends BaseEntity {
   @Column('text')
   color: string = '';
 
-	@ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
-	@ManyToOne(() => Category, category => category.id)
-	@JoinTable()
-	children: Category[];
+  @ApiProperty({ example: 'Category[]', description: 'Дочерние категории'})
+  @OneToMany(() => Category, category => category.parent, { onDelete: 'CASCADE' })
+  @JoinTable()
+  children: Category[];
+
+  @ApiProperty({ example: 'Category', description: 'Родительская категория'})
+  @ManyToOne(() => Category, category => category.children)
+  parent: Category;
 
   @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
   @Column({ nullable: false })

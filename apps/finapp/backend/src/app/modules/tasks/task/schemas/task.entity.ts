@@ -1,5 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  Tree,
+  TreeChildren,
+  TreeParent
+} from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
 import { TaskStates } from '@finapp/app-common';
@@ -8,6 +19,7 @@ import { List } from '../../lists/schemas/list.entity';
 
 
 @Entity()
+@Tree("materialized-path")
 export class Task extends BaseEntity {
 
 	@ApiProperty({example: 'Do homework', description: 'Task name'})
@@ -50,25 +62,28 @@ export class Task extends BaseEntity {
 	@Column({type: "enum", enum: Object.values(TaskStates), default: TaskStates.DRAFT})
 	status: TaskStates;
 
-  @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
-  @OneToMany(() => Task, service => service.parent, { onDelete: 'CASCADE' })
-  @JoinTable()
+  @ApiProperty({ example: 'Task[]', description: 'Дочерние задачи'})
+  // @OneToMany(() => Task, task => task.parent, { onDelete: 'CASCADE' })
+  // @JoinTable()
+  @TreeChildren()
   children: Task[];
 
-  @ManyToOne(() => Task, service => service.children)
+  @ApiProperty({ example: 'Task', description: 'Родительская задача'})
+  // @ManyToOne(() => Task, task => task.children)
+  @TreeParent({ onDelete: 'CASCADE' })
   parent: Task;
 
-  @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
+  @ApiProperty({ example: 'Tag[]', description: 'Список тегов'})
   @ManyToMany(() => Tag)
   @JoinTable()
   tags: Tag[];
 
-  @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
+  @ApiProperty({ example: 'List[]', description: 'Задача в списках'})
   @ManyToMany(() => List)
   @JoinTable()
   lists: List[];
 
-  @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
+  @ApiProperty({ example: '2', description: 'Id родительской задачи'})
   @Column({ nullable: false })
   parent_id: number = -1;
 

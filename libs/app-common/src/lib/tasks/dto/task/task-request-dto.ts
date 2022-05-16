@@ -24,25 +24,32 @@ export class TaskRequestDto implements RequestObjectWithId {
 	icon?: string = '';
 
 	@ApiProperty({ example: '2022.01.21', description: 'Список пользователей работающих над задачей'})
+  @IsOptional()
 	assignee?: number[];
 
 	@ApiProperty({ example: '2022.01.21', description: 'Список пользователей проверяющих задачю'})
+  @IsOptional()
 	reviewer?: number;
 
   @ApiProperty({ example: '2022.01.21', description: 'Список тегов'})
+  @IsOptional()
   tags?: number[];
 
   @ApiProperty({ example: '2022.01.21', description: 'Список списков'})
+  @IsOptional()
   lists?: number[];
 
 	@ApiProperty({description: 'Id родительской ноды'})
   @IsNumber()
+  @IsOptional()
   parent_id?: number = -1;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Дата завершения'})
+  @IsOptional()
 	dateDue?: Date = null;
 
 	@ApiProperty({ example: 'draft', description: 'Статус задачи'})
   @IsString()
+  @IsOptional()
 	status?: TaskStates;
 }

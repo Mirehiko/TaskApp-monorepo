@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
 
 
@@ -18,12 +18,16 @@ export class Tag extends BaseEntity {
   @Column('text')
   color: string = '';
 
-  @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
-  @ManyToOne(() => Tag, tag => tag.id, { onDelete: 'CASCADE' })
+  @ApiProperty({ example: 'Tag[]', description: 'Дочерние теги'})
+  @OneToMany(() => Tag, tag => tag.parent, { onDelete: 'CASCADE' })
   @JoinTable()
   children: Tag[];
 
-  @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
+  @ApiProperty({ example: 'Tag', description: 'Родительский тег'})
+  @ManyToOne(() => Tag, tag => tag.children)
+  parent: Tag;
+
+  @ApiProperty({ example: '2', description: 'Id родительского тега'})
   @Column({ nullable: false })
   parent_id: number;
 }
