@@ -24,6 +24,10 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     super();
   }
 
+  /**
+   * Creating new user
+   * @param requestDto
+   */
   async createUser(@Param() requestDto: UserRequestDto): Promise<any> {
     const candidate = await this.repository.findOne({ email: requestDto.email });
     if (candidate) {
@@ -44,6 +48,12 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     }
   }
 
+  /**
+   * Update user data
+   * @param id
+   * @param requestDto
+   * @param avatar
+   */
   async updateUser(@Param() id: number, requestDto: UserRequestDto, avatar?: any): Promise<User> {
     let user = await this.repository.findOne(id);
     if (!user) {
@@ -70,6 +80,11 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     }
   }
 
+  /**
+   *
+   * @param id
+   * @param password
+   */
   async updateUserPass(@Param() id: number, password: string): Promise<void> {
     let user = await this.repository.findOne(id);
     if (!user) {
@@ -79,6 +94,10 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     await this.repository.save(user);
   }
 
+  /**
+   *
+   * @param userRolesDto
+   */
   async assignRolesToUser(userRolesDto: UserRolesDto): Promise<any> {
     const user = await this.repository.findOne({ where: { id: userRolesDto.userId}, relations: ['roles']});
     const roles = await this.roleService.getBy({
@@ -99,6 +118,10 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     throw new HttpException(this.entityOrRelationNotFoundMessage, HttpStatus.NOT_FOUND);
   }
 
+  /**
+   *
+   * @param userRolesDto
+   */
   async removeUserRoles(userRolesDto: UserRolesDto): Promise<any> {
     const user = await this.repository.findOne({ where: { id: userRolesDto.userId}, relations: ['roles']});
 
@@ -111,6 +134,10 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     throw new HttpException(this.entityOrRelationNotFoundMessage, HttpStatus.NOT_FOUND);
   }
 
+  /**
+   * Suspend the user
+   * @param banUserDto
+   */
   async suspend(banUserDto: BanUserDto): Promise<any> {
     const users = await this.repository.createQueryBuilder('user')
       .where('operation.id IN (:userIds)', {userIds: banUserDto.userIds})
@@ -128,6 +155,10 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     throw new HttpException('Пользователи не найдены', HttpStatus.NOT_FOUND);
   }
 
+  /**
+   *
+   * @param banUserDto
+   */
   async unsuspend(banUserDto: BanUserDto): Promise<any> {
     const users = await this.repository.createQueryBuilder('user')
       .where('operation.id IN (:userIds)', {userIds: banUserDto.userIds})
@@ -145,6 +176,10 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     throw new HttpException('Пользователи не найдены', HttpStatus.NOT_FOUND);
   }
 
+  /**
+   *
+   * @param password
+   */
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(this.saltRounds);
     return await bcrypt.hash(password, salt);

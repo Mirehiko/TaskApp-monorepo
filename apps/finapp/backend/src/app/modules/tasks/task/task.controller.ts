@@ -1,31 +1,28 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
   Param, Patch,
-  Post,
+  Post, Req, UseGuards,
   UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TaskService } from './task.service';
-import { UserRepository } from '../../common/user/user-repository';
 import { plainToClass } from 'class-transformer';
 import {
-  CategoryRequestDto, CategoryResponseDto, MoveDto,
-  RoleResponseDto,
+  MoveDto,
   TaskRequestDto,
   TaskResponseDto,
-  UserResponseDto
 } from '@finapp/app-common';
 import { TransformInterceptor } from '../../../interceptors/transform.interceptor';
 import { Role } from '../../common/role/schemas/role.entity';
-import { Roles } from '../../common/auth/roles-auth.decorator';
+import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 
 
 @ApiTags('Задачи')
 @Controller('main')
+@UseGuards(JwtAuthGuard)
 @UseInterceptors(new TransformInterceptor())
 export class TaskController {
 	constructor(
@@ -54,15 +51,15 @@ export class TaskController {
 
 	@ApiOperation({summary: 'Создание задачи/подзадачи'})
 	@Post('task')
-	async createTask(@Body() taskRequestDto: TaskRequestDto): Promise<TaskResponseDto> {
-    const task = await this.service.createTree(taskRequestDto);
+	async createTask(@Body() taskRequestDto: TaskRequestDto, @Req() req): Promise<TaskResponseDto> {
+    const task = await this.service.createTree(taskRequestDto, req.user);
     return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
 	}
 
   @ApiOperation({summary: 'Перенос задач'})
   @Post('task/move')
-  async moveTasks(@Body() moveDto: MoveDto): Promise<TaskResponseDto[]> {
-	  await this.service.moveTasksTo(moveDto);
+  async moveTasks(@Body() moveDto: MoveDto, @Req() req): Promise<TaskResponseDto[]> {
+	  await this.service.moveTasksTo(moveDto, req.user);
 	  return await this.getTasks();
   }
 
@@ -71,8 +68,9 @@ export class TaskController {
   async update(
     @Body() requestDto: TaskRequestDto,
     @Param() id: number,
+    @Req() req
   ): Promise<TaskResponseDto> {
-    const task = await this.service.update(id, requestDto);
+    const task = await this.service.update(id, requestDto, req.user);
     return plainToClass(TaskResponseDto, task, { excludeExtraneousValues: true });
   }
 

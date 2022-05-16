@@ -45,12 +45,12 @@ export class Task extends BaseEntity {
 	reviewer: User;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Создатель задачи'})
-	@OneToOne(() => User, user => user.id)
+	@ManyToOne(() => User, user => user.id)
 	@JoinTable()
 	createdBy: User;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Человек, который последним обновил задачу'})
-	@OneToOne(() => User, user => user.id)
+	@ManyToOne(() => User, user => user.id)
 	@JoinTable()
 	updatedBy: User;
 

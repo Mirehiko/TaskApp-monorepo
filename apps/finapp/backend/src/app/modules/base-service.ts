@@ -70,7 +70,7 @@ export class BaseTreeService<T, U extends GetParamsData> {
   protected entityNotFoundMessage: string;
 
   public async getAllTrees(): Promise<T[]> {
-    return await this.repository.findTrees();
+    return await this.repository.findTrees({relations: this.relations});
   }
 
   public async getTreesBy(): Promise<T[]> {
