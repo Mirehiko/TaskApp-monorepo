@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { BaseTreeService } from '../../base-service';
 import { TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
-import { TaskRequestDto, TaskStates } from '@finapp/app-common';
+import { MoveDto, TaskRequestDto, TaskStates } from '@finapp/app-common';
 import { TaskTreeRepository } from './task-repository';
 import { TagRepository } from '../tags/tag-repository';
 import { ListRepository } from '../lists/list-repository';
@@ -107,8 +107,19 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     return;
   }
 
-  async moveTasksTo(id: number, ids: number[]): Promise<void> {
+  async moveTasksTo(moveDto: MoveDto): Promise<void> {
+    const parent = await this.repository.findOne(moveDto.parentId);
+    if (!parent) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
 
+    let children = await this.repository.find({ where: { id: In(moveDto.childIds) } });
+    children = children.map(child => {
+      child.parent = parent;
+      child.parent_id = parent.id;
+      return child;
+    })
+    await this.repository.save(children);
   }
 
   async deleteMultiple(ids: number): Promise<any> {

@@ -35,7 +35,7 @@ import { ListModule } from './modules/tasks/lists/list.module';
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true,
+        // synchronize: true,
         // migrationsRun: true,
         autoLoadEntities: true,
         charset: 'UTF8',

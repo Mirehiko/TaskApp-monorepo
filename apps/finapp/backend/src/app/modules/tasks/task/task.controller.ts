@@ -13,7 +13,7 @@ import { TaskService } from './task.service';
 import { UserRepository } from '../../common/user/user-repository';
 import { plainToClass } from 'class-transformer';
 import {
-  CategoryRequestDto, CategoryResponseDto,
+  CategoryRequestDto, CategoryResponseDto, MoveDto,
   RoleResponseDto,
   TaskRequestDto,
   TaskResponseDto,
@@ -52,14 +52,21 @@ export class TaskController {
     return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
   }
 
-	@ApiOperation({summary: 'Создание задачи'})
+	@ApiOperation({summary: 'Создание задачи/подзадачи'})
 	@Post('task')
 	async createTask(@Body() taskRequestDto: TaskRequestDto): Promise<TaskResponseDto> {
     const task = await this.service.createTree(taskRequestDto);
     return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
 	}
 
-  @ApiOperation({summary: 'Обновление категории'})
+  @ApiOperation({summary: 'Перенос задач'})
+  @Post('task/move')
+  async moveTasks(@Body() moveDto: MoveDto): Promise<TaskResponseDto[]> {
+	  await this.service.moveTasksTo(moveDto);
+	  return await this.getTasks();
+  }
+
+  @ApiOperation({summary: 'Обновление задачи'})
   @Patch('task/:id')
   async update(
     @Body() requestDto: TaskRequestDto,
