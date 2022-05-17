@@ -1,5 +1,9 @@
 import {ApiProperty} from '@nestjs/swagger';
-import { Column, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  CreateDateColumn, DeleteDateColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm';
 
 
 export class BaseEntity {
@@ -8,10 +12,14 @@ export class BaseEntity {
 	id: number;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Дата создания'})
-	@Column("timestamp")
-	createdAt: Date = new Date();
+	@CreateDateColumn({ type: "timestamp"})
+	createdAt: string;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Дата обновления'})
-	@Column("timestamp")
-	updatedAt: Date = new Date();
+	@UpdateDateColumn({ type: "timestamp"})
+	updatedAt: string;
+
+  @ApiProperty({ example: '2022.01.21', description: 'Дата удаления'})
+  @DeleteDateColumn({ type: "timestamp", nullable: true})
+  deletedAt: string = null;
 }

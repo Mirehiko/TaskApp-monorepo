@@ -1,7 +1,8 @@
 import {PermissionResponse} from "./permission";
 import { RoleResponse } from './role';
-import { TaskStates } from '../../../../../../../libs/app-common/src/lib/tasks/enums/task-states';
 import { Themes } from '../enums/common/themes';
+import { TaskStatus } from '@finapp/app-common';
+
 
 export interface UserResponse {
   id: number;
@@ -31,7 +32,7 @@ export interface UserRequest {
 
 // export type ThemeStrings = keyof typeof Themes;
 export class UserConfig {
-  showedStatuses: TaskStates[];
+  showedStatuses: TaskStatus[];
   // showedStatuses: ThemeStrings[];
   theme: Themes;
 

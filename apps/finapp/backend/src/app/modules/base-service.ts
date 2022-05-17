@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Param } from '@nestjs/common';
-import { FindOneOptions, getManager, Repository, TreeRepository } from 'typeorm';
+import { FindOneOptions, getManager, In, Repository, TreeRepository } from 'typeorm';
 
 
 export class BaseService<T, U extends GetParamsData> {
@@ -84,6 +84,27 @@ export class BaseTreeService<T, U extends GetParamsData> {
       return entity;
     }
     throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+  }
+
+  public async copyTree(id: number, nodeIds: number[]): Promise<T[]> {
+    const entity = await this.repository.findOne(id);
+    if (!entity) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+
+    const nodes = await this.repository.find({where: {id: In(nodeIds)}});
+    const newNodes = [];
+    // nodes.forEach(node => {
+    //   const n = new T();
+    //   newNodes.push(new T(...node));
+    // });
+
+    try {
+      return await this.repository.save(newNodes);
+    }
+    catch (e) {
+      throw new Error(e);
+    }
   }
 
   public async delete(id: number): Promise<any> {

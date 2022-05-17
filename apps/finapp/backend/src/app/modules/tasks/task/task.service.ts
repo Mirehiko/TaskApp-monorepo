@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { BaseTreeService } from '../../base-service';
 import { TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
-import { MoveDto, TaskRequestDto, TaskStates } from '@finapp/app-common';
+import { MoveDto, TaskDateDueDto, TaskPriority, TaskRequestDto, TaskStatus } from '@finapp/app-common';
 import { TaskTreeRepository } from './task-repository';
 import { TagRepository } from '../tags/tag-repository';
 import { ListRepository } from '../lists/list-repository';
@@ -33,12 +33,14 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    */
   public async createTree(@Param() requestDto: TaskRequestDto, author: User = null): Promise<Task> {
     const newTask = new Task();
-    newTask.dateDue = requestDto.dateDue;
-    newTask.description = requestDto.description;
-    newTask.icon = requestDto.icon;
+    newTask.description = requestDto.description || '';
+    newTask.icon = requestDto.icon || '';
     newTask.name = requestDto.name;
-    newTask.status = requestDto.status || TaskStates.DRAFT;
+    newTask.status = requestDto.status || TaskStatus.DRAFT;
     newTask.parent_id = requestDto.parent_id || newTask.parent_id;
+    newTask.priority = requestDto.priority || TaskPriority.NONE;
+    newTask.startDate = requestDto.startDate || null;
+    newTask.endDate = requestDto.endDate || null;
 
     if (requestDto.assignee) {
       newTask.assignee = await this.userRepository.findOneOrFail({id: requestDto.assignee});
@@ -78,8 +80,10 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     task.description = requestDto.description || requestDto.description;
     task.name = requestDto.name || task.name;
     task.icon = requestDto.icon || task.icon;
-    task.dateDue = requestDto.dateDue || task.dateDue;
-    task.status = requestDto.status || task.status || TaskStates.DRAFT;
+    task.status = requestDto.status || task.status || TaskStatus.DRAFT;
+    task.priority = requestDto.priority || TaskPriority.NONE;
+    task.startDate = requestDto.startDate || null;
+    task.endDate = requestDto.endDate || null;
     task.updatedBy = author;
 
     try {
@@ -104,25 +108,25 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param id
    * @param tagIds
    */
-  async removeTags(): Promise<any> {
+  async removeTags(id: number, tagIds: number[]): Promise<any> {
     return;
   }
 
   /**
    * Add task to lists
    * @param id
-   * @param tagIds
+   * @param listIds
    */
-  async addLists(): Promise<Tag[]> {
+  async addLists(id: number, listIds: number[]): Promise<Tag[]> {
     return [];
   }
 
   /**
    * Remove task from lists
    * @param id
-   * @param tagIds
+   * @param listIds
    */
-  async removeLists(): Promise<any> {
+  async removeLists(id: number, listIds: number[]): Promise<any> {
     return;
   }
 
@@ -233,6 +237,66 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     catch (e) {
       throw new Error(e);
     }
+  }
+
+  /**
+   * Set start and end for the task
+   * @param id
+   * @param dateDue
+   * @param editor
+   */
+  async setDateDue(id: number, dateDue: TaskDateDueDto, editor: User): Promise<Task> {
+    const entity = await this.repository.findOne(id);
+    if (!entity) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+
+    // TODO: Add timezone calculations
+    entity.startDate = dateDue.startDate || null;
+    entity.endDate = dateDue.endDate || null;
+    entity.updatedBy = editor;
+
+    return await this.repository.save(entity);
+  }
+
+  /**
+   * Change the task priority
+   * @param id
+   * @param priority
+   * @param editor
+   */
+  async setPriority(id: number, priority: TaskPriority, editor: User): Promise<any> {
+    const entity = await this.repository.findOne(id);
+    if (!entity) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+
+    entity.priority = priority;
+    entity.updatedBy = editor;
+    await this.repository.save(entity);
+  }
+
+  /**
+   * Change the task status
+   * @param id
+   * @param status
+   * @param editor
+   */
+  async setStatus(id: number, status: TaskStatus, editor: User): Promise<Task> {
+    const entity = await this.repository.findOne(id);
+    if (!entity) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+
+    entity.status = status;
+    entity.updatedBy = editor;
+
+    // TODO: calculate status for parent tasks;
+    return await this.repository.save(entity);
+  }
+
+  async getTasksBy(): Promise<Task[]> {
+    return [];
   }
 }
 

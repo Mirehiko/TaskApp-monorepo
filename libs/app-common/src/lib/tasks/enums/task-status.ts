@@ -1,4 +1,4 @@
-export enum TaskStates {
+export enum TaskStatus {
   DRAFT = 'draft',
   BACKLOG = 'backlog',
   PENDING = 'pending',

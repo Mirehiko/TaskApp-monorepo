@@ -11,9 +11,9 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TaskService } from './task.service';
 import { plainToClass } from 'class-transformer';
 import {
-  MoveDto,
+  MoveDto, TaskPriority,
   TaskRequestDto,
-  TaskResponseDto,
+  TaskResponseDto, TaskStatus
 } from '@finapp/app-common';
 import { TransformInterceptor } from '../../../interceptors/transform.interceptor';
 import { Role } from '../../common/role/schemas/role.entity';
@@ -66,9 +66,7 @@ export class TaskController {
   @ApiOperation({summary: 'Назначить исполнителя для задачи'})
   @Post('task/:id/assign')
   async assignTaskTo(
-    @Body('assigneeId') assigneeId: number,
-    @Param() id: number,
-    @Req() req): Promise<TaskResponseDto> {
+    @Body('assigneeId') assigneeId: number, @Param() id: number, @Req() req): Promise<TaskResponseDto> {
     const task = await this.service.assignTaskTo(id, assigneeId, req.user);
     return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
   }
@@ -76,22 +74,40 @@ export class TaskController {
   @ApiOperation({summary: 'Назначить проверяющего для задачи'})
   @Post('task/:id/reviewer')
   async setReviewer(
-    @Body('reviewerId') reviewerId: number,
-    @Param() id: number,
-    @Req() req): Promise<TaskResponseDto> {
+    @Body('reviewerId') reviewerId: number, @Param() id: number, @Req() req): Promise<TaskResponseDto> {
     const task = await this.service.setReviewer(id, reviewerId, req.user);
     return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Обновление задачи'})
   @Patch('task/:id')
-  async update(
-    @Body() requestDto: TaskRequestDto,
-    @Param() id: number,
-    @Req() req
-  ): Promise<TaskResponseDto> {
+  async update(@Body() requestDto: TaskRequestDto, @Param() id: number, @Req() req): Promise<TaskResponseDto> {
     const task = await this.service.update(id, requestDto, req.user);
     return plainToClass(TaskResponseDto, task, { excludeExtraneousValues: true });
+  }
+
+  @ApiOperation({summary: 'Изменение статуса задачи'})
+  @Post('task/:id/status')
+  async setStatus(
+    @Body('status') status: TaskStatus, @Param() id: number, @Req() req): Promise<TaskResponseDto> {
+    const task = await this.service.setStatus(id, status, req.user);
+    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
+  }
+
+  @ApiOperation({summary: 'Изменение приоритета задачи'})
+  @Post('task/:id/priority')
+  async setPriority( @Body('priority') priority: TaskPriority, @Param() id: number, @Req() req): Promise<void> {
+    await this.service.setPriority(id, priority, req.user);
+    // const task = await this.service.setPriority(id, priority, req.user);
+    // return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
+  }
+
+  @ApiOperation({summary: 'Изменение времени задачи'})
+  @Post('task/:id/dateDue')
+  async setDateDue( @Body() body, @Param() id: number,
+    @Req() req): Promise<TaskResponseDto> {
+    const task = await this.service.setDateDue(id, { startDate: body.startDate, endDate: body.endDate }, req.user);
+    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Удаление задачи'})

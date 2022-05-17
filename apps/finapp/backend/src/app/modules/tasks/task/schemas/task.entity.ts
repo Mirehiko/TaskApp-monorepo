@@ -5,15 +5,13 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
-  OneToMany,
-  OneToOne,
   Tree,
   TreeChildren,
   TreeParent
 } from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
-import { TaskStates } from '@finapp/app-common';
+import { TaskBehavior, TaskPriority, TaskStatus } from '@finapp/app-common';
 import { Tag } from '../../tags/schemas/tag.entity';
 import { List } from '../../lists/schemas/list.entity';
 
@@ -54,13 +52,9 @@ export class Task extends BaseEntity {
 	@JoinTable()
 	updatedBy: User;
 
-	@ApiProperty({ example: '2022.01.21', description: 'Дата завершения'})
-	@Column({type: "timestamp", nullable: true})
-	dateDue: Date = null;
-
 	@ApiProperty({ example: 'draft', description: 'Статус задачи'})
-	@Column({type: "enum", enum: Object.values(TaskStates), default: TaskStates.DRAFT})
-	status: TaskStates;
+	@Column({type: "enum", enum: Object.values(TaskStatus), default: TaskStatus.DRAFT})
+	status: TaskStatus;
 
   @ApiProperty({ example: 'Task[]', description: 'Дочерние задачи'})
   // @OneToMany(() => Task, task => task.parent, { onDelete: 'CASCADE' })
@@ -87,5 +81,25 @@ export class Task extends BaseEntity {
   @Column({ nullable: false })
   parent_id: number = -1;
 
-	// config?: TaskConfig;
+  @ApiProperty({ example: 'low', description: 'Приоритет задачи'})
+  @Column({type: "enum", enum: Object.values(TaskPriority), default: TaskPriority.NONE})
+  priority: TaskPriority;
+
+  @ApiProperty({example: 'true', description: 'Задача закреплена?'})
+  @Column('boolean')
+  pinned: boolean = false;
+
+  @ApiProperty({ example: 'default', description: 'Поведение задачи'})
+  @Column({type: "enum", enum: Object.values(TaskBehavior), default: TaskBehavior.DEFAULT})
+  taskBehavior: TaskBehavior;
+
+  @ApiProperty({ example: '2022.01.21', description: 'Дата удаления'})
+  @Column({type: "datetime", nullable: true})
+  startDate: string = null;
+
+  @ApiProperty({ example: '2022.01.21', description: 'Дата удаления'})
+  @Column({type: "datetime", nullable: true})
+  endDate: string = null;
+
+  // TODO: move some information to different metadata?
 }

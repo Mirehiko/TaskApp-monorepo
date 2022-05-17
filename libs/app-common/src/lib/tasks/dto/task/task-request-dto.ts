@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RequestObjectWithId, TaskStates } from '@finapp/app-common';
+import { RequestObjectWithId, TaskPriority, TaskStatus } from '@finapp/app-common';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 
@@ -44,12 +44,21 @@ export class TaskRequestDto implements RequestObjectWithId {
   @IsOptional()
   parent_id?: number = -1;
 
-	@ApiProperty({ example: '2022.01.21', description: 'Дата завершения'})
+  @ApiProperty({ example: '2022.01.21', description: 'Дата завершения'})
   @IsOptional()
-	dateDue?: Date = null;
+  startDate?: string;
+
+  @ApiProperty({ example: '2022.01.21', description: 'Дата завершения'})
+  @IsOptional()
+  endDate?: string;
 
 	@ApiProperty({ example: 'draft', description: 'Статус задачи'})
   @IsString()
   @IsOptional()
-	status?: TaskStates;
+	status?: TaskStatus;
+
+  @ApiProperty({ example: 'none', description: 'Приоритет задачи'})
+  @IsString()
+  @IsOptional()
+  priority?: TaskPriority;
 }

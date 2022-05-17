@@ -1,5 +1,5 @@
-import { TaskStates } from '../../../../../../../../../libs/app-common/src/lib/tasks/enums/task-states';
 import { GetParams, GetParamsData } from '../../../base-service';
+import { TaskStatus } from '@finapp/app-common';
 
 
 export interface TaskGetParamsData extends GetParamsData {
@@ -7,7 +7,7 @@ export interface TaskGetParamsData extends GetParamsData {
 }
 
 export interface TaskGetParams extends GetParams {
-	state?: TaskStates;
+	state?: TaskStatus;
 	createdBy?: number[];
 	reviewer?: number[];
 	assignee?: number[];
