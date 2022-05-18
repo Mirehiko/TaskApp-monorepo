@@ -7,7 +7,7 @@ import { TaskTreeRepository } from './task-repository';
 import { TagRepository } from '../tags/tag-repository';
 import { ListRepository } from '../lists/list-repository';
 import { UserRepository } from '../../common/user/user-repository';
-import { Between, FindManyOptions, In, Like, Not } from 'typeorm';
+import { Between, FindManyOptions, In, IsNull, Like, Not } from 'typeorm';
 import { Tag } from '../tags/schemas/tag.entity';
 import { User } from '../../common/user/schemas/user.entity';
 
@@ -220,14 +220,14 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * Delete task with subtasks
    * @param id
    */
-  async delete(@Param() id: number): Promise<any> {
-    const entity = await this.repository.findOne({where: {id}});
-    if (!entity) {
+  async delete(ids: number[]): Promise<any> {
+    const entities = await this.repository.find({where: {id: In(ids)}, withDeleted: true});
+    if (!entities.length) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
 
     try {
-      await this.repository.remove(entity);
+      await this.repository.remove(entities);
       return {status: HttpStatus.OK, statusText: 'Deleted successfully'};
     }
     catch (e) {
@@ -292,10 +292,10 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
   }
 
   /**
-   * Get deleted tasks;
+   * Get tasks from trash
    */
-  async getDeletedTasks(): Promise<Task[]> {
-    return await this.repository.find({withDeleted: true, where: {deletedAt: Not(null)}});
+  async getTaskTrash(): Promise<Task[]> {
+    return await this.repository.find({withDeleted: true, where: {deletedAt: Not(IsNull())}});
   }
 
   /**
@@ -344,6 +344,25 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     }
 
     return await qb.getMany();
+  }
+
+  /**
+   * Move tasks to trash
+   * @param ids
+   */
+  async moveTasksToTrash(ids: number[]): Promise<any> {
+    const entities = await this.repository.find({where: {id: In(ids)}});
+    if (!entities.length) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+
+    try {
+      await this.repository.softDelete(ids);
+      return {status: HttpStatus.OK, statusText: 'Moved to trash successfully'};
+    }
+    catch (e) {
+      throw new Error(e);
+    }
   }
 }
 

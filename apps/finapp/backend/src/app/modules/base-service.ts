@@ -107,11 +107,11 @@ export class BaseTreeService<T, U extends GetParamsData> {
     }
   }
 
-  public async delete(id: number): Promise<any> {
-    const entity = await this.repository.findOne({where: {id}});
-    if (entity) {
+  public async delete(ids: number[]): Promise<any> {
+    const entities = await this.repository.find({where: {id: In(ids)}});
+    if (entities.length) {
       try {
-        await this.repository.remove(entity);
+        await this.repository.remove(entities);
         return {status: HttpStatus.OK, statusText: 'Deleted successfully'};
       }
       catch (e) {

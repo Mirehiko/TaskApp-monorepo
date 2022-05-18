@@ -47,6 +47,13 @@ export class TaskController {
     return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
   }
 
+  @ApiOperation({summary: 'Вернуть удаленные задачи'})
+  @Get('tasks/trash')
+  async getTaskTrash(): Promise<TaskResponseDto[]> {
+    const tasks = await this.service.getTaskTrash();
+    return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
+  }
+
   @ApiOperation({summary: 'Получение задачи'})
   @ApiResponse({status: 200, type: Role})
   // @UseGuards(JwtAuthGuard, RolesGuard)
@@ -105,8 +112,6 @@ export class TaskController {
   @Post('task/:id/priority')
   async setPriority( @Body('priority') priority: TaskPriority, @Param() id: number, @Req() req): Promise<void> {
     await this.service.setPriority(id, priority, req.user);
-    // const task = await this.service.setPriority(id, priority, req.user);
-    // return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Изменение времени задачи'})
@@ -120,6 +125,24 @@ export class TaskController {
   @ApiOperation({summary: 'Удаление задачи'})
   @Delete('task/:id')
   async deleteTask(@Param('id') id: number): Promise<any> {
-    return await this.service.delete(id);
+    return await this.service.delete([id]);
+  }
+
+  @ApiOperation({summary: 'Удаление задачи'})
+  @Delete('tasks/trash')
+  async moveTasksToTrash(@Body('taskIds') ids): Promise<any> {
+    return await this.service.moveTasksToTrash(ids);
+  }
+
+  @ApiOperation({summary: 'Удаление задачи'})
+  @Delete('tasks/:id/trash')
+  async moveTaskToTrash(@Param('id') id: number): Promise<any> {
+    return await this.service.moveTasksToTrash([id]);
+  }
+
+  @ApiOperation({summary: 'Удаление задач'})
+  @Delete('tasks/delete')
+  async tasksDelete(@Body('taskIds') ids): Promise<any> {
+    return await this.service.moveTasksToTrash(ids);
   }
 }
