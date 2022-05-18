@@ -139,5 +139,4 @@ export interface GetParams {
 		startDate: string;
 		endDate: string;
 	};
-	relations?: string[];
 }

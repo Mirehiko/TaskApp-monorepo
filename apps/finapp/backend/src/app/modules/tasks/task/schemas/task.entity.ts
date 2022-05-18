@@ -94,6 +94,7 @@ export class Task extends BaseEntity {
   taskBehavior: TaskBehavior;
 
   @ApiProperty({ example: '2022.01.21', description: 'Дата удаления'})
+  // @Column({type: "datetime", default: () => "UTC_TIMESTAMP(6)", nullable: true})
   @Column({type: "datetime", nullable: true})
   startDate: string = null;
 

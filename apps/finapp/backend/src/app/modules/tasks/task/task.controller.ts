@@ -40,6 +40,13 @@ export class TaskController {
     return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
 	}
 
+  @ApiOperation({summary: 'Поиск задач'})
+  @Get('tasks/search')
+  async searchTask(@Body() params): Promise<TaskResponseDto[]> {
+    const tasks = await this.service.searchTasksBy(params);
+    return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
+  }
+
   @ApiOperation({summary: 'Получение задачи'})
   @ApiResponse({status: 200, type: Role})
   // @UseGuards(JwtAuthGuard, RolesGuard)

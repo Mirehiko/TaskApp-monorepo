@@ -12,14 +12,14 @@ export class BaseEntity {
 	id: number;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Дата создания'})
-	@CreateDateColumn({ type: "timestamp"})
+	@CreateDateColumn({ type: "datetime"})
 	createdAt: string;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Дата обновления'})
-	@UpdateDateColumn({ type: "timestamp"})
+	@UpdateDateColumn({ type: "datetime"})
 	updatedAt: string;
 
   @ApiProperty({ example: '2022.01.21', description: 'Дата удаления'})
-  @DeleteDateColumn({ type: "timestamp", nullable: true})
+  @DeleteDateColumn({ type: "datetime", nullable: true})
   deletedAt: string = null;
 }

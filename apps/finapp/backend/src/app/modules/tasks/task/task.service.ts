@@ -1,13 +1,13 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { BaseTreeService } from '../../base-service';
-import { TaskGetParamsData } from './interfaces/task-params';
+import { TaskGetParams, TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
 import { MoveDto, TaskDateDueDto, TaskPriority, TaskRequestDto, TaskStatus } from '@finapp/app-common';
 import { TaskTreeRepository } from './task-repository';
 import { TagRepository } from '../tags/tag-repository';
 import { ListRepository } from '../lists/list-repository';
 import { UserRepository } from '../../common/user/user-repository';
-import { In } from 'typeorm';
+import { Between, FindManyOptions, In, Like, Not } from 'typeorm';
 import { Tag } from '../tags/schemas/tag.entity';
 import { User } from '../../common/user/schemas/user.entity';
 
@@ -203,10 +203,6 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     await this.repository.save(children);
   }
 
-  async deleteMultiple(ids: number): Promise<any> {
-
-  }
-
   /**
    * Get the task
    * @param id
@@ -295,8 +291,59 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     return await this.repository.save(entity);
   }
 
-  async getTasksBy(): Promise<Task[]> {
-    return [];
+  /**
+   * Get deleted tasks;
+   */
+  async getDeletedTasks(): Promise<Task[]> {
+    return await this.repository.find({withDeleted: true, where: {deletedAt: Not(null)}});
+  }
+
+  /**
+   * Search tasks
+   * @param paramsData
+   */
+  async searchTasksBy(paramsData: TaskGetParams): Promise<Task[]> {
+    const qb = this.repository.createQueryBuilder('tasks')
+      .where("CONCAT(tasks.name, ' ', tasks.description) LIKE :text", { text: `%${paramsData.name || ''}%` });
+
+    if (paramsData.priority) {
+      qb.andWhere('tasks.priority IN (:priorities)', {priorities: paramsData.priority});
+    }
+    if (paramsData.status) {
+      qb.andWhere('tasks.status IN (:statuses)', {statuses: paramsData.status});
+    }
+    if (paramsData.assignee) {
+      qb.andWhere('tasks.assignee IN (:assigneeIds)', {assigneeIds: paramsData.assignee});
+    }
+    if (paramsData.reviewer) {
+      qb.andWhere('tasks.reviewer IN (:reviewerIds)', {reviewerIds: paramsData.reviewer});
+    }
+    if (paramsData.createdBy) {
+      qb.andWhere('tasks.createdById IN (:createdByIds)', {createdByIds: paramsData.createdBy});
+    }
+    if (paramsData.tags) {
+      qb.andWhere('tasks.tags IN (:tagsIds)', {tagsIds: paramsData.tags});
+    }
+    if (paramsData.lists) {
+      qb.andWhere('tasks.lists IN (:listsIds)', {listsIds: paramsData.lists});
+    }
+    if (paramsData.createdAt) {
+      qb.andWhere('tasks.createdAt BETWEEN :startDate AND :endDate', {
+        startDate: paramsData.createdAt.startDate,
+        endDate: paramsData.createdAt.endDate
+      });
+    }
+    if (paramsData.dateDue) {
+      qb.andWhere('tasks.endDate BETWEEN :startDate AND :endDate', {
+        startDate: paramsData.dateDue.startDate,
+        endDate: paramsData.dateDue.endDate
+      });
+    }
+    if (paramsData.withDeleted) {
+      qb.withDeleted();
+    }
+
+    return await qb.getMany();
   }
 }
 
