@@ -4,12 +4,12 @@ import { TaskGetParams, TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
 import { MoveDto, TaskDateDueDto, TaskPriority, TaskRequestDto, TaskStatus } from '@finapp/app-common';
 import { TaskTreeRepository } from './task-repository';
-import { TagRepository } from '../tags/tag-repository';
 import { ListRepository } from '../lists/list-repository';
 import { UserRepository } from '../../common/user/user-repository';
 import { Between, FindManyOptions, In, IsNull, Like, Not } from 'typeorm';
 import { Tag } from '../tags/schemas/tag.entity';
 import { User } from '../../common/user/schemas/user.entity';
+import { TagTreeRepository } from '../tags/tag-repository';
 
 
 @Injectable()
@@ -20,7 +20,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
 
 	constructor(
     protected listRepository: ListRepository,
-    protected tagRepository: TagRepository,
+    protected tagTreeRepository: TagTreeRepository,
     protected userRepository: UserRepository,
     protected repository: TaskTreeRepository
 	) {
@@ -49,7 +49,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
       newTask.reviewer = await this.userRepository.findOneOrFail({id: requestDto.reviewer});
     }
     if (requestDto.tags) {
-      newTask.tags = await this.tagRepository.find({id: In(requestDto.tags)});
+      newTask.tags = await this.tagTreeRepository.find({id: In(requestDto.tags)});
     }
     if (requestDto.lists) {
       newTask.lists = await this.listRepository.find({id: In(requestDto.lists)});

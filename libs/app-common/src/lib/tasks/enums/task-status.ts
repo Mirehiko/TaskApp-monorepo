@@ -5,5 +5,7 @@ export enum TaskStatus {
   IN_PROGRESS = 'inProgress',
   REVIEW = 'review',
   DONE = 'done',
-  BLOCKED_BY = 'blockedBy'
+  WONT_DO = 'wontDo',
+  FAILED = 'failed'
+  // BLOCKED_BY = 'blockedBy'
 }

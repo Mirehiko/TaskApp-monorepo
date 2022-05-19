@@ -1,7 +1,7 @@
 import { Injectable, Param } from '@nestjs/common';
 import { BaseService, GetParamsData } from '../../base-service';
 import { ListRepository } from './list-repository';
-import { TaskRepository } from '../task/task-repository';
+import { TaskTreeRepository } from '../task/task-repository';
 import { List } from './schemas/list.entity';
 
 
@@ -13,7 +13,7 @@ export class ListService extends BaseService<List, GetParamsData> {
 
   constructor(
     protected repository: ListRepository,
-    protected taskRepository: TaskRepository,
+    protected taskTreeRepository: TaskTreeRepository,
   ) {
     super();
   }

@@ -1,10 +1,12 @@
-import { Entity, Column, ManyToOne, JoinTable, OneToMany } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinTable, OneToMany, Tree, TreeChildren, TreeParent } from 'typeorm';
 import {ApiProperty} from "@nestjs/swagger";
 import {BaseEntity} from '../../../base-entity';
 
 
 @Entity()
+@Tree("materialized-path")
 export class Category extends BaseEntity {
+
 	@ApiProperty({example: 'Спорт', description: 'Название категории'})
 	@Column({ length: 150 })
 	name: string;
@@ -22,17 +24,17 @@ export class Category extends BaseEntity {
   color: string = '';
 
   @ApiProperty({ example: 'Category[]', description: 'Дочерние категории'})
-  @OneToMany(() => Category, category => category.parent, { onDelete: 'CASCADE' })
-  @JoinTable()
+  @TreeChildren()
   children: Category[];
 
   @ApiProperty({ example: 'Category', description: 'Родительская категория'})
-  @ManyToOne(() => Category, category => category.children)
+  @TreeParent({ onDelete: 'CASCADE' })
   parent: Category;
 
   @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
   @Column({ nullable: false })
   parent_id: number;
+
 	// TODO: Category color, icon, parent
 	// TODO: made as tree?
 }

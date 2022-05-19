@@ -57,18 +57,19 @@ export class Task extends BaseEntity {
 	status: TaskStatus;
 
   @ApiProperty({ example: 'Task[]', description: 'Дочерние задачи'})
-  // @OneToMany(() => Task, task => task.parent, { onDelete: 'CASCADE' })
-  // @JoinTable()
   @TreeChildren()
   children: Task[];
 
   @ApiProperty({ example: 'Task', description: 'Родительская задача'})
-  // @ManyToOne(() => Task, task => task.children)
   @TreeParent({ onDelete: 'CASCADE' })
   parent: Task;
 
+  @ApiProperty({ example: '2', description: 'Id родительской задачи'})
+  @Column({ nullable: false })
+  parent_id: number = -1;
+
   @ApiProperty({ example: 'Tag[]', description: 'Список тегов'})
-  @ManyToMany(() => Tag)
+  @ManyToMany(() => Tag, tag => tag.tasks)
   @JoinTable()
   tags: Tag[];
 
@@ -76,10 +77,6 @@ export class Task extends BaseEntity {
   @ManyToMany(() => List)
   @JoinTable()
   lists: List[];
-
-  @ApiProperty({ example: '2', description: 'Id родительской задачи'})
-  @Column({ nullable: false })
-  parent_id: number = -1;
 
   @ApiProperty({ example: 'low', description: 'Приоритет задачи'})
   @Column({type: "enum", enum: Object.values(TaskPriority), default: TaskPriority.NONE})

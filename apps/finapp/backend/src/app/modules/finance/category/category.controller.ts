@@ -30,28 +30,28 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Get('bills')
   async getAll(): Promise<CategoryResponseDto[]> {
-    const category = await this.service.getAll();
+    const category = await this.service.getAllTrees();
     return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
 	}
 
-	@ApiOperation({summary: 'Получение категории'})
-	// @ApiResponse({status: 200, type: User})
-  @UseInterceptors(ClassSerializerInterceptor)
-	@UseGuards(JwtAuthGuard)
-	@Get('bill/:id')
-  async getByID(@Param('id') id: number): Promise<CategoryResponseDto> {
-    const category = await this.service.getByID(id);
-    return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
-	}
+	// @ApiOperation({summary: 'Получение категории'})
+	// // @ApiResponse({status: 200, type: User})
+  // @UseInterceptors(ClassSerializerInterceptor)
+	// @UseGuards(JwtAuthGuard)
+	// @Get('bill/:id')
+  // async getByID(@Param('id') id: number): Promise<CategoryResponseDto> {
+  //   const category = await this.service.getByID(id);
+  //   return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
+	// }
 
-	@ApiOperation({summary: 'Получение категории по полю'})
-	// @ApiResponse({status: 200, type: User})
-	@UseGuards(JwtAuthGuard)
-	@Get('bill/')
-  async getBy(@Query() requestDto: BillGetParamsData): Promise<CategoryResponseDto> {
-		const category = await this.service.getBy(requestDto);
-    return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
-	}
+	// @ApiOperation({summary: 'Получение категории по полю'})
+	// // @ApiResponse({status: 200, type: User})
+	// @UseGuards(JwtAuthGuard)
+	// @Get('bill/')
+  // async getBy(@Query() requestDto: BillGetParamsData): Promise<CategoryResponseDto> {
+	// 	const category = await this.service.getBy(requestDto);
+  //   return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
+	// }
 
 	@ApiOperation({summary: 'Обновление категории'})
 	// @ApiResponse({status: 200, type: User})
@@ -83,6 +83,6 @@ export class CategoryController {
 	@UseGuards(JwtAuthGuard)
 	@Delete('bill/:id')
   async delete(@Param('id') id: number): Promise<any> {
-		return await this.service.delete(id);
+		return await this.service.delete([id]);
 	}
 }

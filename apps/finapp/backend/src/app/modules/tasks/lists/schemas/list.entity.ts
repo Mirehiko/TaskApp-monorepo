@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
+import { Task } from '../../task/schemas/task.entity';
 
 
 @Entity()
@@ -30,4 +31,8 @@ export class List extends BaseEntity {
   @ApiProperty({ example: '2', description: 'Id родительского списка'})
   @Column({ nullable: false })
   parent_id: number;
+
+  @ApiProperty({ example: 'Task[]', description: 'Задачи в списке'})
+  @ManyToMany(() => Task, task => task.tags)
+  tasks: Task[];
 }

@@ -1,21 +1,19 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { FindOneOptions, In, Repository } from 'typeorm';
-import { BaseService, GetParams, GetParamsData } from '../../base-service';
-import { CategoryRepository } from './category-repository';
+import { BaseService, BaseTreeService, GetParams, GetParamsData } from '../../base-service';
+import { CategoryTreeRepository } from './category-repository';
 import { Category } from './schemas/category.entity';
 import { CategoryRequestDto, TaskRequestDto } from '@finapp/app-common';
-import { Task } from '../../tasks/task/schemas/task.entity';
 import { UserRepository } from '../../common/user/user-repository';
 
 
 @Injectable()
-export class CategoryService extends BaseService<Category, GetParamsData> {
+export class CategoryService extends BaseTreeService<Category, GetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такого счета';
 	protected entityOrRelationNotFoundMessage: string = '';
 	protected relations: string[] = ['createdBy', 'createdBy.users'];
 
 	constructor(
-		protected repository: CategoryRepository,
+		protected repository: CategoryTreeRepository,
     protected userRepository: UserRepository,
 	) {
 		super();
