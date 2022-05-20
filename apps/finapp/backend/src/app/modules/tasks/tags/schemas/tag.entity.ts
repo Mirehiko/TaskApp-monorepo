@@ -11,11 +11,12 @@ import {
 import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
 import { Task } from '../../task/schemas/task.entity';
+import { TreeEntity } from '../../../base-tree-repository';
 
 
 @Entity()
 @Tree("materialized-path")
-export class Tag extends BaseEntity {
+export class Tag extends BaseEntity implements TreeEntity<Tag> {
 
   @ApiProperty({example: 'Do homework', description: 'Task name'})
   @Column({ length: 150 })
@@ -54,4 +55,5 @@ export class Tag extends BaseEntity {
   @ApiProperty({ example: 'Task[]', description: 'Задачи с данным тегом'})
   @ManyToMany(() => Task, task => task.tags)
   tasks: Task[];
+
 }

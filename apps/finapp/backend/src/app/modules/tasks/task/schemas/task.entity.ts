@@ -14,11 +14,12 @@ import { User } from '../../../common/user/schemas/user.entity';
 import { TaskBehavior, TaskPriority, TaskStatus } from '@finapp/app-common';
 import { Tag } from '../../tags/schemas/tag.entity';
 import { List } from '../../lists/schemas/list.entity';
+import { TreeEntity } from '../../../base-tree-repository';
 
 
 @Entity()
 @Tree("materialized-path")
-export class Task extends BaseEntity {
+export class Task extends BaseEntity implements TreeEntity<Task> {
 
 	@ApiProperty({example: 'Do homework', description: 'Task name'})
 	@Column({ length: 150 })
@@ -26,7 +27,7 @@ export class Task extends BaseEntity {
 
 	@ApiProperty({example: 'Description here', description: 'Описание задачи'})
 	@Column({ length: 150 })
-	description: string;
+	description: string = '';
 
 	@ApiProperty({example: 'file', description: 'Иконка задачи'})
 	@Column('text')
@@ -35,12 +36,12 @@ export class Task extends BaseEntity {
 	@ApiProperty({ example: '2022.01.21', description: 'Список пользователей работающих над задачей'})
 	@ManyToOne(() => User, user => user.id)
 	@JoinTable()
-	assignee: User;
+	assignee: User = null;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Список пользователей проверяющих задачю'})
 	@ManyToOne(() => User, user => user.id)
 	@JoinTable()
-	reviewer: User;
+	reviewer: User = null;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Создатель задачи'})
 	@ManyToOne(() => User, user => user.id)

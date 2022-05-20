@@ -135,7 +135,13 @@ export class TaskController {
   }
 
   @ApiOperation({summary: 'Удаление задачи'})
-  @Delete('tasks/:id/trash')
+  @Post('tasks/restore')
+  async restoreTasks(@Body('taskIds') ids): Promise<any> {
+    return await this.service.restore(ids);
+  }
+
+  @ApiOperation({summary: 'Удаление задачи'})
+  @Delete('task/:id/trash')
   async moveTaskToTrash(@Param('id') id: number): Promise<any> {
     return await this.service.moveTasksToTrash([id]);
   }
@@ -143,6 +149,38 @@ export class TaskController {
   @ApiOperation({summary: 'Удаление задач'})
   @Delete('tasks/delete')
   async tasksDelete(@Body('taskIds') ids): Promise<any> {
-    return await this.service.moveTasksToTrash(ids);
+    return await this.service.delete(ids);
+  }
+
+  @ApiOperation({summary: 'Добавление тегов для задачи'})
+  @Post('task/:id/tag')
+  async addTaskTags(@Param() id, @Body('tagIds') tagIds): Promise<any> {
+    return await this.service.addTags(id, tagIds);
+  }
+
+  @ApiOperation({summary: 'Удаление тегов для задачи'})
+  @Delete('task/:id/tag')
+  async removeTaskTags(@Param() id, @Body('tagIds') tagIds): Promise<any> {
+    return await this.service.removeTags(id, tagIds);
+  }
+
+  @ApiOperation({summary: 'Добавление задачи в списки'})
+  @Post('task/:id/list')
+  async addTaskLists(@Param() id, @Body('listIds') listIds): Promise<any> {
+    return await this.service.addLists(id, listIds);
+  }
+
+  @ApiOperation({summary: 'Удаление задачи из списков'})
+  @Delete('task/:id/list')
+  async removeTaskLists(@Param() id, @Body('listIds') listIds): Promise<any> {
+    return await this.service.removeLists(id, listIds);
+  }
+
+  @ApiOperation({summary: 'Копирование задач'})
+  @Post('tasks/copy')
+  async copyTasks(@Body() body, @Req() req): Promise<TaskResponseDto[]> {
+    return await this.service.copyTree(body.id, body.taskIds, req.user, [
+      'reviewer', 'assignee', 'tags', 'lists'
+    ]);
   }
 }

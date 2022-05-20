@@ -6,7 +6,7 @@ import { MoveDto, TaskDateDueDto, TaskPriority, TaskRequestDto, TaskStatus } fro
 import { TaskTreeRepository } from './task-repository';
 import { ListRepository } from '../lists/list-repository';
 import { UserRepository } from '../../common/user/user-repository';
-import { Between, FindManyOptions, In, IsNull, Like, Not } from 'typeorm';
+import { In, IsNull, Not } from 'typeorm';
 import { Tag } from '../tags/schemas/tag.entity';
 import { User } from '../../common/user/schemas/user.entity';
 import { TagTreeRepository } from '../tags/tag-repository';
@@ -141,12 +141,15 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
 
-    const candidate = await this.userRepository.findOne(reviewerId);
-    if (!candidate) {
-      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    let candidate = null;
+    if (reviewerId !== null) {
+      candidate = await this.userRepository.findOne(reviewerId);
+      if (!candidate) {
+        throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+      }
     }
 
-    task.reviewer = candidate.id !== editor.id ? candidate : null;
+    task.reviewer = candidate;
     task.updatedBy = editor;
 
     try {
@@ -167,12 +170,16 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     if (!task) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
-    const candidate = await this.userRepository.findOne(assignTo);
-    if (!candidate) {
-      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+
+    let candidate = null;
+    if (assignTo !== null) {
+      candidate = await this.userRepository.findOne(assignTo);
+      if (!candidate) {
+        throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+      }
     }
 
-    task.assignee = candidate.id !== editor.id ? candidate : null;
+    task.assignee = candidate;
     task.updatedBy = editor;
 
     try {
@@ -192,15 +199,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     if (!parent) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
-
-    let children = await this.repository.find({ where: { id: In(moveDto.childIds) } });
-    children = children.map(child => {
-      child.parent = parent;
-      child.parent_id = parent.id;
-      child.updatedBy = author;
-      return child;
-    })
-    await this.repository.save(children);
+    await this.repository.moveTo(parent, moveDto, author)
   }
 
   /**
@@ -214,25 +213,6 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
       return entity;
     }
     throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
-  }
-
-  /**
-   * Delete task with subtasks
-   * @param id
-   */
-  async delete(ids: number[]): Promise<any> {
-    const entities = await this.repository.find({where: {id: In(ids)}, withDeleted: true});
-    if (!entities.length) {
-      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
-    }
-
-    try {
-      await this.repository.remove(entities);
-      return {status: HttpStatus.OK, statusText: 'Deleted successfully'};
-    }
-    catch (e) {
-      throw new Error(e);
-    }
   }
 
   /**
@@ -363,6 +343,12 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     catch (e) {
       throw new Error(e);
     }
+  }
+
+  copyEntity(entity: Task): Task {
+    const task = new Task();
+    for(const k in task) task[k] = entity[k];
+    return task;
   }
 }
 
