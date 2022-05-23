@@ -104,7 +104,8 @@ export class BaseTreeService<T extends TreeEntity<T>, U extends GetParamsData> {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
 
-    entities = await this.repository.getTreeOfEntities(entities, relations);
+    // TODO: Check logic using default method .findDescendantsTree()
+    entities = await this.repository.getChildrenTreeOfEntity(entities, relations);
     const copiedTrees = await this.copyTreeNodes(entities, editor);
 
     await this.repository.rebuildTree(entity, copiedTrees);

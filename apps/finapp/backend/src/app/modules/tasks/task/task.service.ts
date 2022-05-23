@@ -199,7 +199,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     if (!parent) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
-    await this.repository.moveTo(parent, moveDto, author)
+    await this.repository.moveTo(parent, moveDto, author);
   }
 
   /**
@@ -266,6 +266,11 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
 
     entity.status = status;
     entity.updatedBy = editor;
+
+    const statusForUpdate = [TaskStatus.PENDING, TaskStatus.DONE, TaskStatus.WONT_DO];
+    if (statusForUpdate.includes(status)) {
+      await this.updateStatuses(entity);
+    }
 
     // TODO: calculate status for parent tasks;
     return await this.repository.save(entity);
@@ -350,6 +355,53 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     for(const k in task) task[k] = entity[k];
     return task;
   }
+
+  async updateStatuses(task: Task): Promise<void> {
+    const children = await this.repository.findDescendantsTree(task);
+    await this.updateCurrentStatusForChildren([children], task);
+
+    const parentTree = await this.repository.findAncestorsTree(task);
+    await this.updateCurrentStatusForParents(parentTree.parent, task);
+  }
+
+  async updateCurrentStatusForParents(parent: Task, task: Task): Promise<void> {
+    const children = await this.repository.findDescendantsTree(parent, {depth: 1});
+    const ignoreStatus = [TaskStatus.DRAFT, TaskStatus.BACKLOG];
+    const calculable = children.children.filter(t => !ignoreStatus.includes(t.status)).length;
+    const matches = children.children.filter(t => t.status === task.status).length;
+    if (calculable !== matches) {
+      return;
+    }
+
+    if (parent.status !== TaskStatus.DRAFT) {
+      parent.status = task.status;
+      parent.updatedBy = task.updatedBy;
+      // await this.repository.update(parent.id, {status: task.status, updatedBy: task.updatedBy})
+      await this.repository.save(parent);
+    }
+
+    if (parent.parent) {
+      await this.updateCurrentStatusForParents(parent.parent, parent);
+    }
+  }
+
+  async updateCurrentStatusForChildren(taskTree: Task[], parent: Task): Promise<void> {
+    await Promise.all(taskTree.map(async (task: Task) => {
+      if (task.status !== TaskStatus.DRAFT) {
+        task.status = parent.status;
+        task.updatedBy = parent.updatedBy;
+        await this.repository.save(task);
+      }
+
+      if (task.children.length) {
+        await this.updateCurrentStatusForChildren(task.children, task);
+      }
+    }));
+  }
+
+  // TODO: Пересчитывать ли статус родительских задач при перемещении/добавлении/удалении
+  // TODO: Хранить ли статусы подзадач в задаче?
+
 }
 
 
