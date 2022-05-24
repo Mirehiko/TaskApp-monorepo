@@ -84,6 +84,6 @@ export class PermissionController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('permission/:id')
   async deletePermission(@Param('id') id: number): Promise<any> {
-    return await this.permissionService.delete(id);
+    return await this.permissionService.delete([id]);
   }
 }

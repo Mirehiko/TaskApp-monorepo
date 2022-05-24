@@ -1,23 +1,41 @@
-import {IsEmail, IsNotEmpty} from "class-validator";
-import {Expose} from "class-transformer";
+import { IsNotEmpty, IsOptional } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Expose } from "class-transformer";
+
 
 export class CategoryResponseDto {
+  @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
   @Expose()
   id: number;
 
+  @ApiProperty({example: 'simple tag', description: 'Tag name'})
   @IsNotEmpty()
   @Expose()
-  firstName: string;
+  name: string;
+
+  @ApiProperty({example: 'simple tag', description: 'Tag name'})
+  @IsOptional()
+  @Expose()
+  description?: string;
+
+  @IsOptional()
+  @Expose()
+  icon?: string;
+
+  @ApiProperty({example: '#fff', description: 'Tag color'})
+  @IsOptional()
+  @Expose()
+  color?: string;
 
   @IsNotEmpty()
-  @Expose()
-  lastName: string;
+  parent_id: number;
 
-  @IsEmail()
-  @IsNotEmpty()
+  @IsOptional()
   @Expose()
-  email: string;
+  children?: CategoryResponseDto[];
 
-  // @IsNotEmpty()
-  // password: string;
+  @ApiProperty({example: 'true', description: 'Parent id'})
+  @IsOptional()
+  @Expose()
+  archived?: boolean;
 }

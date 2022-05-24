@@ -18,6 +18,7 @@ import {
 import { TransformInterceptor } from '../../../interceptors/transform.interceptor';
 import { Role } from '../../common/role/schemas/role.entity';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
+import { Task } from './schemas/task.entity';
 
 
 @ApiTags('Задачи')
@@ -36,7 +37,9 @@ export class TaskController {
 	// @UseGuards(JwtAuthGuard, RolesGuard)
 	@Get('tasks')
 	async getTasks(): Promise<TaskResponseDto[]> {
-    const tasks = await this.service.getAllTrees();
+    const tasks = await this.service.getAllTrees(
+      ['parent', 'children', 'createdBy', 'updatedBy', 'assignee', 'reviewer']
+    );
     return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
 	}
 
@@ -50,7 +53,7 @@ export class TaskController {
   @ApiOperation({summary: 'Вернуть удаленные задачи'})
   @Get('tasks/trash')
   async getTaskTrash(): Promise<TaskResponseDto[]> {
-    const tasks = await this.service.getTaskTrash();
+    const tasks = await this.service.getEntitiesTrash();
     return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
   }
 
@@ -59,7 +62,7 @@ export class TaskController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('task/:id')
   async getTaskTreeById(@Param('id') id: number): Promise<TaskResponseDto> {
-    const task = await this.service.getTreeByID(id);
+    const task = await this.service.getTreeByID(id, ['assignee', 'reviewer', 'createdBy']);
     return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
   }
 
@@ -73,7 +76,7 @@ export class TaskController {
   @ApiOperation({summary: 'Перенос задач'})
   @Post('task/move')
   async moveTasks(@Body() moveDto: MoveDto, @Req() req): Promise<TaskResponseDto[]> {
-	  await this.service.moveTasksTo(moveDto, req.user);
+	  await this.service.moveTo(moveDto, req.user);
 	  return await this.getTasks();
   }
 
@@ -131,7 +134,7 @@ export class TaskController {
   @ApiOperation({summary: 'Удаление задачи'})
   @Delete('tasks/trash')
   async moveTasksToTrash(@Body('taskIds') ids): Promise<any> {
-    return await this.service.moveTasksToTrash(ids);
+    return await this.service.moveEntitiesToTrash(ids);
   }
 
   @ApiOperation({summary: 'Удаление задачи'})
@@ -143,7 +146,7 @@ export class TaskController {
   @ApiOperation({summary: 'Удаление задачи'})
   @Delete('task/:id/trash')
   async moveTaskToTrash(@Param('id') id: number): Promise<any> {
-    return await this.service.moveTasksToTrash([id]);
+    return await this.service.moveEntitiesToTrash([id]);
   }
 
   @ApiOperation({summary: 'Удаление задач'})
@@ -179,7 +182,7 @@ export class TaskController {
   @ApiOperation({summary: 'Копирование задач'})
   @Post('tasks/copy')
   async copyTasks(@Body() body, @Req() req): Promise<TaskResponseDto[]> {
-    return await this.service.copyTree(body.id, body.taskIds, req.user, [
+    return await this.service.copyTree(body.id, body.taskIds, Task, req.user, [
       'reviewer', 'assignee', 'tags', 'lists'
     ]);
   }

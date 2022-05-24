@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
 import { Task } from '../../task/schemas/task.entity';
+import { ListType } from '@finapp/app-common';
 
 
 @Entity()
@@ -19,6 +20,10 @@ export class List extends BaseEntity {
   @Column('text')
   color: string = '';
 
+  @ApiProperty({ example: 'folder', description: 'Тип списка задачи'})
+  @Column({type: "enum", enum: Object.values(ListType), default: ListType.LIST})
+  type: ListType;
+
   @ApiProperty({ example: 'List[]', description: 'Дочерние списки'})
   @OneToMany(() => List, list => list.parent, { onDelete: 'CASCADE' })
   @JoinTable()
@@ -35,4 +40,8 @@ export class List extends BaseEntity {
   @ApiProperty({ example: 'Task[]', description: 'Задачи в списке'})
   @ManyToMany(() => Task, task => task.tags)
   tasks: Task[];
+
+  @ApiProperty({ example: 'List[]', description: 'Дочерние списки'})
+  @Column('boolean')
+  archived: boolean = false;
 }

@@ -23,7 +23,7 @@ export class Task extends BaseEntity implements TreeEntity<Task> {
 
 	@ApiProperty({example: 'Do homework', description: 'Task name'})
 	@Column({ length: 150 })
-	name: string = '';
+	name: string;
 
 	@ApiProperty({example: 'Description here', description: 'Описание задачи'})
 	@Column({ length: 150 })

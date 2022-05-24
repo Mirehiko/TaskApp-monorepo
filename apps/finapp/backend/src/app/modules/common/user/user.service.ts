@@ -33,9 +33,10 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     if (candidate) {
       throw new HttpException('Такой email уже существует. Введите другой email', HttpStatus.CONFLICT);
     }
+    
+    const newUser = await this.repository.create({...requestDto});
 
     try {
-      const newUser = await this.repository.create({...requestDto});
       let role;
       if (!requestDto.roles || !requestDto.roles.length) {
         role = await this.roleService.getByID(1); // TODO: roles
@@ -86,7 +87,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
    * @param password
    */
   async updateUserPass(@Param() id: number, password: string): Promise<void> {
-    let user = await this.repository.findOne(id);
+    const user = await this.repository.findOne(id);
     if (!user) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }

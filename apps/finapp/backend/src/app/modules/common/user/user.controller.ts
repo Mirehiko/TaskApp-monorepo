@@ -93,7 +93,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Delete('user/:id')
   async deleteUser(@Param('id') id: number): Promise<any> {
-    return await this.service.delete(id);
+    return await this.service.delete([id]);
   }
 
   @ApiOperation({summary: 'Назначение прав пользователю'})

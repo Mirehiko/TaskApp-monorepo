@@ -19,5 +19,4 @@ export interface TaskGetParams extends GetParams {
   taskBehavior?: TaskBehavior;
   lists?: number[];
   tags?: number[];
-  withDeleted?: boolean;
 }

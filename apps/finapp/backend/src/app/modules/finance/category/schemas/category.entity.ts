@@ -37,6 +37,11 @@ export class Category extends BaseEntity implements TreeEntity<Category> {
   @Column({ nullable: false })
   parent_id: number;
 
+  @ApiProperty({ example: '2022.01.21', description: 'Создатель задачи'})
+  @ManyToOne(() => User, user => user.id)
+  @JoinTable()
+  createdBy: User;
+
   @ApiProperty({ example: '2022.01.21', description: 'Человек, который последним обновил задачу'})
   @ManyToOne(() => User, user => user.id)
   @JoinTable()

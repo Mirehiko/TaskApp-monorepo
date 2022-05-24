@@ -16,7 +16,7 @@ import { TagTreeRepository } from '../tags/tag-repository';
 export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такой задачи';
 	protected entityOrRelationNotFoundMessage: string = '';
-  protected relations: string[] = ['parent', 'children', 'createdBy', 'updatedBy', 'assignee', 'reviewer'];
+  protected relations: string[] = [];
 
 	constructor(
     protected listRepository: ListRepository,
@@ -191,31 +191,6 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
   }
 
   /**
-   * Move selected tasks to the task
-   * @param moveDto
-   */
-  async moveTasksTo(moveDto: MoveDto, author: User = null): Promise<void> {
-    const parent = await this.repository.findOne(moveDto.parentId);
-    if (!parent) {
-      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
-    }
-    await this.repository.moveTo(parent, moveDto, author);
-  }
-
-  /**
-   * Get the task
-   * @param id
-   */
-  public async getTreeByID(id: number): Promise<Task> {
-    const entity = await this.repository.findOne({where: {id}, relations: ['assignee', 'reviewer', 'createdBy']});
-    if (entity) {
-      await this.repository.findDescendantsTree(entity, {depth: 2 });
-      return entity;
-    }
-    throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
-  }
-
-  /**
    * Set start and end for the task
    * @param id
    * @param dateDue
@@ -277,13 +252,6 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
   }
 
   /**
-   * Get tasks from trash
-   */
-  async getTaskTrash(): Promise<Task[]> {
-    return await this.repository.find({withDeleted: true, where: {deletedAt: Not(IsNull())}});
-  }
-
-  /**
    * Search tasks
    * @param paramsData
    */
@@ -329,31 +297,6 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     }
 
     return await qb.getMany();
-  }
-
-  /**
-   * Move tasks to trash
-   * @param ids
-   */
-  async moveTasksToTrash(ids: number[]): Promise<any> {
-    const entities = await this.repository.find({where: {id: In(ids)}});
-    if (!entities.length) {
-      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
-    }
-
-    try {
-      await this.repository.softDelete(ids);
-      return {status: HttpStatus.OK, statusText: 'Moved to trash successfully'};
-    }
-    catch (e) {
-      throw new Error(e);
-    }
-  }
-
-  copyEntity(entity: Task): Task {
-    const task = new Task();
-    for(const k in task) task[k] = entity[k];
-    return task;
   }
 
   async updateStatuses(task: Task): Promise<void> {

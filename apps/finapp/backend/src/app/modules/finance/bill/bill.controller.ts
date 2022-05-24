@@ -84,6 +84,6 @@ export class BillController {
 	@UseGuards(JwtAuthGuard)
 	@Delete('bill/:id')
   async delete(@Param('id') id: number): Promise<any> {
-		return await this.service.delete(id);
+		return await this.service.delete([id]);
 	}
 }

@@ -88,6 +88,6 @@ export class RoleController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('role/:id')
   async deleteRole(@Param('id') id: number): Promise<any> {
-    return await this.service.delete(id);
+    return await this.service.delete([id]);
   }
 }

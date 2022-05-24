@@ -3,6 +3,7 @@ import { In, TreeRepository } from 'typeorm';
 import { MoveDto } from '@finapp/app-common';
 
 
+
 export interface TreeEntity<E> {
   id?: number;
   parent: any;
@@ -11,8 +12,6 @@ export interface TreeEntity<E> {
   createdBy?: User;
   updatedBy?: User;
   children?: E[];
-  parentId?: number;
-  mpath?: string;
 }
 
 export class BaseTreeRepository<T extends TreeEntity<T>> extends TreeRepository<T> {

@@ -4,7 +4,7 @@ import { ListService } from './list.service';
 
 
 @ApiTags('Папки')
-@Controller('/api/main/')
+@Controller('main')
 export class ListController {
   constructor(private readonly service: ListService) {
   }
