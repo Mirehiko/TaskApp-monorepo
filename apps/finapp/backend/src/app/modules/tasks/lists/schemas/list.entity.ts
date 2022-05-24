@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
 import { Task } from '../../task/schemas/task.entity';
+import { ListType, TaskStatus } from '@finapp/app-common';
 
 
 @Entity()
@@ -18,6 +19,10 @@ export class List extends BaseEntity {
   @ApiProperty({example: 'file', description: 'Иконка задачи'})
   @Column('text')
   color: string = '';
+
+  @ApiProperty({ example: 'folder', description: 'Тип списка задачи'})
+  @Column({type: "enum", enum: Object.values(ListType), default: ListType.LIST})
+  status: ListType;
 
   @ApiProperty({ example: 'List[]', description: 'Дочерние списки'})
   @OneToMany(() => List, list => list.parent, { onDelete: 'CASCADE' })
