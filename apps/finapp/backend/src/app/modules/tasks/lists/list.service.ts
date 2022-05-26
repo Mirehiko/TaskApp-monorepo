@@ -1,15 +1,17 @@
-import { Injectable, Param } from '@nestjs/common';
-import { BaseService, GetParamsData } from '../../base-service';
+import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
+import { BaseListService, BaseService, GetParamsData } from '../../base-service';
 import { ListRepository } from './list-repository';
 import { TaskTreeRepository } from '../task/task-repository';
 import { List } from './schemas/list.entity';
+import { User } from '../../common/user/schemas/user.entity';
+import { ListBehaviorType, ListRequestDto, ListType } from '@finapp/app-common';
+import { ListGetParams, ListGetParamsData } from './interfaces/list-params';
 
 
 @Injectable()
-export class ListService extends BaseService<List, GetParamsData> {
+export class ListService extends BaseListService<List, ListGetParamsData> {
   protected entityNotFoundMessage: string = 'Нет такого счета';
   protected entityOrRelationNotFoundMessage: string = '';
-  protected relations: string[] = ['createdBy', 'createdBy.users'];
 
   constructor(
     protected repository: ListRepository,
@@ -18,11 +20,77 @@ export class ListService extends BaseService<List, GetParamsData> {
     super();
   }
 
-  // async create(@Param() requestDto: TagRequestDto): Promise<Tag> {
-  //   return new Tag();
-  // }
-  //
-  // async update(@Param() id: number, requestDto: TagRequestDto): Promise<Tag> {
-  //   return new Tag();
-  // }
+  /**
+   * Create new node. If a parent list defined the list will be child of this parent list
+   * @param requestDto
+   */
+   public async create(@Param() requestDto: ListRequestDto, author: User = null): Promise<List> {
+    const list = new List();
+    list.name = requestDto.name;
+    list.createdBy = author;
+    list.updatedBy = author;
+    list.color = requestDto.color || '';
+    list.archived = requestDto.archived || false;
+    list.behavior_type = requestDto.behavior_type || ListBehaviorType.PERSONAL;
+    list.icon = requestDto.icon || '';
+    list.parent_id = requestDto.parent_id || -1;
+    list.type = requestDto.type || ListType.LIST;
+
+    if (requestDto.parent_id !== -1) {
+      list.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
+      return await this.repository.save(list);
+    }
+    const createdList = await this.repository.create(list);
+    return await this.repository.save(createdList); // 200
+  }
+
+  /**
+   * Update list data
+   * @param id
+   * @param requestDto
+   */
+  async update(@Param() id: number, requestDto: ListRequestDto, author: User = null): Promise<List> {
+    const list = await this.repository.findOne(id);
+    if (!list) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+
+    list.name = requestDto.name || list.name;
+    list.icon = requestDto.icon || list.icon;
+    list.color = requestDto.color || list.color;
+    list.archived = requestDto.archived || list.archived;
+    list.behavior_type = requestDto.behavior_type || list.behavior_type;
+    list.updatedBy = author;
+
+    try {
+      return await this.repository.save(list);
+    }
+    catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  /**
+   * Search lists
+   * @param paramsData
+   */
+  async searchListsBy(paramsData: ListGetParams): Promise<List[]> {
+    const qb = this.repository.createQueryBuilder('lists')
+      .where("lists.name LIKE :text", { text: `%${paramsData.name || ''}%` });
+
+    if (paramsData.createdBy) {
+      qb.andWhere('lists.createdById IN (:createdByIds)', {createdByIds: paramsData.createdBy});
+    }
+    if (paramsData.createdAt) {
+      qb.andWhere('lists.createdAt BETWEEN :startDate AND :endDate', {
+        startDate: paramsData.createdAt.startDate,
+        endDate: paramsData.createdAt.endDate
+      });
+    }
+    if (paramsData.withDeleted) {
+      qb.withDeleted();
+    }
+
+    return await qb.getMany();
+  }
 }

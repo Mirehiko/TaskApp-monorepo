@@ -71,4 +71,10 @@ export class BaseTreeRepository<T extends TreeEntity<T>> extends TreeRepository<
       }))
     );
   }
+
+  copyEntity(entity: T, cls: any): T {
+    const copiedEntity = new cls();
+    for(const k in entity) copiedEntity[k] = entity[k];
+    return copiedEntity;
+  }
 }

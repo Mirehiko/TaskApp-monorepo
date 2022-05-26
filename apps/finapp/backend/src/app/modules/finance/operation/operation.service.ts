@@ -11,7 +11,6 @@ import { In } from 'typeorm';
 export class OperationService extends BaseService<Operation, GetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такой операции';
 	protected entityOrRelationNotFoundMessage: string = '';
-	protected relations: string[] = ['createdBy', 'createdBy.users'];
 
 	constructor(
     protected repository: OperationRepository,

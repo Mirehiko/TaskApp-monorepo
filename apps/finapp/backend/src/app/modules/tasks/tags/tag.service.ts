@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { BaseTreeService, GetParamsData } from '../../base-service';
+import { GetParamsData } from '../../base-service';
 import { Tag } from './schemas/tag.entity';
 import { TagTreeRepository } from './tag-repository';
 import { TaskTreeRepository } from '../task/task-repository';
 import { TagRequestDto } from '@finapp/app-common';
 import { User } from '../../common/user/schemas/user.entity';
 import { TagGetParams } from './interfaces/tag-params';
+import { BaseTreeService } from '../../base-tree-service';
 
 
 @Injectable()

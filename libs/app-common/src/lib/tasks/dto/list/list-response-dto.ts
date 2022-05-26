@@ -37,7 +37,10 @@ export class ListResponseDto {
   description?: string;
 
   @ApiProperty({example: 'folder', description: 'List type'})
-  @IsOptional()
   @Expose()
   type?: ListType;
+
+  @ApiProperty({example: 'folder', description: 'List type'})
+  @Expose()
+  archived?: boolean;
 }

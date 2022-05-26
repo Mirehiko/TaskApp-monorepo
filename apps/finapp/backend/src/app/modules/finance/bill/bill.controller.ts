@@ -30,7 +30,7 @@ export class BillController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Get('bills')
   async getAll(): Promise<BillResponseDto[]> {
-    const bill = await this.service.getAll();
+    const bill = await this.service.getAll(['createdBy', 'createdBy.users']);
     return plainToClass(BillResponseDto, bill, { excludeExtraneousValues: true });
 	}
 
@@ -40,7 +40,7 @@ export class BillController {
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/:id')
   async getByID(@Param('id') id: number): Promise<BillResponseDto> {
-    const bill = await this.service.getByID(id);
+    const bill = await this.service.getByID(id, ['createdBy', 'createdBy.users']);
     return plainToClass(BillResponseDto, bill, { excludeExtraneousValues: true });
 	}
 
@@ -50,7 +50,7 @@ export class BillController {
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/')
   async getBy(@Body() requestParams: BillGetParamsData): Promise<BillResponseDto> {
-    const bill = await this.service.getBy(requestParams);
+    const bill = await this.service.getBy(requestParams, ['createdBy', 'createdBy.users']);
     return plainToClass(BillResponseDto, bill, { excludeExtraneousValues: true });
 	}
 

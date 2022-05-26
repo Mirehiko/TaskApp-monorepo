@@ -182,8 +182,9 @@ export class TaskController {
   @ApiOperation({summary: 'Копирование задач'})
   @Post('tasks/copy')
   async copyTasks(@Body() body, @Req() req): Promise<TaskResponseDto[]> {
-    return await this.service.copyTree(body.id, body.taskIds, Task, req.user, [
+    const tasks = await this.service.copyTree(body.id, body.taskIds, Task, req.user, [
       'reviewer', 'assignee', 'tags', 'lists'
     ]);
+    return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
   }
 }

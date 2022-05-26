@@ -74,10 +74,10 @@ export class Task extends BaseEntity implements TreeEntity<Task> {
   @JoinTable()
   tags: Tag[];
 
-  @ApiProperty({ example: 'List[]', description: 'Задача в списках'})
-  @ManyToMany(() => List)
+  @ApiProperty({ example: 'List', description: 'Задача в списке'})
+  @ManyToOne(() => List, list => list.tasks)
   @JoinTable()
-  lists: List[];
+  list: List;
 
   @ApiProperty({ example: 'low', description: 'Приоритет задачи'})
   @Column({type: "enum", enum: Object.values(TaskPriority), default: TaskPriority.NONE})

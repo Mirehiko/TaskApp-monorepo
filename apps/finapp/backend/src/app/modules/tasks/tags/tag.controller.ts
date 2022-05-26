@@ -99,6 +99,7 @@ export class TagController {
   @ApiOperation({summary: 'Копирование задач'})
   @Post('tags/copy')
   async copyTags(@Body() body, @Req() req): Promise<TagResponseDto[]> {
-    return await this.service.copyTree(body.id, body.tagIds, Tag, req.user);
+    const tags = await this.service.copyTree(body.id, body.tagIds, Tag, req.user);
+    return plainToClass(TagResponseDto, tags, { excludeExtraneousValues: true });
   }
 }

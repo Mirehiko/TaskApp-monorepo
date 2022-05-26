@@ -30,7 +30,7 @@ export class OperationController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Get('bills')
   async getAll(): Promise<OperationResponseDto[]> {
-    const operation = await this.service.getAll();
+    const operation = await this.service.getAll(['createdBy', 'createdBy.users']);
     return plainToClass(OperationResponseDto, operation, { excludeExtraneousValues: true });
 	}
 
@@ -40,7 +40,7 @@ export class OperationController {
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/:id')
   async getByID(@Param('id') id: number): Promise<OperationResponseDto> {
-    const operation = await this.service.getByID(id);
+    const operation = await this.service.getByID(id, ['createdBy', 'createdBy.users']);
     return plainToClass(OperationResponseDto, operation, { excludeExtraneousValues: true });
 	}
 
@@ -50,7 +50,7 @@ export class OperationController {
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/')
   async getBy(@Query() requestDto: OperationGetParamsData): Promise<OperationResponseDto> {
-    const operation = await this.service.getBy(requestDto);
+    const operation = await this.service.getBy(requestDto, ['createdBy', 'createdBy.users']);
     return plainToClass(OperationResponseDto, operation, { excludeExtraneousValues: true });
 	}
 

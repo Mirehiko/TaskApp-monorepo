@@ -110,6 +110,7 @@ export class CategoryController {
 	@ApiOperation({summary: 'Копирование задач'})
 	@Post('categories/copy')
 	async copyCategories(@Body() body, @Req() req): Promise<CategoryResponseDto[]> {
-	  return await this.service.copyTree(body.id, body.categoryIds, Category, req.user);
+	  const categories = await this.service.copyTree(body.id, body.categoryIds, Category, req.user);
+	  return plainToClass(CategoryResponseDto, categories, { excludeExtraneousValues: true });
 	}
 }

@@ -17,6 +17,6 @@ export interface TaskGetParams extends GetParams {
 	};
 	priority?: TaskPriority[];
   taskBehavior?: TaskBehavior;
-  lists?: number[];
+  list?: number;
   tags?: number[];
 }

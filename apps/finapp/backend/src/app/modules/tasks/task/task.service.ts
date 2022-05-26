@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { BaseTreeService } from '../../base-service';
 import { TaskGetParams, TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
 import { MoveDto, TaskDateDueDto, TaskPriority, TaskRequestDto, TaskStatus } from '@finapp/app-common';
@@ -10,6 +9,7 @@ import { In, IsNull, Not } from 'typeorm';
 import { Tag } from '../tags/schemas/tag.entity';
 import { User } from '../../common/user/schemas/user.entity';
 import { TagTreeRepository } from '../tags/tag-repository';
+import { BaseTreeService } from '../../base-tree-service';
 
 
 @Injectable()
@@ -51,8 +51,8 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     if (requestDto.tags) {
       newTask.tags = await this.tagTreeRepository.find({id: In(requestDto.tags)});
     }
-    if (requestDto.lists) {
-      newTask.lists = await this.listRepository.find({id: In(requestDto.lists)});
+    if (requestDto.list) {
+      newTask.list = await this.listRepository.findOne({id: requestDto.list});
     }
 
     newTask.createdBy = author;
@@ -277,8 +277,8 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
     if (paramsData.tags) {
       qb.andWhere('tasks.tags IN (:tagsIds)', {tagsIds: paramsData.tags});
     }
-    if (paramsData.lists) {
-      qb.andWhere('tasks.lists IN (:listsIds)', {listsIds: paramsData.lists});
+    if (paramsData.list) {
+      qb.andWhere('tasks.list = :list)', {list: paramsData.list});
     }
     if (paramsData.createdAt) {
       qb.andWhere('tasks.createdAt BETWEEN :startDate AND :endDate', {

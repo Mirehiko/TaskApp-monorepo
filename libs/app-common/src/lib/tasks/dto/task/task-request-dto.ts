@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RequestObjectWithId, TaskPriority, TaskStatus } from '@finapp/app-common';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { RequestObjectWithId } from '../../../common';
+import { TaskPriority, TaskStatus } from '../../enums';
 
 
 export class TaskRequestDto implements RequestObjectWithId {
@@ -37,7 +38,7 @@ export class TaskRequestDto implements RequestObjectWithId {
 
   @ApiProperty({ example: '2022.01.21', description: 'Список списков'})
   @IsOptional()
-  lists?: number[];
+  list?: number;
 
 	@ApiProperty({description: 'Id родительской ноды'})
   @IsNumber()
@@ -61,4 +62,9 @@ export class TaskRequestDto implements RequestObjectWithId {
   @IsString()
   @IsOptional()
   priority?: TaskPriority;
+
+  @ApiProperty({ example: 'none', description: 'Приоритет задачи'})
+  @IsString()
+  @IsOptional()
+  pinned?: boolean;
 }

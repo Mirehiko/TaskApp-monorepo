@@ -36,7 +36,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('users')
   async getUsers(): Promise<UserResponseDto[]> {
-    const users = await this.service.getAllRelations();
+    const users = await this.service.getAll(['roles', 'roles.permissions']);
     return plainToClass(UserResponseDto, users, { enableCircularCheck: true });
   }
 
@@ -46,7 +46,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('user/:id')
   async getUserById(@Param('id') id: number): Promise<UserResponseDto> {
-    const user = await this.service.getByID(id);
+    const user = await this.service.getByID(id, ['roles', 'roles.permissions']);
     return plainToClass(UserResponseDto, user, { enableCircularCheck: true });
     // return plainToClass(UserResponseDto, user, { enableCircularCheck: true, excludeExtraneousValues: true });
   }
@@ -57,7 +57,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('user/')
   async getUserBy(@Body() userRequestParams: UserGetParamsData): Promise<UserResponseDto> {
-    const user = await this.service.getBy(userRequestParams);
+    const user = await this.service.getBy(userRequestParams, ['roles', 'roles.permissions']);
     return plainToClass(UserResponseDto, user, { enableCircularCheck: true });
   }
 

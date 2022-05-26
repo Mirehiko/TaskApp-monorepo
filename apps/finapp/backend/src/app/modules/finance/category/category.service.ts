@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { BaseTreeService, GetParamsData } from '../../base-service';
+import { GetParamsData } from '../../base-service';
 import { CategoryTreeRepository } from './category-repository';
 import { Category } from './schemas/category.entity';
 import { CategoryRequestDto } from '@finapp/app-common';
 import { UserRepository } from '../../common/user/user-repository';
 import { User } from '../../common/user/schemas/user.entity';
 import { CategoryGetParams } from './interfaces/category-params';
+import { BaseTreeService } from '../../base-tree-service';
 
 
 @Injectable()
