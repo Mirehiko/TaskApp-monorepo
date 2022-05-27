@@ -18,6 +18,7 @@ import {
 import { TransformInterceptor } from '../../../interceptors/transform.interceptor';
 import { Role } from '../../common/role/schemas/role.entity';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
+import { Task } from './schemas/task.entity';
 
 
 @ApiTags('Задачи')
@@ -36,7 +37,9 @@ export class TaskController {
 	// @UseGuards(JwtAuthGuard, RolesGuard)
 	@Get('tasks')
 	async getTasks(): Promise<TaskResponseDto[]> {
-    const tasks = await this.service.getAllTrees();
+    const tasks = await this.service.getAllTrees(
+      ['parent', 'children', 'createdBy', 'updatedBy', 'assignee', 'reviewer']
+    );
     return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
 	}
 
@@ -179,8 +182,9 @@ export class TaskController {
   @ApiOperation({summary: 'Копирование задач'})
   @Post('tasks/copy')
   async copyTasks(@Body() body, @Req() req): Promise<TaskResponseDto[]> {
-    return await this.service.copyTree(body.id, body.taskIds, req.user, [
+    const tasks = await this.service.copyTree(body.id, body.taskIds, Task, req.user, [
       'reviewer', 'assignee', 'tags', 'lists'
     ]);
+    return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
   }
 }

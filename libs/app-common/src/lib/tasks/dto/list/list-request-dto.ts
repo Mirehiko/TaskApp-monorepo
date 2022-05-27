@@ -1,5 +1,7 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ListType } from '../../enums';
+import { ListBehaviorType } from '../../enums/list-behavior-type';
 
 
 export class ListRequestDto {
@@ -8,6 +10,11 @@ export class ListRequestDto {
   @IsNotEmpty()
   @IsString()
   name: string;
+
+  @ApiProperty({example: 'simple tag', description: 'List description'})
+  @IsOptional()
+  @IsString()
+  description?: string;
 
   @ApiProperty({example: 'home', description: 'List icon'})
   @IsOptional()
@@ -18,9 +25,22 @@ export class ListRequestDto {
   @IsOptional()
   @IsString()
   color?: string;
+  
+  @ApiProperty({example: 'folder', description: 'List type'})
+  @IsString()
+  @IsOptional()
+  type?: ListType;
 
   @ApiProperty({example: '1234', description: 'Parent id'})
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  parent_id: number;
+  parent_id?: number;
+
+  @ApiProperty({example: '1234', description: 'Parent id'})
+  @IsOptional()
+  behavior_type?: ListBehaviorType;
+
+  @ApiProperty({example: '1234', description: 'Parent id'})
+  @IsOptional()
+  archived?: boolean;
 }

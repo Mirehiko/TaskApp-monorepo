@@ -19,7 +19,7 @@ export class BaseEntity {
 	@UpdateDateColumn({ type: "datetime"})
 	updatedAt: string;
 
-  @ApiProperty({ example: '2022.01.21', description: 'Дата удаления'})
-  @DeleteDateColumn({ type: "datetime", nullable: true})
-  deletedAt: string = null;
+	@ApiProperty({ example: '2022.01.21', description: 'Дата удаления'})
+	@DeleteDateColumn({ type: "datetime", nullable: true})
+	deletedAt: string = null;
 }

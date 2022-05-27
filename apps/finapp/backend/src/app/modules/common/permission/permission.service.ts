@@ -9,7 +9,6 @@ import { PermissionRequestDto } from '@finapp/app-common';
 @Injectable()
 export class PermissionService extends BaseService<Permission, GetParamsData> {
   protected entityNotFoundMessage: string = 'Нет такого пермишена';
-  protected relations: string[];
 
   constructor(
     @InjectRepository(Permission)

@@ -10,7 +10,6 @@ import { PermissionService } from '../permission/permission.service';
 @Injectable()
 export class RoleService extends BaseService<Role, GetParamsData> {
   protected entityNotFoundMessage: string = 'Нет такой роли';
-  protected relations: string[] = ['permissions'];
 
   constructor(
     @InjectRepository(Role)

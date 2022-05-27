@@ -14,7 +14,6 @@ export class UserService extends BaseService<User, UserGetParamsData> {
   private readonly saltRounds = 10;
   protected entityNotFoundMessage: string = 'Нет такого пользователя';
   protected entityOrRelationNotFoundMessage: string = 'Пользователь или роль не найдены';
-  protected relations: string[] = ['roles', 'roles.permissions'];
 
   constructor(
     public repository: UserRepository,
@@ -33,12 +32,13 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     if (candidate) {
       throw new HttpException('Такой email уже существует. Введите другой email', HttpStatus.CONFLICT);
     }
+    
+    const newUser = await this.repository.create({...requestDto});
 
     try {
-      const newUser = await this.repository.create({...requestDto});
       let role;
       if (!requestDto.roles || !requestDto.roles.length) {
-        role = await this.roleService.getByID(1); // TODO: roles
+        role = await this.roleService.getByID(1, ['permissions']); // TODO: roles
         newUser.roles = [role];
       }
 
@@ -86,7 +86,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
    * @param password
    */
   async updateUserPass(@Param() id: number, password: string): Promise<void> {
-    let user = await this.repository.findOne(id);
+    const user = await this.repository.findOne(id);
     if (!user) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
@@ -102,7 +102,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     const user = await this.repository.findOne({ where: { id: userRolesDto.userId}, relations: ['roles']});
     const roles = await this.roleService.getBy({
       params: {}
-    })
+    }, ['permissions']);
 
     if (userRolesDto.roles.length && user) {
       if (userRolesDto.replaceRoles) {
@@ -113,7 +113,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
         user.roles = [roles].filter(r => !uRoles.includes(r.id)).concat(user.roles);
       }
       await this.repository.save(user);
-      return await this.getBy({params: {id: user.id}});
+      return await this.getBy({params: {id: user.id}}, ['roles', 'roles.permissions']);
     }
     throw new HttpException(this.entityOrRelationNotFoundMessage, HttpStatus.NOT_FOUND);
   }
@@ -129,7 +129,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
       const roles = userRolesDto.roles.map(r => r.id);
       user.roles = user.roles.filter(ur => !roles.includes(ur.id));
       await this.repository.save(user);
-      return await this.getBy({params: {id: user.id}});
+      return await this.getBy({params: {id: user.id}}, ['roles', 'roles.permissions']);
     }
     throw new HttpException(this.entityOrRelationNotFoundMessage, HttpStatus.NOT_FOUND);
   }

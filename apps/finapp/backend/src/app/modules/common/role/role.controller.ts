@@ -36,7 +36,7 @@ export class RoleController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('roles')
   async getRoles(): Promise<RoleResponseDto[]> {
-    const roles = await this.service.getAllRelations();
+    const roles = await this.service.getAll(['permissions']);
     return plainToClass(RoleResponseDto, roles, {enableCircularCheck: true});
   }
 
@@ -45,7 +45,7 @@ export class RoleController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('role/:id')
   async getRoleById(@Param('id') id: number): Promise<RoleResponseDto> {
-    const role = await this.service.getByID(id);
+    const role = await this.service.getByID(id, ['permissions']);
     return plainToClass(RoleResponseDto, role, { enableCircularCheck: true });
   }
 
@@ -54,7 +54,7 @@ export class RoleController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('role/:id')
   async getRoleBy(@Query() requestParams: GetParamsData): Promise<RoleResponseDto> {
-    const role = await this.service.getBy(requestParams);
+    const role = await this.service.getBy(requestParams, ['permissions']);
     return plainToClass(RoleResponseDto, role, { enableCircularCheck: true });
   }
 
@@ -88,6 +88,6 @@ export class RoleController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('role/:id')
   async deleteRole(@Param('id') id: number): Promise<any> {
-    return await this.service.delete(id);
+    return await this.service.delete([id]);
   }
 }

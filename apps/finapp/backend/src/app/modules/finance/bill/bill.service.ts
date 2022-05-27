@@ -12,7 +12,6 @@ import { BillGetParamsData } from './interfaces/bill-params';
 export class BillService extends BaseService<Bill, BillGetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такого счета';
 	protected entityOrRelationNotFoundMessage: string = '';
-	protected relations: string[] = ['createdBy', 'createdBy.users'];
 
 	constructor(
     protected repository: BillRepository,

@@ -19,7 +19,7 @@ export class TagRequestDto {
   color?: string;
 
   @ApiProperty({example: '1234', description: 'Parent id'})
-  @IsNotEmpty()
   @IsNumber()
+  @IsOptional()
   parent_id: number;
 }

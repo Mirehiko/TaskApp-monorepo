@@ -4,10 +4,11 @@ import { TagService } from './tag.service';
 import { MoveDto, TagRequestDto, TagResponseDto } from '@finapp/app-common';
 import { plainToClass } from 'class-transformer';
 import { Role } from '../../common/role/schemas/role.entity';
+import { Tag } from './schemas/tag.entity';
 
 
 @ApiTags('Теги')
-@Controller('/api/main/')
+@Controller('main')
 export class TagController {
   constructor(private readonly service: TagService) {
   }
@@ -18,13 +19,13 @@ export class TagController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('tags')
   async getTags(): Promise<TagResponseDto[]> {
-    const tags = await this.service.getAllTrees();
+    const tags = await this.service.getAllTrees(['createdBy']);
     return plainToClass(TagResponseDto, tags, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Поиск задач'})
   @Get('tags/search')
-  async searchTask(@Body() params): Promise<TagResponseDto[]> {
+  async searchTag(@Body() params): Promise<TagResponseDto[]> {
     const tags = await this.service.searchTagsBy(params);
     return plainToClass(TagResponseDto, tags, { enableCircularCheck: true });
   }
@@ -40,46 +41,46 @@ export class TagController {
   @ApiResponse({status: 200, type: Role})
   @Get('tag/:id')
   async getTagTreeById(@Param('id') id: number): Promise<TagResponseDto> {
-    const task = await this.service.getTreeByID(id, ['createdBy']);
-    return plainToClass(TagResponseDto, task, { enableCircularCheck: true });
+    const tag = await this.service.getTreeByID(id, ['createdBy']);
+    return plainToClass(TagResponseDto, tag, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Создание задачи/подзадачи'})
   @Post('tag')
-  async createTag(@Body() taskRequestDto: TagRequestDto, @Req() req): Promise<TagResponseDto> {
-    const task = await this.service.createTree(taskRequestDto, req.user);
-    return plainToClass(TagResponseDto, task, { enableCircularCheck: true });
+  async createTag(@Body() tagRequestDto: TagRequestDto, @Req() req): Promise<TagResponseDto> {
+    const tag = await this.service.createTree(tagRequestDto, req.user);
+    return plainToClass(TagResponseDto, tag, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Перенос задач'})
-  @Post('tag/move')
+  @Post('tags/move')
   async moveTags(@Body() moveDto: MoveDto, @Req() req): Promise<TagResponseDto[]> {
-    await this.service.moveTo(moveDto, req.user);
+    await this.service.moveTo(moveDto, req.userApiOperation);
     return await this.getTags();
   }
 
   @ApiOperation({summary: 'Обновление задачи'})
   @Patch('tag/:id')
   async update(@Body() requestDto: TagRequestDto, @Param() id: number, @Req() req): Promise<TagResponseDto> {
-    const task = await this.service.update(id, requestDto, req.user);
-    return plainToClass(TagResponseDto, task, { excludeExtraneousValues: true });
+    const tag = await this.service.update(id, requestDto, req.user);
+    return plainToClass(TagResponseDto, tag, { excludeExtraneousValues: true });
   }
 
   @ApiOperation({summary: 'Удаление задачи'})
   @Delete('tag/:id')
-  async deleteTask(@Param('id') id: number): Promise<any> {
+  async deleteTag(@Param('id') id: number): Promise<any> {
     return await this.service.delete([id]);
   }
 
   @ApiOperation({summary: 'Удаление задачи'})
   @Delete('tags/trash')
-  async moveTagsToTrash(@Body('taskIds') ids): Promise<any> {
+  async moveTagsToTrash(@Body('tagIds') ids): Promise<any> {
     return await this.service.moveEntitiesToTrash(ids);
   }
 
   @ApiOperation({summary: 'Удаление задачи'})
   @Post('tags/restore')
-  async restoreTags(@Body('taskIds') ids): Promise<any> {
+  async restoreTags(@Body('tagIds') ids): Promise<any> {
     return await this.service.restore(ids);
   }
 
@@ -91,13 +92,14 @@ export class TagController {
 
   @ApiOperation({summary: 'Удаление задач'})
   @Delete('tags/delete')
-  async tagsDelete(@Body('taskIds') ids): Promise<any> {
+  async tagsDelete(@Body('tagIds') ids): Promise<any> {
     return await this.service.delete(ids);
   }
 
   @ApiOperation({summary: 'Копирование задач'})
   @Post('tags/copy')
   async copyTags(@Body() body, @Req() req): Promise<TagResponseDto[]> {
-    return await this.service.copyTree(body.id, body.tagIds, req.user);
+    const tags = await this.service.copyTree(body.id, body.tagIds, Tag, req.user);
+    return plainToClass(TagResponseDto, tags, { excludeExtraneousValues: true });
   }
 }

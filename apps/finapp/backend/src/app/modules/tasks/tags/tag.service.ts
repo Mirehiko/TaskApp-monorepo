@@ -1,21 +1,19 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { BaseService, BaseTreeService, GetParamsData } from '../../base-service';
+import { GetParamsData } from '../../base-service';
 import { Tag } from './schemas/tag.entity';
 import { TagTreeRepository } from './tag-repository';
 import { TaskTreeRepository } from '../task/task-repository';
-import { MoveDto, TagRequestDto, TaskDateDueDto, TaskPriority, TaskRequestDto, TaskStatus } from '@finapp/app-common';
+import { TagRequestDto } from '@finapp/app-common';
 import { User } from '../../common/user/schemas/user.entity';
-import { Task } from '../task/schemas/task.entity';
-import { In, IsNull, Not } from 'typeorm';
-import { TaskGetParams } from '../task/interfaces/task-params';
 import { TagGetParams } from './interfaces/tag-params';
+import { BaseTreeService } from '../../base-tree-service';
 
 
 @Injectable()
 export class TagService extends BaseTreeService<Tag, GetParamsData> {
   protected entityNotFoundMessage: string = 'Нет такого счета';
   protected entityOrRelationNotFoundMessage: string = '';
-  protected relations: string[] = ['createdBy', 'createdBy.users'];
+  protected relations: string[] = [];
 
   constructor(
     protected repository: TagTreeRepository,
@@ -35,7 +33,7 @@ export class TagService extends BaseTreeService<Tag, GetParamsData> {
     tag.updatedBy = author;
     tag.color = requestDto.color || '';
     tag.icon = requestDto.icon || '';
-    tag.parent_id = requestDto.parent_id || tag.parent_id;
+    tag.parent_id = requestDto.parent_id || -1;
 
     if (requestDto.parent_id !== -1) {
       tag.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
@@ -92,11 +90,4 @@ export class TagService extends BaseTreeService<Tag, GetParamsData> {
 
     return await qb.getMany();
   }
-
-  copyEntity(entity: Tag): Tag {
-    const tag = new Tag();
-    for(const k in tag) tag[k] = tag[k];
-    return tag;
-  }
-
 }

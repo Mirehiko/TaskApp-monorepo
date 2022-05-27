@@ -1,20 +1,21 @@
 import {
-  Body, ClassSerializerInterceptor,
+  Body,
   Controller,
   Delete,
   Get,
   Param,
   Patch,
-  Post, Query, UseGuards, UseInterceptors,
+  Post, Query, Req, UseGuards, UseInterceptors,
 } from '@nestjs/common';
-import {ApiOperation, ApiTags} from "@nestjs/swagger";
+import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { Roles } from '../../common/auth/roles-auth.decorator';
 import { RolesGuard } from '../../common/auth/roles.guard';
 import { CategoryService } from './category.service';
-import { CategoryRequestDto, CategoryResponseDto } from '@finapp/app-common';
-import { BillGetParamsData } from '../bill/interfaces/bill-params';
+import { CategoryRequestDto, CategoryResponseDto, MoveDto } from '@finapp/app-common';
 import { plainToClass } from 'class-transformer';
+import { Role } from '../../common/role/schemas/role.entity';
+import { Category } from './schemas/category.entity';
 
 
 @ApiTags('Категории')
@@ -23,66 +24,93 @@ export class CategoryController {
 	constructor(private readonly service: CategoryService) {
 	}
 
-	@ApiOperation({summary: 'Получение списка категорий'})
-	// @ApiResponse({status: 200, type: [User]})
-  @UseInterceptors(ClassSerializerInterceptor)
-	@Roles("ADMIN")
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Get('bills')
-  async getAll(): Promise<CategoryResponseDto[]> {
-    const category = await this.service.getAllTrees();
-    return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
+	@ApiOperation({summary: 'Получение списка задач'})
+	@ApiResponse({status: 200, type: [CategoryResponseDto]})
+	// @Roles("ADMIN")
+	// @UseGuards(JwtAuthGuard, RolesGuard)
+	@Get('categories')
+	async getCategories(): Promise<CategoryResponseDto[]> {
+	  const categories = await this.service.getAllTrees(['createdBy']);
+	  return plainToClass(CategoryResponseDto, categories, { enableCircularCheck: true });
 	}
-
-	// @ApiOperation({summary: 'Получение категории'})
-	// // @ApiResponse({status: 200, type: User})
-  // @UseInterceptors(ClassSerializerInterceptor)
-	// @UseGuards(JwtAuthGuard)
-	// @Get('bill/:id')
-  // async getByID(@Param('id') id: number): Promise<CategoryResponseDto> {
-  //   const category = await this.service.getByID(id);
-  //   return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
-	// }
-
-	// @ApiOperation({summary: 'Получение категории по полю'})
-	// // @ApiResponse({status: 200, type: User})
-	// @UseGuards(JwtAuthGuard)
-	// @Get('bill/')
-  // async getBy(@Query() requestDto: BillGetParamsData): Promise<CategoryResponseDto> {
-	// 	const category = await this.service.getBy(requestDto);
-  //   return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
-	// }
-
-	@ApiOperation({summary: 'Обновление категории'})
-	// @ApiResponse({status: 200, type: User})
-  @UseInterceptors(ClassSerializerInterceptor)
-	// @UseGuards(JwtAuthGuard)
-	@Patch('bill/:id')
-  async update(
-		@Body() requestDto: CategoryRequestDto,
-		@Param() id: number,
-	): Promise<CategoryResponseDto> {
-    const category = await this.service.update(id, requestDto);
-    return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
+  
+	@ApiOperation({summary: 'Поиск задач'})
+	@Get('categories/search')
+	async searchCategory(@Body() params): Promise<CategoryResponseDto[]> {
+	  const categories = await this.service.searchCategoriesBy(params);
+	  return plainToClass(CategoryResponseDto, categories, { enableCircularCheck: true });
 	}
-
-	@ApiOperation({summary: 'Создание категории'})
-	// @ApiResponse({status: 201, type: User})
-  @UseInterceptors(ClassSerializerInterceptor)
-	// @UsePipes(ValidationPipe)
-	@UseGuards(JwtAuthGuard)
-	@Post('bill')
-	// @HttpCode(HttpStatus.CREATED)
-  async create(@Body() requestDto: CategoryRequestDto): Promise<CategoryResponseDto> {
-    const category = await this.service.create(requestDto);
-    return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
+  
+	@ApiOperation({summary: 'Вернуть удаленные задачи'})
+	@Get('categories/trash')
+	async getCategoriesTrash(): Promise<CategoryResponseDto[]> {
+	  const categories = await this.service.getEntitiesTrash();
+	  return plainToClass(CategoryResponseDto, categories, { enableCircularCheck: true });
 	}
-
-	@ApiOperation({summary: 'Удаление категории'})
-	// @ApiResponse({status: 200, type: User})
-	@UseGuards(JwtAuthGuard)
-	@Delete('bill/:id')
-  async delete(@Param('id') id: number): Promise<any> {
-		return await this.service.delete([id]);
+  
+	@ApiOperation({summary: 'Получение задачи'})
+	@ApiResponse({status: 200, type: Role})
+	@Get('category/:id')
+	async getCategoryTreeById(@Param('id') id: number): Promise<CategoryResponseDto> {
+	  const category = await this.service.getTreeByID(id, ['createdBy']);
+	  return plainToClass(CategoryResponseDto, category, { enableCircularCheck: true });
+	}
+  
+	@ApiOperation({summary: 'Создание задачи/подзадачи'})
+	@Post('category')
+	async createCategory(@Body() categoryRequestDto: CategoryRequestDto, @Req() req): Promise<CategoryResponseDto> {
+	  const category = await this.service.createTree(categoryRequestDto, req.user);
+	  return plainToClass(CategoryResponseDto, category, { enableCircularCheck: true });
+	}
+  
+	@ApiOperation({summary: 'Перенос задач'})
+	@Post('categories/move')
+	async moveCategories(@Body() moveDto: MoveDto, @Req() req): Promise<CategoryResponseDto[]> {
+	  await this.service.moveTo(moveDto, req.userApiOperation);
+	  return await this.getCategories();
+	}
+  
+	@ApiOperation({summary: 'Обновление задачи'})
+	@Patch('category/:id')
+	async update(@Body() requestDto: CategoryRequestDto, @Param() id: number, @Req() req): Promise<CategoryResponseDto> {
+	  const category = await this.service.update(id, requestDto, req.user);
+	  return plainToClass(CategoryResponseDto, category, { excludeExtraneousValues: true });
+	}
+  
+	@ApiOperation({summary: 'Удаление задачи'})
+	@Delete('category/:id')
+	async deleteCategory(@Param('id') id: number): Promise<any> {
+	  return await this.service.delete([id]);
+	}
+  
+	@ApiOperation({summary: 'Удаление задачи'})
+	@Delete('categories/trash')
+	async moveCategoriesToTrash(@Body('categoryIds') ids): Promise<any> {
+	  return await this.service.moveEntitiesToTrash(ids);
+	}
+  
+	@ApiOperation({summary: 'Удаление задачи'})
+	@Post('categories/restore')
+	async restoreCategories(@Body('categoryIds') ids): Promise<any> {
+	  return await this.service.restore(ids);
+	}
+  
+	@ApiOperation({summary: 'Удаление задачи'})
+	@Delete('category/:id/trash')
+	async moveCategoryToTrash(@Param('id') id: number): Promise<any> {
+	  return await this.service.moveEntitiesToTrash([id]);
+	}
+  
+	@ApiOperation({summary: 'Удаление задач'})
+	@Delete('categories/delete')
+	async categoriesDelete(@Body('categoryIds') ids): Promise<any> {
+	  return await this.service.delete(ids);
+	}
+  
+	@ApiOperation({summary: 'Копирование задач'})
+	@Post('categories/copy')
+	async copyCategories(@Body() body, @Req() req): Promise<CategoryResponseDto[]> {
+	  const categories = await this.service.copyTree(body.id, body.categoryIds, Category, req.user);
+	  return plainToClass(CategoryResponseDto, categories, { excludeExtraneousValues: true });
 	}
 }

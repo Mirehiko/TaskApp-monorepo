@@ -4,13 +4,13 @@ import { OperationRepository } from './operation-repository';
 import { Operation } from './schemas/operation.entity';
 import { OperationRequestDto, OperationType } from '@finapp/app-common';
 import { BillRepository } from '../bill/bill-repository';
+import { In } from 'typeorm';
 
 
 @Injectable()
 export class OperationService extends BaseService<Operation, GetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такой операции';
 	protected entityOrRelationNotFoundMessage: string = '';
-	protected relations: string[] = ['createdBy', 'createdBy.users'];
 
 	constructor(
     protected repository: OperationRepository,
@@ -55,17 +55,17 @@ export class OperationService extends BaseService<Operation, GetParamsData> {
     }
 	}
 
-	async delete(@Param() id: number): Promise<any> {
-    const entity = await this.repository.findOne({where: {id}});
-    if (!entity) {
+	async delete(@Param() ids: number[]): Promise<any> {
+    const entities = await this.repository.find({where: {id: In(ids)}});
+    if (!entities) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
     try {
-
-      const operationType = entity.type === OperationType.INC || entity.type === OperationType.TRANS_FROM
+      // TODO: переписать для массива
+      const operationType = entities[0].type === OperationType.INC || entities[0].type === OperationType.TRANS_FROM
         ? OperationType.DEC : OperationType.INC;
-      await this.billRepository.changeBalance(entity.bill.id, {operationType, value: entity.value});
-      await this.repository.remove(entity);
+      await this.billRepository.changeBalance(entities[0].bill.id, {operationType, value: entities[0].value});
+      await this.repository.remove(entities[0]);
       return {status: HttpStatus.OK, statusText: 'Deleted successfully'};
     }
     catch (e) {

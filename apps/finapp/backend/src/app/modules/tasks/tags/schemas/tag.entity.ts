@@ -20,7 +20,7 @@ export class Tag extends BaseEntity implements TreeEntity<Tag> {
 
   @ApiProperty({example: 'Do homework', description: 'Task name'})
   @Column({ length: 150 })
-  name: string = '';
+  name: string;
 
   @ApiProperty({example: 'file', description: 'Иконка задачи'})
   @Column('text')
