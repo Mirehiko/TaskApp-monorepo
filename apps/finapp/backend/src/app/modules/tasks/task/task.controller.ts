@@ -60,7 +60,7 @@ export class TaskController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('task/:id')
   async getTaskTreeById(@Param('id') id: number): Promise<TaskResponseDto> {
-    const task = await this.service.getTreeByID(id, ['assignee', 'reviewer', 'createdBy', 'updatedBy']);
+    const task = await this.service.getTreeByID(id, ['assignee', 'reviewer', 'createdBy', 'updatedBy', 'list', 'tags']);
     return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
   }
 
@@ -167,14 +167,14 @@ export class TaskController {
 
   @ApiOperation({summary: 'Добавление задачи в списки'})
   @Post('task/:id/list')
-  async addTaskLists(@Param() id, @Body('listIds') listIds): Promise<any> {
-    return await this.service.addLists(id, listIds);
+  async addTaskLists(@Param() id, @Body('listId') listId): Promise<any> {
+    return await this.service.addLists(id, listId);
   }
 
   @ApiOperation({summary: 'Удаление задачи из списков'})
   @Delete('task/:id/list')
-  async removeTaskLists(@Param() id, @Body('listIds') listIds): Promise<any> {
-    return await this.service.removeLists(id, listIds);
+  async removeTaskLists(@Param() id): Promise<any> {
+    return await this.service.removeLists(id);
   }
 
   @ApiOperation({summary: 'Копирование задач'})

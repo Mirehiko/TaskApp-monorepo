@@ -100,7 +100,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param tagIds
    */
   async addTags(id: number, tagIds: number[]): Promise<Tag[]> {
-    const task = await this.repository.findOne(id);
+    const task = await this.repository.findOne(id, {relations: ['tags']});
     if (!task) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
@@ -140,8 +140,18 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param id
    * @param listIds
    */
-  async addLists(id: number, listIds: number[]): Promise<Tag[]> {
-    return [];
+  async addLists(id: number, listId: number): Promise<Task> {
+    const task = await this.repository.findOne(id, {relations: ['list']});
+    if (!task) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+    const list = await this.listRepository.findOne(listId);
+    if (!list) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+    task.list = list;
+    await this.repository.save(task);
+    return task;
   }
 
   /**
@@ -149,8 +159,14 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param id
    * @param listIds
    */
-  async removeLists(id: number, listIds: number[]): Promise<any> {
-    return;
+  async removeLists(id: number): Promise<any> {
+    const task = await this.repository.findOne(id, {relations: ['list']});
+    if (!task) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+    task.list = null;
+    await this.repository.save(task);
+    return task;
   }
 
   /**
