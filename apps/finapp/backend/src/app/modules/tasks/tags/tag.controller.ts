@@ -42,8 +42,8 @@ export class TagController {
   @ApiOperation({summary: 'Получение задачи'})
   @ApiResponse({status: 200, type: Role})
   @Get('tag/:id')
-  async getTagTreeById(@Param('id') id: number): Promise<TagResponseDto> {
-    const tag = await this.service.getTreeByID(id, ['createdBy']);
+  async getTagById(@Param('id') id: number): Promise<TagResponseDto> {
+    const tag = await this.service.getByID(id, ['createdBy', 'tasks', 'tasks.list', 'tasks.reviewer', 'tasks.assignee']);
     return plainToClass(TagResponseDto, tag, { enableCircularCheck: true });
   }
 

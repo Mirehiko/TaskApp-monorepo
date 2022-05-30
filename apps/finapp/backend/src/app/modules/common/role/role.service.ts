@@ -20,6 +20,10 @@ export class RoleService extends BaseService<Role, GetParamsData> {
     super();
   }
 
+  /**
+   * Creates new role
+   * @param role
+   */
   async createRole(role: RoleRequestDto): Promise<any> {
     const candidate = await this.repository.findOne({ name: role.name });
     if (candidate) {
@@ -43,6 +47,11 @@ export class RoleService extends BaseService<Role, GetParamsData> {
     }
   }
 
+  /**
+   * Updates the role data
+   * @param id
+   * @param roleRequestDto
+   */
   async updateRole(@Param() id: number, roleRequestDto: RoleRequestDto): Promise<Role> {
     const role = await this.repository.findOne({where: {id}});
     if (!role) {

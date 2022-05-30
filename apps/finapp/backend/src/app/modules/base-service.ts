@@ -10,11 +10,19 @@ export class BaseService<T, U extends GetParamsData> {
 	protected repository: Repository<T>;
 	protected entityNotFoundMessage: string;
 
-
+  /**
+   * Get list of entities
+   * @param relations
+   */
   public async getAll(relations: string[] = []): Promise<T[]> {
     return await this.repository.find({relations});
   }
 
+  /**
+   * Get entity by Id
+   * @param id
+   * @param relations
+   */
 	public async getByID(id: number, relations: string[] = []): Promise<T> {
 		const entity = await this.repository.findOne({where: {id}, relations});
 		if (entity) {
@@ -23,6 +31,11 @@ export class BaseService<T, U extends GetParamsData> {
 		throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
 	}
 
+  /**
+   * Get entity by
+   * @param paramsData
+   * @param relations
+   */
 	public async getBy(@Param() paramsData: U, relations: string[] = []): Promise<T> {
 		try {
 			const requestObject: FindOneOptions<T> = {
@@ -47,6 +60,9 @@ export class BaseService<T, U extends GetParamsData> {
 		}
 	}
 
+  /**
+   * @param ids
+   */
 	public async delete(ids: number[]): Promise<any> {
     const entities = await this.repository.find({where: {id: In(ids)}, withDeleted: true});
     if (entities.length) {
@@ -111,10 +127,21 @@ export class BaseListService<T extends TreeEntity<T>, U extends GetParamsData> e
   protected repository: BaseListRepository<T>;
 	protected entityNotFoundMessage: string;
 
+  /**
+   *
+   * @param moveDto
+   * @param author
+   */
   async moveTo(moveDto: MoveDto, author: User = null): Promise<void> {
     await this.repository.moveTo(moveDto, author);
   }
 
+  /**
+   *
+   * @param id
+   * @param cls
+   * @param editor
+   */
   async duplicate(id: number, cls: any, editor: User = null): Promise<T> {
     const entity = await this.repository.findOne(id);
     if (!entity) {

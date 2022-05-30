@@ -25,6 +25,7 @@ export class TagService extends BaseTreeService<Tag, GetParamsData> {
   /**
    * Create new node. If a parent tag defined the tag will be child of this parent tag
    * @param requestDto
+   * @param author
    */
   public async createTree(@Param() requestDto: TagRequestDto, author: User = null): Promise<Tag> {
     const tag = new Tag();
@@ -37,6 +38,7 @@ export class TagService extends BaseTreeService<Tag, GetParamsData> {
 
     if (requestDto.parent_id !== -1) {
       tag.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
+      tag.color = tag.color ? tag.color : tag.parent.color;
       return await this.repository.save(tag);
     }
     const createdTag = await this.repository.create(tag);
@@ -47,6 +49,7 @@ export class TagService extends BaseTreeService<Tag, GetParamsData> {
    * Update tag data
    * @param id
    * @param requestDto
+   * @param author
    */
   async update(@Param() id: number, requestDto: TagRequestDto, author: User = null): Promise<Tag> {
     const tag = await this.repository.findOne(id);

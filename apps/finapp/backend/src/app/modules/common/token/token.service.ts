@@ -12,12 +12,21 @@ export class TokenService {
     private repository: Repository<UserToken>,
   ) {}
 
+  /**
+   * Create new token for user
+   * @param createUserTokenDto
+   */
   async create(@Param() createUserTokenDto: CreateUserTokenDto): Promise<CreateUserTokenDto> {
     const userToken = await this.repository.create({...createUserTokenDto});
     await this.repository.save(userToken);
     return {token: userToken.token, userId: userToken.userId, expireAt: userToken.expireAt+''};
   }
 
+  /**
+   * Delete one user token
+   * @param userId
+   * @param token
+   */
   async delete(userId: number, token: string): Promise<boolean> {
     const row = await this.repository.find({userId, token });
     if (row) {
@@ -27,6 +36,10 @@ export class TokenService {
     throw new NotFoundException('Entities not found');
   }
 
+  /**
+   * Remove all user tokens
+   * @param userId
+   */
   async deleteAll(userId: number): Promise<boolean> {
     const rows = await this.repository.find({userId});
     if (rows.length) {
@@ -36,6 +49,11 @@ export class TokenService {
     throw new NotFoundException('Entities not found');
   }
 
+  /**
+   * Check token existing
+   * @param userId
+   * @param token
+   */
   async exists(userId: number, token: string): Promise<boolean> {
     const row = await this.repository.findOne({ userId, token });
     return !!row;

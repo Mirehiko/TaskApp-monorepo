@@ -25,44 +25,47 @@ export class CategoryService extends BaseTreeService<Category, GetParamsData> {
   /**
    * Create new node. If a parent category defined the category will be child of this parent category
    * @param requestDto
+   * @param author
    */
-   public async createTree(@Param() requestDto: CategoryRequestDto, author: User = null): Promise<Category> {
-    const tag = new Category();
-    tag.name = requestDto.name;
-    tag.description = requestDto.description || '';
-    tag.createdBy = author;
-    tag.updatedBy = author;
-    tag.color = requestDto.color || '';
-    tag.icon = requestDto.icon || '';
-    tag.parent_id = requestDto.parent_id || -1;
+  public async createTree(@Param() requestDto: CategoryRequestDto, author: User = null): Promise<Category> {
+    const category = new Category();
+    category.name = requestDto.name;
+    category.description = requestDto.description || '';
+    category.createdBy = author;
+    category.updatedBy = author;
+    category.color = requestDto.color || '';
+    category.icon = requestDto.icon || '';
+    category.parent_id = requestDto.parent_id || -1;
 
     if (requestDto.parent_id !== -1) {
-      tag.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
-      return await this.repository.save(tag);
+      category.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
+      category.color = category.color ? category.color : category.parent.color;
+      return await this.repository.save(category);
     }
-    const createdTag = await this.repository.create(tag);
-    return await this.repository.save(createdTag); // 200
+    const createdCategory = await this.repository.create(category);
+    return await this.repository.save(createdCategory); // 200
   }
 
   /**
    * Update category data
    * @param id
    * @param requestDto
+   * @param author
    */
   async update(@Param() id: number, requestDto: CategoryRequestDto, author: User = null): Promise<Category> {
-    const tag = await this.repository.findOne(id);
-    if (!tag) {
+    const category = await this.repository.findOne(id);
+    if (!category) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
 
-    tag.name = requestDto.name || tag.name;
-    tag.description = requestDto.description || '';
-    tag.icon = requestDto.icon || tag.icon;
-    tag.color = requestDto.color || tag.color;
-    tag.updatedBy = author;
+    category.name = requestDto.name || category.name;
+    category.description = requestDto.description || '';
+    category.icon = requestDto.icon || category.icon;
+    category.color = requestDto.color || category.color;
+    category.updatedBy = author;
 
     try {
-      return await this.repository.save(tag);
+      return await this.repository.save(category);
     }
     catch (e) {
       throw new Error(e);

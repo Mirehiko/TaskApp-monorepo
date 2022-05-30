@@ -17,6 +17,10 @@ export class PermissionService extends BaseService<Permission, GetParamsData> {
     super();
   }
 
+  /**
+   * Creates the new permission
+   * @param permission
+   */
   async createPermission(permission: PermissionRequestDto): Promise<Permission> {
     const candidate = await this.repository.findOne({ name: permission.name });
     if (candidate) {
@@ -32,6 +36,11 @@ export class PermissionService extends BaseService<Permission, GetParamsData> {
     }
   }
 
+  /**
+   * Update the permission data
+   * @param id
+   * @param permissionRequestDto
+   */
   async updatePermission(@Param() id: string, permissionRequestDto: PermissionRequestDto): Promise<Permission> {
     const permission = await this.repository.findOne({where: {id}});
     if (!permission) {

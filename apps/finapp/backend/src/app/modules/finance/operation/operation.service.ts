@@ -19,6 +19,10 @@ export class OperationService extends BaseService<Operation, GetParamsData> {
 		super();
 	}
 
+  /**
+   *
+   * @param requestDto
+   */
 	async create(@Param() requestDto: OperationRequestDto): Promise<Operation> {
     const bill = await this.repository.findOne({where: {id : requestDto.billId}});
     if (!bill) {
@@ -33,6 +37,11 @@ export class OperationService extends BaseService<Operation, GetParamsData> {
     }
 	}
 
+  /**
+   *
+   * @param id
+   * @param requestDto
+   */
 	async update(@Param() id: number, requestDto: OperationRequestDto): Promise<Operation> {
     const operation = await this.repository.findOne({where: {id}});
     if (!operation) {

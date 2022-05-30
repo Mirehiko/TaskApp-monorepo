@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { BaseListService, BaseService, GetParamsData } from '../../base-service';
+import { BaseListService } from '../../base-service';
 import { ListRepository } from './list-repository';
 import { TaskTreeRepository } from '../task/task-repository';
 import { List } from './schemas/list.entity';
@@ -21,8 +21,9 @@ export class ListService extends BaseListService<List, ListGetParamsData> {
   }
 
   /**
-   * Create new node. If a parent list defined the list will be child of this parent list
+   *
    * @param requestDto
+   * @param author
    */
   public async create(@Param() requestDto: ListRequestDto, author: User = null): Promise<List> {
     const list = new List();
@@ -38,6 +39,7 @@ export class ListService extends BaseListService<List, ListGetParamsData> {
 
     if (requestDto.parent_id !== -1) {
       list.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
+      list.color = list.color ? list.color : list.parent.color;
       return await this.repository.save(list);
     }
     const createdList = await this.repository.create(list);
@@ -48,6 +50,7 @@ export class ListService extends BaseListService<List, ListGetParamsData> {
    * Update list data
    * @param id
    * @param requestDto
+   * @param author
    */
   async update(@Param() id: number, requestDto: ListRequestDto, author: User = null): Promise<List> {
     const list = await this.repository.findOne(id);

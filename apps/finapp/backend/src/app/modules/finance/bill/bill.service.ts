@@ -20,6 +20,10 @@ export class BillService extends BaseService<Bill, BillGetParamsData> {
 		super();
 	}
 
+  /**
+   *
+   * @param requestDto
+   */
 	async create(@Param() requestDto: BillRequestDto): Promise<Bill> {
     const user = await this.userRepository.findOne({where: {id: requestDto.userId}});
     if (!user) {
@@ -29,9 +33,13 @@ export class BillService extends BaseService<Bill, BillGetParamsData> {
     const newBill = await this.repository.create({...requestDto});
     newBill.user = user;
     return await this.repository.save(newBill); // 200
-    return new Bill();
 	}
 
+  /**
+   *
+   * @param id
+   * @param requestDto
+   */
 	async update(@Param() id: number, requestDto: BillRequestDto): Promise<Bill> {
     let bill = await this.repository.findOne(id);
     bill.name = requestDto.name ? requestDto.name : bill.name;
@@ -45,9 +53,13 @@ export class BillService extends BaseService<Bill, BillGetParamsData> {
     catch (e) {
       throw new Error(e);
     }
-    return new Bill();
   }
 
+  /**
+   *
+   * @param id
+   * @param changeBalance
+   */
   async changeBalance(@Param() id: number, changeBalance: ChangeBalance): Promise<Bill> {
     return await this.repository.changeBalance(id, changeBalance);
   }
