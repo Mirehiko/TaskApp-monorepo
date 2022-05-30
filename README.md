@@ -1,6 +1,17 @@
-# Finapp
+# TestApp
 
 use node v16.14.0, npm: 8.10.0
+
+## Redis
+Run command `docker-compose -f <docker-compose-file>.yml up -d` to up redis server
+For tests 
+- run `docker exec -it <redis-container-name> sh` to enter to container with redis
+- run `redis-cli`
+- run `auth <your_password>` to authenticate in redis;
+- run `ping` to get `PONG`
+
+
+
 
 This project was generated using [Nx](https://nx.dev).
 
