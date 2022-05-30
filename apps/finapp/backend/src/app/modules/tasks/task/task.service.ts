@@ -1,11 +1,11 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { TaskGetParams, TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
-import { MoveDto, TaskDateDueDto, TaskPriority, TaskRequestDto, TaskStatus } from '@finapp/app-common';
+import { TaskDateDueDto, TaskPriority, TaskRequestDto, TaskStatus } from '@finapp/app-common';
 import { TaskTreeRepository } from './task-repository';
 import { ListRepository } from '../lists/list-repository';
 import { UserRepository } from '../../common/user/user-repository';
-import { In, IsNull, Not } from 'typeorm';
+import { In } from 'typeorm';
 import { Tag } from '../tags/schemas/tag.entity';
 import { User } from '../../common/user/schemas/user.entity';
 import { TagTreeRepository } from '../tags/tag-repository';

@@ -1,4 +1,4 @@
-import { Connection, Repository } from 'typeorm';
+import { Connection } from 'typeorm';
 import {Constants} from "../../../shared/enums/common/constants";
 import { Task } from './schemas/task.entity';
 

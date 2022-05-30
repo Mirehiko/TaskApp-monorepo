@@ -1,14 +1,16 @@
 import { ListResponseDto, ListRequestDto, MoveDto } from '@finapp/app-common';
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import { Role } from '../../common/role/schemas/role.entity';
 import { ListService } from './list.service';
 import { List } from './schemas/list.entity';
+import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 
 
 @ApiTags('Папки')
 @Controller('main')
+@UseGuards(JwtAuthGuard)
 export class ListController {
   constructor(private readonly service: ListService) {
   }

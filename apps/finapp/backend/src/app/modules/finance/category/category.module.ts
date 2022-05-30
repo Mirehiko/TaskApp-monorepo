@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import {TypeOrmModule} from "@nestjs/typeorm";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { AuthModule } from '../../common/auth/auth.module';
 import { Role } from '../../common/role/schemas/role.entity';
 import { UserRepository } from '../../common/user/user-repository';

@@ -31,15 +31,16 @@ export class ListService extends BaseListService<List, ListGetParamsData> {
     list.createdBy = author;
     list.updatedBy = author;
     list.color = requestDto.color || '';
+    list.description = requestDto.description || '';
     list.archived = requestDto.archived || false;
     list.behavior_type = requestDto.behavior_type || ListBehaviorType.PERSONAL;
     list.icon = requestDto.icon || '';
     list.parent_id = requestDto.parent_id || -1;
     list.type = requestDto.type || ListType.LIST;
 
-    if (requestDto.parent_id !== -1) {
+    if (requestDto.parent_id && requestDto.parent_id !== -1) {
       list.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
-      list.color = list.color ? list.color : list.parent.color;
+      list.color = list.color ? list.color : list.parent?.color;
       return await this.repository.save(list);
     }
     const createdList = await this.repository.create(list);
@@ -59,6 +60,7 @@ export class ListService extends BaseListService<List, ListGetParamsData> {
     }
 
     list.name = requestDto.name || list.name;
+    list.description = requestDto.description || list.description;
     list.icon = requestDto.icon || list.icon;
     list.color = requestDto.color || list.color;
     list.archived = requestDto.archived || list.archived;

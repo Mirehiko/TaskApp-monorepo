@@ -1,5 +1,5 @@
-import {forwardRef, Module} from '@nestjs/common';
-import {TypeOrmModule} from "@nestjs/typeorm";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { TaskService } from './task.service';
 import { TaskController } from './task.controller';
 import { TaskTreeRepository } from './task-repository';
@@ -13,7 +13,6 @@ import { AuthModule } from '../../common/auth/auth.module';
 	imports: [
 		// DatabaseModule,
 		TypeOrmModule.forFeature(([TaskTreeRepository, UserRepository, TagTreeRepository, ListRepository])),
-		// forwardRef(() => AuthModule)
     AuthModule,
 	],
 	providers: [TaskService],

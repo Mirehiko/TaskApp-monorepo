@@ -37,7 +37,7 @@ export class CategoryService extends BaseTreeService<Category, GetParamsData> {
     category.icon = requestDto.icon || '';
     category.parent_id = requestDto.parent_id || -1;
 
-    if (requestDto.parent_id !== -1) {
+    if (requestDto.parent_id && requestDto.parent_id !== -1) {
       category.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
       category.color = category.color ? category.color : category.parent.color;
       return await this.repository.save(category);

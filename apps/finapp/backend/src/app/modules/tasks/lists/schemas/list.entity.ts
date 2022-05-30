@@ -9,23 +9,27 @@ import { User } from '../../../common/user/schemas/user.entity';
 @Entity()
 export class List extends BaseEntity {
 
-  @ApiProperty({example: 'Do homework', description: 'Task name'})
+  @ApiProperty({example: 'Do homework', description: 'Название списка'})
   @Column({ length: 150 })
   name: string = '';
 
-  @ApiProperty({example: 'file', description: 'Иконка задачи'})
+  @ApiProperty({example: 'file', description: 'Иконка списка'})
   @Column('text')
   icon: string = '';
+
+  @ApiProperty({example: 'file', description: 'Описание списка'})
+  @Column('text')
+  description: string = '';
 
   @ApiProperty({example: 'file', description: 'Иконка задачи'})
   @Column('text')
   color: string = '';
 
-  @ApiProperty({ example: 'folder', description: 'Тип списка задачи'})
+  @ApiProperty({ example: 'folder', description: 'Тип списка'})
   @Column({type: "enum", enum: Object.values(ListType), default: ListType.LIST})
   type: ListType;
 
-  @ApiProperty({ example: 'folder', description: 'Тип списка задачи'})
+  @ApiProperty({ example: 'folder', description: 'Тип списка'})
   @Column({type: "enum", enum: Object.values(ListBehaviorType), default: ListBehaviorType.PERSONAL})
   behavior_type: ListBehaviorType;
 
@@ -54,12 +58,12 @@ export class List extends BaseEntity {
   @Column('boolean')
   is_common: boolean = false;
 
-  @ApiProperty({ example: '2022.01.21', description: 'Человек, который последним обновил задачу'})
+  @ApiProperty({ example: '2022.01.21', description: 'Человек, который создал список'})
   @ManyToOne(() => User, user => user.id)
   @JoinTable()
   createdBy: User;
 
-  @ApiProperty({ example: '2022.01.21', description: 'Человек, который последним обновил задачу'})
+  @ApiProperty({ example: '2022.01.21', description: 'Человек, который последним обновил список'})
   @ManyToOne(() => User, user => user.id)
   @JoinTable()
   updatedBy: User;

@@ -1,4 +1,4 @@
-import { EntityRepository, Repository } from 'typeorm';
+import { EntityRepository } from 'typeorm';
 import { BaseListRepository } from '../../base-list-repository';
 import { List } from './schemas/list.entity';
 

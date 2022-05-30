@@ -36,7 +36,7 @@ export class TagService extends BaseTreeService<Tag, GetParamsData> {
     tag.icon = requestDto.icon || '';
     tag.parent_id = requestDto.parent_id || -1;
 
-    if (requestDto.parent_id !== -1) {
+    if (requestDto.parent_id && requestDto.parent_id !== -1) {
       tag.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
       tag.color = tag.color ? tag.color : tag.parent.color;
       return await this.repository.save(tag);

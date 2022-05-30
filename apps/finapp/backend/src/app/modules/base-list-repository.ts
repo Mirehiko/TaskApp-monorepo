@@ -21,6 +21,9 @@ export class BaseListRepository<T extends TreeEntity<T>> extends Repository<T> {
     const copy = this.copyEntity(entity, cls);
     delete copy.id;
     copy.name += ' copy';
+    copy.createdBy = editor;
+    copy.updatedBy = editor;
+
     const result = (await this.manager.getRepository(this.metadata.name).create({ ...copy })) as T;
     return await this.manager.save(result);
   }
