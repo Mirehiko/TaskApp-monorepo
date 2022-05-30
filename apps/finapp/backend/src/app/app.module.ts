@@ -24,7 +24,7 @@ import { ListModule } from './modules/tasks/lists/list.module';
   imports: [
     configModule,
     ServeStaticModule.forRoot({
-      rootPath: path.resolve(__dirname, 'static'),
+      rootPath: path.resolve(__dirname, '../static'),
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
