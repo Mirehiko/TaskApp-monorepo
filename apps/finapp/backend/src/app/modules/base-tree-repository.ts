@@ -58,7 +58,8 @@ export class BaseTreeRepository<T extends TreeEntity<T>> extends TreeRepository<
   async rebuildTree(root: T, arr: Array<T>) {
     await Promise.all(
       arr.map((async (value: T) => {
-        delete value.id;
+        delete value.id, value.parent, value.parent_id;
+
         value.name += ' copy';
         const result = (await this.manager.getTreeRepository(this.metadata.name).create({ ...value })) as T;
         result.parent = root;
@@ -74,7 +75,7 @@ export class BaseTreeRepository<T extends TreeEntity<T>> extends TreeRepository<
 
   copyEntity(entity: T, cls: any): T {
     const copiedEntity = new cls();
-    for(const k in entity) copiedEntity[k] = entity[k];
+    for(const k in copiedEntity) copiedEntity[k] = entity[k];
     return copiedEntity;
   }
 }

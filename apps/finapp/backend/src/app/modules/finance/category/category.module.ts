@@ -1,4 +1,4 @@
-import {forwardRef, Module} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { AuthModule } from '../../common/auth/auth.module';
 import { Role } from '../../common/role/schemas/role.entity';
@@ -12,7 +12,7 @@ import { CategoryTreeRepository } from './category-repository';
 	imports: [
 		// DatabaseModule,
 		TypeOrmModule.forFeature(([UserRepository, CategoryTreeRepository, Role])),
-		forwardRef(() => AuthModule)
+    AuthModule
 	],
 	providers: [CategoryService],
 	controllers: [CategoryController],

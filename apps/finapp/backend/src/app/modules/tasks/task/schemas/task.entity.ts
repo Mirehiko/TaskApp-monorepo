@@ -1,14 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  Tree,
-  TreeChildren,
-  TreeParent
-} from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, Tree, TreeChildren, TreeParent } from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
 import { TaskBehavior, TaskPriority, TaskStatus } from '@finapp/app-common';
@@ -21,9 +12,19 @@ import { TreeEntity } from '../../../base-tree-repository';
 @Tree("materialized-path")
 export class Task extends BaseEntity implements TreeEntity<Task> {
 
+  constructor(assignee?: User, reviewer?: User, children?: Task[], parent?: Task, tags?: Tag[], list?: List) {
+    super();
+    this.assignee = assignee;
+    this.reviewer = reviewer;
+    this.children = children;
+    this.parent = parent;
+    this.tags = tags;
+    this.list = list;
+  }
+
 	@ApiProperty({example: 'Do homework', description: 'Task name'})
 	@Column({ length: 150 })
-	name: string;
+	name: string = '';
 
 	@ApiProperty({example: 'Description here', description: 'Описание задачи'})
 	@Column({ length: 150 })
@@ -34,14 +35,14 @@ export class Task extends BaseEntity implements TreeEntity<Task> {
 	icon: string = '';
 
 	@ApiProperty({ example: '2022.01.21', description: 'Список пользователей работающих над задачей'})
-	@ManyToOne(() => User, user => user.id)
+	@ManyToOne(() => User, user => user.id, {nullable: true})
 	@JoinTable()
-	assignee: User = null;
+	assignee: User;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Список пользователей проверяющих задачю'})
-	@ManyToOne(() => User, user => user.id)
+	@ManyToOne(() => User, user => user.id, {nullable: true})
 	@JoinTable()
-	reviewer: User = null;
+	reviewer: User;
 
 	@ApiProperty({ example: '2022.01.21', description: 'Создатель задачи'})
 	@ManyToOne(() => User, user => user.id)
@@ -55,7 +56,7 @@ export class Task extends BaseEntity implements TreeEntity<Task> {
 
 	@ApiProperty({ example: 'draft', description: 'Статус задачи'})
 	@Column({type: "enum", enum: Object.values(TaskStatus), default: TaskStatus.DRAFT})
-	status: TaskStatus;
+	status: TaskStatus = TaskStatus.DRAFT;
 
   @ApiProperty({ example: 'Task[]', description: 'Дочерние задачи'})
   @TreeChildren()
@@ -70,18 +71,18 @@ export class Task extends BaseEntity implements TreeEntity<Task> {
   parent_id: number = -1;
 
   @ApiProperty({ example: 'Tag[]', description: 'Список тегов'})
-  @ManyToMany(() => Tag, tag => tag.tasks)
+  @ManyToMany(() => Tag, tag => tag.tasks, {nullable: true})
   @JoinTable()
   tags: Tag[];
 
   @ApiProperty({ example: 'List', description: 'Задача в списке'})
-  @ManyToOne(() => List, list => list.tasks)
+  @ManyToOne(() => List, list => list.tasks, {nullable: true})
   @JoinTable()
   list: List;
 
   @ApiProperty({ example: 'low', description: 'Приоритет задачи'})
   @Column({type: "enum", enum: Object.values(TaskPriority), default: TaskPriority.NONE})
-  priority: TaskPriority;
+  priority: TaskPriority = TaskPriority.NONE;
 
   @ApiProperty({example: 'true', description: 'Задача закреплена?'})
   @Column('boolean')
@@ -89,7 +90,7 @@ export class Task extends BaseEntity implements TreeEntity<Task> {
 
   @ApiProperty({ example: 'default', description: 'Поведение задачи'})
   @Column({type: "enum", enum: Object.values(TaskBehavior), default: TaskBehavior.DEFAULT})
-  taskBehavior: TaskBehavior;
+  taskBehavior: TaskBehavior = TaskBehavior.DEFAULT;
 
   @ApiProperty({ example: '2022.01.21', description: 'Дата удаления'})
   // @Column({type: "datetime", default: () => "UTC_TIMESTAMP(6)", nullable: true})

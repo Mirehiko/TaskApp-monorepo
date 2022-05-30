@@ -1,14 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TagService } from './tag.service';
 import { MoveDto, TagRequestDto, TagResponseDto } from '@finapp/app-common';
 import { plainToClass } from 'class-transformer';
 import { Role } from '../../common/role/schemas/role.entity';
 import { Tag } from './schemas/tag.entity';
+import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 
 
 @ApiTags('Теги')
 @Controller('main')
+@UseGuards(JwtAuthGuard)
 export class TagController {
   constructor(private readonly service: TagService) {
   }

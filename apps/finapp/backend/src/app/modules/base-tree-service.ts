@@ -9,14 +9,14 @@ import { User } from "./common/user/schemas/user.entity";
 export class BaseTreeService<T extends TreeEntity<T>, U extends GetParamsData> {
     protected repository: BaseTreeRepository<T>;
     protected entityNotFoundMessage: string;
-  
+
     /**
      *
      */
     public async getAllTrees(relations: string[] = []): Promise<T[]> {
       return await this.repository.findTrees({ relations });
     }
-  
+
     /**
      * Get entity tree by id with relations
      * @param id
@@ -30,7 +30,7 @@ export class BaseTreeService<T extends TreeEntity<T>, U extends GetParamsData> {
       }
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
-  
+
     /**
      *
      * @param id
@@ -50,16 +50,16 @@ export class BaseTreeService<T extends TreeEntity<T>, U extends GetParamsData> {
       if (!entities.length) {
         throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
       }
-  
+
       // TODO: Check logic using default method .findDescendantsTree()
       entities = await this.repository.getChildrenTreeOfEntity(entities, relations);
       const copiedTrees = await this.copyTreeNodes(entities, cls, editor);
-  
+
       await this.repository.rebuildTree(entity, copiedTrees);
-  
+
       return await this.getAllTrees();
     }
-  
+
     /**
      * Move selected entities to the entity
      * @param moveDto
@@ -71,7 +71,7 @@ export class BaseTreeService<T extends TreeEntity<T>, U extends GetParamsData> {
       }
       await this.repository.moveTo(parent, moveDto, author);
     }
-  
+
     /**
      * Copy tree nodes
      * @param node
@@ -92,7 +92,7 @@ export class BaseTreeService<T extends TreeEntity<T>, U extends GetParamsData> {
       );
       return newTrees;
     }
-  
+
     /**
      * Delete entities with children
      * @param id
@@ -110,7 +110,7 @@ export class BaseTreeService<T extends TreeEntity<T>, U extends GetParamsData> {
       }
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
-  
+
     /**
      * Restore deleted entities from trash
      * @param ids
@@ -128,14 +128,14 @@ export class BaseTreeService<T extends TreeEntity<T>, U extends GetParamsData> {
       }
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
-  
+
     /**
      * Get entities from trash
      */
     async getEntitiesTrash(): Promise<T[]> {
       return await this.repository.find({withDeleted: true, where: {deletedAt: Not(IsNull())}});
     }
-  
+
     /**
      * Move entities to trash
      * @param ids

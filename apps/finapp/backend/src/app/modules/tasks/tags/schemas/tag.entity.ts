@@ -18,9 +18,15 @@ import { TreeEntity } from '../../../base-tree-repository';
 @Tree("materialized-path")
 export class Tag extends BaseEntity implements TreeEntity<Tag> {
 
+  constructor(children?: Tag[], parent?: Tag) {
+    super();
+    this.children = children;
+    this.parent = parent;
+  }
+
   @ApiProperty({example: 'Do homework', description: 'Task name'})
   @Column({ length: 150 })
-  name: string;
+  name: string = '';
 
   @ApiProperty({example: 'file', description: 'Иконка задачи'})
   @Column('text')

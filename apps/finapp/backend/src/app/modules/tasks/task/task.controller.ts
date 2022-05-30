@@ -5,7 +5,6 @@ import {
   Get,
   Param, Patch,
   Post, Req, UseGuards,
-  UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TaskService } from './task.service';
@@ -15,7 +14,6 @@ import {
   TaskRequestDto,
   TaskResponseDto, TaskStatus
 } from '@finapp/app-common';
-import { TransformInterceptor } from '../../../interceptors/transform.interceptor';
 import { Role } from '../../common/role/schemas/role.entity';
 import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { Task } from './schemas/task.entity';
@@ -24,7 +22,7 @@ import { Task } from './schemas/task.entity';
 @ApiTags('Задачи')
 @Controller('main')
 @UseGuards(JwtAuthGuard)
-@UseInterceptors(new TransformInterceptor())
+// @UseInterceptors(new TransformInterceptor())
 export class TaskController {
 	constructor(
 	  private readonly service: TaskService,
@@ -38,7 +36,7 @@ export class TaskController {
 	@Get('tasks')
 	async getTasks(): Promise<TaskResponseDto[]> {
     const tasks = await this.service.getAllTrees(
-      ['parent', 'children', 'createdBy', 'updatedBy', 'assignee', 'reviewer']
+      ['parent', 'children', 'createdBy', 'updatedBy', 'assignee', 'reviewer', 'tags']
     );
     return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
 	}
@@ -46,7 +44,7 @@ export class TaskController {
   @ApiOperation({summary: 'Поиск задач'})
   @Get('tasks/search')
   async searchTask(@Body() params): Promise<TaskResponseDto[]> {
-    const tasks = await this.service.searchTasksBy(params);
+    const tasks = await this.service.searchTasksBy(params); // TODO: add relations to search object
     return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
   }
 
@@ -62,7 +60,7 @@ export class TaskController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('task/:id')
   async getTaskTreeById(@Param('id') id: number): Promise<TaskResponseDto> {
-    const task = await this.service.getTreeByID(id, ['assignee', 'reviewer', 'createdBy']);
+    const task = await this.service.getTreeByID(id, ['assignee', 'reviewer', 'createdBy', 'updatedBy']);
     return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
   }
 
@@ -156,13 +154,13 @@ export class TaskController {
   }
 
   @ApiOperation({summary: 'Добавление тегов для задачи'})
-  @Post('task/:id/tag')
+  @Post('task/:id/tags')
   async addTaskTags(@Param() id, @Body('tagIds') tagIds): Promise<any> {
     return await this.service.addTags(id, tagIds);
   }
 
   @ApiOperation({summary: 'Удаление тегов для задачи'})
-  @Delete('task/:id/tag')
+  @Delete('task/:id/tags')
   async removeTaskTags(@Param() id, @Body('tagIds') tagIds): Promise<any> {
     return await this.service.removeTags(id, tagIds);
   }
@@ -183,7 +181,7 @@ export class TaskController {
   @Post('tasks/copy')
   async copyTasks(@Body() body, @Req() req): Promise<TaskResponseDto[]> {
     const tasks = await this.service.copyTree(body.id, body.taskIds, Task, req.user, [
-      'reviewer', 'assignee', 'tags', 'lists'
+      'reviewer', 'assignee', 'tags', 'list'
     ]);
     return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
   }

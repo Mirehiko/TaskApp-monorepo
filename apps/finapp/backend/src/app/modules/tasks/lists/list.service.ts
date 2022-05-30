@@ -24,7 +24,7 @@ export class ListService extends BaseListService<List, ListGetParamsData> {
    * Create new node. If a parent list defined the list will be child of this parent list
    * @param requestDto
    */
-   public async create(@Param() requestDto: ListRequestDto, author: User = null): Promise<List> {
+  public async create(@Param() requestDto: ListRequestDto, author: User = null): Promise<List> {
     const list = new List();
     list.name = requestDto.name;
     list.createdBy = author;

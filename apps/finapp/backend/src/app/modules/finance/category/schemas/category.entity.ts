@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, JoinTable, OneToMany, Tree, TreeChildren, TreeParent } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinTable, Tree, TreeChildren, TreeParent } from 'typeorm';
 import {ApiProperty} from "@nestjs/swagger";
 import {BaseEntity} from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
@@ -9,13 +9,19 @@ import { TreeEntity } from '../../../base-tree-repository';
 @Tree("materialized-path")
 export class Category extends BaseEntity implements TreeEntity<Category> {
 
+  constructor(children?: Category[], parent?: Category) {
+    super();
+    this.children = children;
+    this.parent = parent;
+  }
+
 	@ApiProperty({example: 'Спорт', description: 'Название категории'})
 	@Column({ length: 150 })
-	name: string;
+	name: string = '';
 
 	@ApiProperty({example: 'Описание категории', description: 'Описание категории'})
 	@Column({ length: 500 })
-	description: string;
+	description: string = '';
 
   @ApiProperty({example: 'file', description: 'Иконка задачи'})
   @Column('text')
@@ -35,7 +41,7 @@ export class Category extends BaseEntity implements TreeEntity<Category> {
 
   @ApiProperty({ example: 'Данные пользователя', description: 'Операция проведена пользователем'})
   @Column({ nullable: false })
-  parent_id: number;
+  parent_id: number = -1;
 
   @ApiProperty({ example: '2022.01.21', description: 'Создатель задачи'})
   @ManyToOne(() => User, user => user.id)

@@ -100,7 +100,18 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param tagIds
    */
   async addTags(id: number, tagIds: number[]): Promise<Tag[]> {
-	  return [];
+    const task = await this.repository.findOne(id);
+    if (!task) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+    const tags = await this.tagTreeRepository.find({id: In(tagIds)});
+    if (!tags.length) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+    const tagList = task.tags ? [...task.tags, ...tags.filter(t => task.tags.map(tt => tt.id).includes(t.id))] : tags;
+    task.tags = tagList;
+    await this.repository.save(task);
+    return tagList;
   }
 
   /**
@@ -109,7 +120,19 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param tagIds
    */
   async removeTags(id: number, tagIds: number[]): Promise<any> {
-    return;
+    const task = await this.repository.findOne(id, {relations: ['tags']});
+    if (!task) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+    const tags = await this.tagTreeRepository.find({id: In(tagIds)});
+    if (!tags.length) {
+      throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
+    }
+    if (!task.tags) {
+      return;
+    }
+    task.tags = task.tags.filter(tt => !tags.map(t => t.id).includes(tt.id));
+    await this.repository.save(task);
   }
 
   /**

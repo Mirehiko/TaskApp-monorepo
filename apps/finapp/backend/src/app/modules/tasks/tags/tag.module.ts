@@ -1,17 +1,18 @@
-import {forwardRef, Module} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { UserRepository } from '../../common/user/user-repository';
-import { TagTreeRepository } from '../tags/tag-repository';
 import { TagService } from './tag.service';
 import { TagController } from './tag.controller';
 import { TaskTreeRepository } from '../task/task-repository';
+import { AuthModule } from '../../common/auth/auth.module';
+import { TagTreeRepository } from './tag-repository';
 
 
 @Module({
   imports: [
     // DatabaseModule,
     TypeOrmModule.forFeature(([TagTreeRepository, UserRepository, TaskTreeRepository])),
-    // forwardRef(() => AuthModule)
+    AuthModule,
   ],
   providers: [TagService],
   controllers: [TagController],
