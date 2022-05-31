@@ -5,6 +5,7 @@ import {BaseEntity} from '../../../base-entity';
 import {Role} from "../../role/schemas/role.entity";
 import {UserStatusEnum} from "../user-status.enum";
 import { Bill } from '../../../finance/bill/schemas/bill.entity';
+import { ConnectedUserEntity } from '../../gateway/schemas/connected-user.entity';
 
 
 @Entity()
@@ -47,4 +48,7 @@ export class User extends BaseEntity {
   @OneToMany(() => Bill, bill => bill.user)
   // @JoinTable()
   bills: Bill[];
+
+  @OneToMany(() => ConnectedUserEntity, connection => connection.user, {nullable: true})
+  connections: ConnectedUserEntity[];
 }
