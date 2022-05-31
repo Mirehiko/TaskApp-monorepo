@@ -9,14 +9,14 @@ const routes: Routes = [
   },
   {
     path: 'main',
-    loadChildren: () => import("../modules/main/main.module").then(m => m.MainModule),
+    loadChildren: () => import("../modules/app-task-main/main.module").then(m => m.MainModule),
   },
   {
     path: 'administration',
     loadChildren: () => import("../modules/admin/admin.module").then(m => m.AdminModule),
   },
   // { path: 'error', component: ErrorPageComponent },
-  { path: '**', redirectTo: '/error' }
+  { path: '**', redirectTo: '/main/' }
 ];
 
 @NgModule({

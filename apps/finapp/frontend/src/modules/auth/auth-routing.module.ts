@@ -1,40 +1,43 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { AuthComponent } from './auth.component';
+import { LoginPageComponent } from './login-page/login-page.component';
+
 
 const routes: Routes = [
-  // {
-  //   path: "login",
-  //   component: PageLoginComponent,
-  // },
-  // {
-  //   path: "registration",
-  //   component: PageLoginComponent,
-  //   // data: {
-  //   //   restore: true
-  //   // }
-  // },
-  // {
-  //   path: "restore-password",
-  //   component: PageLoginComponent,
-  //   // data: {
-  //   //   restore: true
-  //   // }
-  // },
+  {
+    path: "login",
+    component: LoginPageComponent,
+  },
+  {
+    path: "registration",
+    component: LoginPageComponent,
+    // data: {
+    //   registration: true
+    // }
+  },
+  {
+    path: "restore",
+    component: LoginPageComponent,
+    // data: {
+    //   restore: true
+    // }
+  },
+  {
+    path: "confirm",
+    component: LoginPageComponent,
+    // data: {
+    //   confirm: true
+    // }
+  },
   {
     path: "",
     component: AuthComponent,
-    // canActivate: [ AuthGuard ],
-    children: [
-      {
-        path: "",
-        // loadChildren: () => import("./pages/dashboard/dashboard.module").then(m => m.DashboardModule),
-      },
-    ]
+    redirectTo: 'login'
   },
   {
     path: "**",
-    redirectTo: "/auth/login"
+    redirectTo: "login"
   },
 ];
 

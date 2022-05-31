@@ -38,19 +38,21 @@ export class LoginPageComponent implements OnInit, OnDestroy {
 
   submit(): void {
     this.form.disable();
-    // if ( !this.form.invalid ) {
-    //   const user = this.form.value;
-    //   this.aSub = this.authService.login(user)
-    //     .subscribe(() => {
-    //       this.router.navigate(['/cabinet']);
-    //     },
-    //     err => {
-    //       console.log(err);
-    //       this.form.enable();
-    //     });
-    // }
-    // else {
-    //   this.form.enable();
-    // }
+    if ( !this.form.invalid ) {
+      const user = this.form.value;
+      this.aSub = this.authService.login(user)
+        .subscribe(() => {
+          this.router.navigate(['/cabinet']);
+        },
+        err => {
+          console.log(err);
+          this.form.enable();
+        });
+    }
+    else {
+      this.form.enable();
+    }
   }
+
+
 }
