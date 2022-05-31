@@ -18,6 +18,7 @@ import { OperationModule } from './modules/finance/operation/operation.module';
 import { TaskModule } from './modules/tasks/task/task.module';
 import { TagModule } from './modules/tasks/tags/tag.module';
 import { ListModule } from './modules/tasks/lists/list.module';
+import { AppGateway } from './gateway/gateway.gateway';
 
 
 @Module({
@@ -60,7 +61,7 @@ import { ListModule } from './modules/tasks/lists/list.module';
     TagModule,
     ListModule,
   ],
-  providers: [FilesService],
+  providers: [FilesService, AppGateway],
   // controllers: [AppController],
 })
 export class AppModule implements NestModule {
