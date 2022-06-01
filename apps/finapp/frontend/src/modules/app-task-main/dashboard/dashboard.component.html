@@ -1,0 +1,38 @@
+<section class="balance">
+  <h2 class="keyVal">Общий баланс: <span class="val">{{ balance }}</span></h2>
+  <ul>
+    <li>
+      <p class="keyVal">Всего по картам:<span class="val">{{ cards.total || 0 }}</span></p>
+      <ul *ngIf="cards.hasOwnProperty('list') && cards.list.length">
+        <li class="keyVal" *ngFor="let item of cards.list">{{ item.name }}:<span class="val">{{ item.balance }}</span></li>
+      </ul>
+    </li>
+
+    <li>
+      <p class="keyVal">Всего по вкладам:<span class="val">{{ contributions.total || 0 }}</span></p>
+      <ul *ngIf="contributions.hasOwnProperty('list') && contributions.list.length">
+        <li class="keyVal" *ngFor="let item of contributions.list">{{ item.name }}:<span class="val">{{ item.balance }}</span></li>
+      </ul>
+    </li>
+
+    <li>
+      <p class="keyVal">Наличных:<span class="val">{{ cash.total || 0 }}</span></p>
+      <ul *ngIf="cash.hasOwnProperty('list') && cash.list.length">
+        <li class="keyVal" *ngFor="let item of cash.list">{{ item.name }}:<span class="val">{{ item.balance }}</span></li>
+      </ul>
+    </li>
+
+    <li>
+      <p class="keyVal">Накопления<span class="val">{{ savings.total || 0 }}</span></p>
+      <ul *ngIf="savings.hasOwnProperty('list') && savings.list.length">
+        <li class="keyVal" *ngFor="let item of savings.list">{{ item.name }}:<span class="val">{{ item.balance }}</span></li>
+      </ul>
+    </li>
+  </ul>
+
+</section>
+
+<section>
+  <h2>Статистика</h2>
+  <button></button>
+</section>

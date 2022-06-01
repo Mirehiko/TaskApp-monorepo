@@ -42,7 +42,7 @@ export class LoginPageComponent implements OnInit, OnDestroy {
       const user = this.form.value;
       this.aSub = this.authService.login(user)
         .subscribe(() => {
-          this.router.navigate(['/cabinet']);
+          this.router.navigate(['/main/dashboard']);
         },
         err => {
           console.log(err);
