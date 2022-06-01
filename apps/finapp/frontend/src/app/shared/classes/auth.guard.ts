@@ -13,21 +13,14 @@ import { AuthService } from '../services/auth.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard implements CanActivate, CanActivateChild {
+export class AuthGuard implements CanActivate {
   constructor(private auth: AuthService, private router: Router) {}
 
-  canActivate(
+  async canActivate(
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
-    return this.canActivate(childRoute, state);
-  }
-
-  canActivateChild(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
-    if (this.auth.isAuthenticated()) {
+  ): Promise<any> {
+    if ( await this.auth.isAuthenticated()) {
       return of(true);
     } else {
       this.router.navigate(['/auth/login'], {
@@ -38,4 +31,20 @@ export class AuthGuard implements CanActivate, CanActivateChild {
       return of(false);
     }
   }
+
+  // canActivateChild(
+  //   route: ActivatedRouteSnapshot,
+  //   state: RouterStateSnapshot
+  // ): Observable<boolean> | Promise<boolean> | boolean {
+  //   if (this.auth.isAuthenticated()) {
+  //     return of(true);
+  //   } else {
+  //     this.router.navigate(['/auth/login'], {
+  //       queryParams: {
+  //         accessDenied: true,
+  //       },
+  //     });
+  //     return of(false);
+  //   }
+  // }
 }

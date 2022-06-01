@@ -6,7 +6,15 @@ import {
 import {AuthService} from "./auth.service";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {User} from "../user/schemas/user.entity";
-import { AuthUserDto, ChangePasswordDto, ForgotPasswordDto, UserRequestDto } from '@finapp/app-common';
+import {
+  AuthResponseDto,
+  AuthUserDto,
+  ChangePasswordDto,
+  ForgotPasswordDto,
+  UserRequestDto,
+  UserResponseDto
+} from '@finapp/app-common';
+import { plainToClass } from 'class-transformer';
 
 
 // TODO: Use class-transformer
@@ -26,8 +34,9 @@ export class AuthController {
   @ApiOperation({summary: 'Вход в систему'})
   @ApiResponse({status: 200, type: User})
   @Post('login')
-  async login(@Body() authUserDto: AuthUserDto): Promise<any> {
-    return this.authService.signIn(authUserDto);
+  async login(@Body() authUserDto: AuthUserDto): Promise<AuthResponseDto> {
+    const authUser = await this.authService.signIn(authUserDto);
+    return plainToClass(AuthResponseDto, authUser, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Выход из системы'})

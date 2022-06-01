@@ -19,7 +19,7 @@ import {
   ChangePasswordDto,
   ForgotPasswordDto,
   UserRequestDto,
-  AuthUserDto
+  AuthUserDto, AuthResponseDto
 } from '@finapp/app-common';
 
 
@@ -62,7 +62,7 @@ export class AuthService {
    * User login
    * @param authUserDto
    */
-  async signIn(authUserDto: AuthUserDto): Promise<{ token: string }> {
+  async signIn(authUserDto: AuthUserDto): Promise<AuthResponseDto> {
     const user = await this.validateUser(authUserDto);
     const token = await this.generateToken(user);
     if (user.status === UserStatusEnum.PENDING) {
@@ -70,7 +70,7 @@ export class AuthService {
         // await this.userService.usersRepository.save(operation);
         await this.sendConfirmation(user);
     }
-    return {token: token};
+    return {token, user};
   }
 
   /**

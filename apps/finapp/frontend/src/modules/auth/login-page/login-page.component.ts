@@ -36,18 +36,13 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  submit(): void {
+  async submit(): Promise<void> {
     this.form.disable();
     if ( !this.form.invalid ) {
       const user = this.form.value;
-      this.aSub = this.authService.login(user)
-        .subscribe(() => {
-          this.router.navigate(['/main/dashboard']);
-        },
-        err => {
-          console.log(err);
-          this.form.enable();
-        });
+      await this.authService.login(user);
+      this.router.navigate(['/main/dashboard']);
+      this.form.enable();
     }
     else {
       this.form.enable();

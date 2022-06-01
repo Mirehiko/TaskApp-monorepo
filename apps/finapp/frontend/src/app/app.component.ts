@@ -12,12 +12,12 @@ export class AppComponent implements OnInit {
   constructor(private auth: AuthService) {}
 
   ngOnInit(): void {
-    const potentialToken = localStorage.getItem('auth-token');
-    if (potentialToken === null) return;
-    const user = localStorage.getItem('permit');
-    if (user === null) return;
-    this.auth.user = JSON.parse(user);
-    this.auth.setToken(potentialToken);
+    // const potentialToken = localStorage.getItem('auth-token');
+    // if (potentialToken === null) return;
+    // const user = localStorage.getItem('permit');
+    // if (user === null) return;
+    // this.auth.user = JSON.parse(user);
+    // this.auth.setToken(potentialToken);
   }
 
 }
