@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
 import { ConnectedUserRepository } from './connected-user-repository';
 import { ConnectedUserEntity } from './schemas/connected-user.entity';
 import { User } from '../user/schemas/user.entity';
 import { In } from 'typeorm';
+import { Injectable } from '@nestjs/common';
 
 
 @Injectable()

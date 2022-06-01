@@ -7,11 +7,12 @@ import {Role} from "../role/schemas/role.entity";
 import { RoleModule } from '../role/role.module';
 import {AuthModule} from "../auth/auth.module";
 import {FilesModule} from "../../../files/files.module";
+import { ConnectedUserRepository } from '../gateway/connected-user-repository';
+
 
 @Module({
     imports: [
-        // DatabaseModule,
-        TypeOrmModule.forFeature(([UserRepository, Role])),
+        TypeOrmModule.forFeature(([UserRepository, ConnectedUserRepository, Role])),
         RoleModule,
         FilesModule,
         forwardRef(() => AuthModule)
