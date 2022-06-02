@@ -66,8 +66,8 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
   async handleConnection(client: Socket, ...args: any[]) {
     try {
-      const token = await this.jwtService.verify(client.handshake.headers.authorization);
-      const user = await this.userService.getByID(token.user.id);
+      const tokenUser = await this.jwtService.verify(client.handshake.headers.authorization);
+      const user = await this.userService.getByID(tokenUser.id, ['roles']);
       if (!user) {
         return this.disconnect(client);
       }
@@ -76,7 +76,8 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
       await this.connectedUserService.create(client.id, user);
       // return this.server.to(client.id).emit('notifications', notifications);
     }
-    catch {
+    catch(err) {
+      console.log(err)
       return this.disconnect(client);
     }
   }

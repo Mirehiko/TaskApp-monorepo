@@ -24,7 +24,7 @@ export class BaseService<T, U extends GetParamsData> {
    * @param relations
    */
 	public async getByID(id: number, relations: string[] = []): Promise<T> {
-		const entity = await this.repository.findOne({where: {id}, relations});
+		const entity = await this.repository.findOne(id, {relations});
 		if (entity) {
 			return entity;
 		}

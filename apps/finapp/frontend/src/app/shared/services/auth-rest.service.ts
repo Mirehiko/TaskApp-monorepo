@@ -7,18 +7,32 @@ import { Subscription } from 'rxjs';
 
 @Injectable({ providedIn: "root" })
 export class AuthRestService {
-  public baseUrl: '/auth';
+  public baseUrl = 'http://localhost:5000/api/auth';
 
   constructor(
     private http: HttpClient,
   ) {
   }
 
-  public async login(authUserDto: AuthUserDto): Promise<void> {
-    this.http.post(`auth/login`, authUserDto).subscribe(res => {
-      console.log(res)
-      // return res as AuthResponseDto;
-    });
+  public async login(authUserDto: AuthUserDto): Promise<AuthResponseDto> {
+    return new Promise<AuthResponseDto>( (ok, fail) => {
+      const sub = new Subscription();
+
+      sub.add(
+        this.http.post(`${this.baseUrl}/login`, authUserDto).subscribe(res => {
+          if (sub) {
+            sub.unsubscribe();
+          }
+          ok(res as AuthResponseDto)
+        }, (error) => {
+          if (sub) {
+            sub.unsubscribe();
+          }
+          fail(error);
+        })
+      );
+    })
+
   }
 
   public async logout(authUserDto: AuthUserDto): Promise<void> {

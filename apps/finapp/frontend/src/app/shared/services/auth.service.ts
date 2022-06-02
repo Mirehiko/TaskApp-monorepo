@@ -23,8 +23,8 @@ export class AuthService {
 
   async login(authUserDto: AuthUserDto): Promise<void> {
     const response =  await this.authRestService.login(authUserDto);
-    // this.user = response.user;
-    // this.setToken(response.token);
+    this.user = response.user;
+    this.setToken(response.token);
     // localStorage.setItem('permit', `${JSON.stringify(user)}`);
   }
 
