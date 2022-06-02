@@ -1,4 +1,3 @@
-import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 
 
@@ -19,12 +18,10 @@ export class CategoryRequestDto {
   @IsOptional()
   color?: string;
 
-  @ApiProperty({example: '1234', description: 'Parent id'})
   @IsNumber()
   @IsOptional()
   parent_id?: number;
 
-  @ApiProperty({example: 'true', description: 'Parent id'})
   @IsBoolean()
   @IsOptional()
   archived?: boolean;

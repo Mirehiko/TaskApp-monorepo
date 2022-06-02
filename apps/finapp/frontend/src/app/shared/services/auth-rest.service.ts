@@ -10,12 +10,13 @@ export class AuthRestService {
   ) {
   }
 
-  // public async login(authUserDto: AuthUserDto): Promise<AuthResponseDto> {
-  //   const response = await this.http.post<AuthResponseDto>('/api/auth/login', authUserDto).toPromise();
-  //   return response as AuthResponseDto;
-  // }
-  //
-  // public async getUserByToken(token: string | null): Promise<UserResponseDto | undefined> {
-  //   return await this.http.post<UserResponseDto>('auth/by-token', { data: { token: token }}).toPromise();
-  // }
+  public async login(authUserDto: AuthUserDto): Promise<AuthResponseDto> {
+    return await this.http.post<AuthResponseDto>('/api/auth/login', authUserDto).toPromise().then(res => {
+      return res as AuthResponseDto;
+    });
+  }
+
+  public async getUserByToken(token: string | null): Promise<UserResponseDto | undefined> {
+    return await this.http.post<UserResponseDto>('auth/by-token', { data: { token: token }}).toPromise();
+  }
 }

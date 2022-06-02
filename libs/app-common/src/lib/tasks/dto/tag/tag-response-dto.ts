@@ -1,14 +1,11 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
-import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from "class-transformer";
 
 
 export class TagResponseDto {
-  @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
   @Expose()
   id: number;
 
-  @ApiProperty({example: 'simple tag', description: 'Tag name'})
   @IsNotEmpty()
   @Expose()
   name: string;
@@ -17,7 +14,6 @@ export class TagResponseDto {
   @Expose()
   icon?: string;
 
-  @ApiProperty({example: '#fff', description: 'Tag color'})
   @IsOptional()
   @Expose()
   color?: string;
