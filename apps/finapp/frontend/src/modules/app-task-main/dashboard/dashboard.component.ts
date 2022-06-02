@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../app/shared/services/auth.service';
+import { SocketNotificationService } from '../services/socket-notification.service';
 
 
 @Component({
@@ -17,10 +18,12 @@ export class DashboardComponent implements OnInit {
   savings: any = {};
 
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private socketService: SocketNotificationService,
   ) { }
 
   ngOnInit(): void {
+    // this.socketService.connectToNotify();
     // this.analyticsService.userShotInfo(this.authService.user.id)
     //   .subscribe(data => {
     //     console.log(data);

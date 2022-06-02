@@ -32,24 +32,24 @@ export class EditRoleComponent implements OnInit, OnDestroy {
 
     this.form.disable();
 
-    this.route.params.pipe(
-      switchMap((params: Params) => {
-        if (params['id']) {
-          return this.roleService.getRoleById(params['id']);
-        }
-        return of(null);
-      })
-    ).subscribe((role: Role) => {
-      if (role) {
-        this.role = role;
-        this.form.patchValue({
-          name: role.name,
-          code_name: role.code_name,
-          desc: role.desc
-        });
-      }
-      this.form.enable();
-    }, err => console.log(err));
+    // this.route.params.pipe(
+    //   switchMap((params: Params) => {
+    //     if (params['id']) {
+    //       return this.roleService.getRoleById(params['id']);
+    //     }
+    //     return of(null);
+    //   })
+    // ).subscribe((role: Role) => {
+    //   if (role) {
+    //     this.role = role;
+    //     this.form.patchValue({
+    //       name: role.name,
+    //       code_name: role.code_name,
+    //       desc: role.desc
+    //     });
+    //   }
+    //   this.form.enable();
+    // }, err => console.log(err));
 
   }
 
