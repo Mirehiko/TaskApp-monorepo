@@ -22,7 +22,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // this.uSub = this.uService.getUserById(this.authService.user._id)
+    // this.uSub = this.uService.getUserById(this.authService.user.id)
     //   .subscribe(
     //     user => {
     //       this.user = user;

@@ -9,7 +9,8 @@ import { AuthRestService } from './auth-rest.service';
 })
 export class AuthService {
   private token: string | null = null;
-  public user: any;
+  public user: UserResponseDto;
+  // public user: UserResponseDto;
 
   constructor(
     private authRestService: AuthRestService,
@@ -21,14 +22,14 @@ export class AuthService {
   // }
 
   async login(authUserDto: AuthUserDto): Promise<void> {
-    const response =  await this.authRestService.login(authUserDto);
-    this.user = response.user;
-    this.setToken(response.token);
+    // const response =  await this.authRestService.login(authUserDto);
+    // this.user = response.user;
+    // this.setToken(response.token);
     // localStorage.setItem('permit', `${JSON.stringify(user)}`);
   }
 
   async logout(): Promise<void> {
-    this.user = null;
+    this.user = null as unknown as UserResponseDto;
     this.removeToken()
     await this.router.navigate([ "/login" ]);
   }

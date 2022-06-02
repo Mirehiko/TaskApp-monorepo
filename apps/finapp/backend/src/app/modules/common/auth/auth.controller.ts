@@ -58,6 +58,13 @@ export class AuthController {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
+  @ApiOperation({summary: 'Получение пользователя по токену'})
+  @Post('/by-token')
+  async getUserByToken(@Body() body): Promise<UserResponseDto> {
+    const user = this.authService.getUserByToken(body.token);
+    return plainToClass(UserResponseDto, user, { enableCircularCheck: true });
+  }
+
   @Patch('/change-password')
   // @UseGuards(AuthGuard())
   async changePassword(

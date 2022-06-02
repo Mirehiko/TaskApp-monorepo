@@ -1,5 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
-import { UserResponseDto } from '@finapp/app-common';
+import { UserResponseDto } from '../user/user-response.dto';
 
 
 export class AuthResponseDto {

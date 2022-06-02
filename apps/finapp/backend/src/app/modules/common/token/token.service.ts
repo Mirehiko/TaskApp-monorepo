@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException, Param} from '@nestjs/common';
+import { Injectable, NotFoundException, Param, UnauthorizedException } from '@nestjs/common';
 import {CreateUserTokenDto} from "./dto/user-token-dto";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Repository} from "typeorm";
@@ -57,5 +57,13 @@ export class TokenService {
   async exists(userId: number, token: string): Promise<boolean> {
     const row = await this.repository.findOne({ userId, token });
     return !!row;
+  }
+
+  async getUserIdByToken(token: string): Promise<number> {
+    const user = await this.repository.findOne({token}, {relations: ['User']});
+    if (!user) {
+      throw new UnauthorizedException({message: "User unauthorized"});
+    }
+    return user.userId;
   }
 }

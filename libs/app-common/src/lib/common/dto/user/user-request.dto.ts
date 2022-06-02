@@ -1,5 +1,6 @@
 import { IsArray, IsEmail, IsNumber, IsOptional, IsString, Length } from 'class-validator';
-import { RequestObjectWithId, RoleRequestDto, RoleResponseDto } from '@finapp/app-common';
+import { RequestObjectWithId } from '../objectWithId';
+import { RoleRequestDto } from '../role/role-request-dto';
 
 
 export class UserRequestDto implements RequestObjectWithId {

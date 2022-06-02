@@ -21,7 +21,7 @@ export class BillListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.bSub = this.billService.getBillsByUserId(this.authService.user._id)
+    this.bSub = this.billService.getBillsByUserId(this.authService.user.id)
       .subscribe(data => {
         console.log(data)
         // data.bills.forEach(bill => {

@@ -21,7 +21,7 @@ export class ListTargetComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // this.cSub = this.targetService.getTargetsByUserId(this.authService.user._id)
+    // this.cSub = this.targetService.getTargetsByUserId(this.authService.user.id)
     //   .subscribe(data => {
     //     data.targets.forEach(target => {
     //       console.log(data.targetTypes)

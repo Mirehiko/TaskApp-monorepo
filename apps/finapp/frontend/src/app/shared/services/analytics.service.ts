@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class AnalyticsService {
   constructor(private http: HttpClient) {}
 
-  userShotInfo(userId: string): Observable<any> {
+  userShotInfo(userId: number): Observable<any> {
     return this.http.get<any>(`/api/analytics/user/${userId}`);
   }
 

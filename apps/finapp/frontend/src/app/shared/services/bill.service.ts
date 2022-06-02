@@ -17,11 +17,11 @@ export class BillService {
     });
   }
 
-  getBillsByUserId(userId: string): Observable<any> {
+  getBillsByUserId(userId: number): Observable<any> {
     return this.http.get<any>(`/api/bill/user/${userId}`);
   }
 
-  getBillById(billId: string): Observable<Bill> {
+  getBillById(billId: number): Observable<Bill> {
     return this.http.get<Bill>(`/api/bill/${billId}`);
   }
 
@@ -29,11 +29,11 @@ export class BillService {
     return this.http.post<Bill>('/api/bill', bill);
   }
 
-  update(billId: string, bill: Bill): Observable<Bill> {
+  update(billId: number, bill: Bill): Observable<Bill> {
     return this.http.patch<Bill>(`/api/bill/${billId}`, bill);
   }
 
-  delete(billId: string): Observable<Message> {
+  delete(billId: number): Observable<Message> {
     return this.http.delete<Message>(`/api/bill/${billId}`);
   }
 }

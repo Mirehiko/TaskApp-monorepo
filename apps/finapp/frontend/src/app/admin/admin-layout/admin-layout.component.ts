@@ -35,9 +35,9 @@ export class AdminLayoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (!this.authService.user.isAdmin) {
-      this.router.navigate(['/login']);
-    }
+    // if (!this.authService.user.isAdmin) {
+    //   this.router.navigate(['/login']);
+    // }
   }
 
   logout(): void {

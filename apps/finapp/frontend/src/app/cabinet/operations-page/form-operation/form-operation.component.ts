@@ -52,7 +52,7 @@ export class FormOperationComponent implements OnInit, OnDestroy {
     // 2. Получаем счета юзера, доступные для перевода.
     // 3. Отправляем
     this.wholeSub$ = combineLatest(
-      this.billService.getBillsByUserId(this.authService.user._id),
+      this.billService.getBillsByUserId(this.authService.user.id),
       this.utilService.getOperationTypes(),
       this.catService.fetch()
     ).subscribe(

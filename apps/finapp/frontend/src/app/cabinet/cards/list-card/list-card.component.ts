@@ -21,7 +21,7 @@ export class ListCardComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    // this.cSub = this.cardService.getCardsByUserId(this.authService.user._id)
+    // this.cSub = this.cardService.getCardsByUserId(this.authService.user.id)
     //   .subscribe(data => {
     //     data.cards.forEach(card => {
     //       card.type = data.cardTypes.filter(type => type.key === card.type)[0].value;

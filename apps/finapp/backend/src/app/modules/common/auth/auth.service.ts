@@ -66,9 +66,9 @@ export class AuthService {
     const user = await this.validateUser(authUserDto);
     const token = await this.generateToken(user);
     if (user.status === UserStatusEnum.PENDING) {
-        // operation.status = UserStatusEnum.ACTIVE;
-        // await this.userService.usersRepository.save(operation);
-        await this.sendConfirmation(user);
+      // operation.status = UserStatusEnum.ACTIVE;
+      // await this.userService.usersRepository.save(operation);
+      await this.sendConfirmation(user);
     }
     return {token, user};
   }
@@ -234,4 +234,10 @@ export class AuthService {
     //     `,
     // });
   }
+
+  async getUserByToken(token: string): Promise<User> {
+    const userId = await this.tokenService.getUserIdByToken(token);
+    return await this.userService.getByID(userId);
+  }
+
 }

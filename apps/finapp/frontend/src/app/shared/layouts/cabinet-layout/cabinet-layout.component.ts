@@ -15,7 +15,7 @@ export class CabinetLayoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isAdmin = this.authService.user.isAdmin;
+    // this.isAdmin = this.authService.user.isAdmin;
   }
 
   logout(): void {

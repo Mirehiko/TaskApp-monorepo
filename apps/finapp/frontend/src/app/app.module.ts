@@ -25,7 +25,7 @@ export function tokenGetter() {
     ReactiveFormsModule,
     HttpClientModule,
     CabinetModule,
-    AdminModule
+    AdminModule,
   ],
   providers: [{
     provide: HTTP_INTERCEPTORS,

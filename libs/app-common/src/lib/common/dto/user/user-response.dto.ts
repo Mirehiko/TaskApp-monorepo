@@ -1,5 +1,5 @@
-import { RoleResponseDto } from '@finapp/app-common';
 import { Expose } from 'class-transformer';
+import { RoleResponseDto } from '../role/role-response-dto';
 
 
 export class UserResponseDto {

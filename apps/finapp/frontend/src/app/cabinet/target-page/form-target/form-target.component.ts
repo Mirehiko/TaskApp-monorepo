@@ -98,7 +98,7 @@ export class FormTargetComponent implements OnInit, OnDestroy {
 
     if (!this.form.invalid) {
       const sendTarget = this.form.value;
-      sendTarget.user = this.authService.user._id;
+      sendTarget.user = this.authService.user.id;
       // if (this.action === 'create') {
       //   obs$ = this.targetService.create(sendTarget);
       // } else {

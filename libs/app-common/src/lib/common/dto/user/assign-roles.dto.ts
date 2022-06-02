@@ -1,4 +1,4 @@
-import { RoleRequestDto } from '@finapp/app-common';
+import { RoleRequestDto } from "../role/role-request-dto";
 
 
 export class UserRolesDto {

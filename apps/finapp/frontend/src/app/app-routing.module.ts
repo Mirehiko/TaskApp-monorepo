@@ -10,7 +10,7 @@ const routes: Routes = [
   },
   {
     path: 'main',
-    canActivate: [ AuthGuard ],
+    // canActivate: [ AuthGuard ],
     loadChildren: () => import("../modules/app-task-main/main.module").then(m => m.MainModule),
   },
   {

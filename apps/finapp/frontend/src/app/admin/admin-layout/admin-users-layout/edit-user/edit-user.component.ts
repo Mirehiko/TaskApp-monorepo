@@ -83,7 +83,7 @@ export class EditUserComponent implements OnInit, OnDestroy {
   submit(): void {
     this.form.disable();
     if (!this.form.invalid) {
-      // this.userService.update(this.user._id, this.form.value)
+      // this.userService.update(this.user.id, this.form.value)
       //   .subscribe(user => {
       //     console.log('User was updated', user);
       //     this.user = user;
@@ -93,7 +93,7 @@ export class EditUserComponent implements OnInit, OnDestroy {
   }
 
   remove(): void {
-    // this.uSub$ = this.userService.delete(this.user._id)
+    // this.uSub$ = this.userService.delete(this.user.id)
     //   .subscribe(() => {
     //     this.router.navigate(['/admin', 'users']);
     //   });

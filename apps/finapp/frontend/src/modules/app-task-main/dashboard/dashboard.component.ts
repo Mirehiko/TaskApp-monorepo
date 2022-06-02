@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // this.analyticsService.userShotInfo(this.authService.user._id)
+    // this.analyticsService.userShotInfo(this.authService.user.id)
     //   .subscribe(data => {
     //     console.log(data);
     //     this.balance = data.total;

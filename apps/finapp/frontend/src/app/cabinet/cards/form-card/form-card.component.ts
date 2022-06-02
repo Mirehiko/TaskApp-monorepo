@@ -90,7 +90,7 @@ export class FormCardComponent implements OnInit, OnDestroy {
 
     if (!this.form.invalid) {
       const sendCard = this.form.value;
-      sendCard.user = this.authService.user._id;
+      sendCard.user = this.authService.user.id;
       // if (this.isNew) {
       //   obs$ = this.cardService.create(sendCard);
       // } else {
