@@ -4,9 +4,9 @@ import { ActivatedRoute, Router, Params } from '@angular/router';
 import { Subscription, combineLatest, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { UtilService } from '../../../shared/services/util.service';
-import { AuthService } from '../../../shared/services/auth.service';
 import { Card, Operation } from '../../../shared/interfaces';
 import { CardService } from '../../../shared/services/card.service';
+import { AuthService } from '../../../../modules/auth/services/auth.service';
 
 
 @Component({

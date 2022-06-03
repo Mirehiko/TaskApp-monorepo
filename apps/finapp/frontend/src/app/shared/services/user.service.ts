@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Message, User } from '../interfaces';
 import { UserResponseDto } from '@finapp/app-common';
-import { AuthService } from './auth.service';
+import { AuthService } from '../../../modules/auth/services/auth.service';
 
 
 @Injectable({

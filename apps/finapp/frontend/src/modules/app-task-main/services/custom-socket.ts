@@ -112,7 +112,8 @@ export interface ExtendedSocketIoConfig extends SocketIoConfig {
 }
 
 const config: ExtendedSocketIoConfig = {
-  url: 'http://localhost:5000', options: {
+  url: 'http://localhost:5000',
+  options: {
     extraHeaders: {
       Authorization: tokenGetter()
     }

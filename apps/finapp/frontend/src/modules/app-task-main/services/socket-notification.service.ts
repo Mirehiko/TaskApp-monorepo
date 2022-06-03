@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CustomSocket } from './custom-socket';
+import { Observable } from 'rxjs';
 
 
 @Injectable({
@@ -17,16 +18,16 @@ export class SocketNotificationService {
     this.socket.emit('addMessage', 'disconnectFromNotify');
   }
 
-  sendTaskChangedNotification(): void {
-    this.socket.emit('taskChanged', 'sendTaskChangedNotification');
+  sendTaskChangedNotification(data: any): void {
+    this.socket.emit('taskChanged', data);
   }
 
-  getTaskChangedNotification(): void {
-    console.log(this.socket.fromEvent<any>(''))
+  getTaskChangedNotification(): Observable<any> {
+    return this.socket.fromEvent<any>('taskUpdated');
   }
 
-  getNotifications(): void {
-    console.log(this.socket.fromEvent<any>(''))
+  getNotifications(): Observable<any> {
+    return this.socket.fromEvent<any>('')
   }
 }
 

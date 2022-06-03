@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Target } from '../../../shared/interfaces';
 import { TargetService } from '../../../shared/services/target.service';
-import { AuthService } from '../../../shared/services/auth.service';
+import { AuthService } from '../../../../modules/auth/services/auth.service';
 
 
 @Component({

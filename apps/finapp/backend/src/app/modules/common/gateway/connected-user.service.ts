@@ -1,7 +1,6 @@
 import { ConnectedUserRepository } from './connected-user-repository';
 import { ConnectedUserEntity } from './schemas/connected-user.entity';
 import { User } from '../user/schemas/user.entity';
-import { In } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 
 
@@ -15,8 +14,10 @@ export class ConnectedUserService {
     return this.repository.save({ socketId, user });
   }
 
-  async getUsers(users: User[]): Promise<ConnectedUserEntity[]> {
-    return await this.repository.find({user: In(users)});
+  async getUsers(userIds: number[]): Promise<ConnectedUserEntity[]> {
+    return await this.repository.createQueryBuilder('connectedUser')
+      .andWhere('connectedUser.userId IN (:userIds)', { userIds })
+      .getMany();
   }
 
   async findByUser(user: User): Promise<ConnectedUserEntity[]> {

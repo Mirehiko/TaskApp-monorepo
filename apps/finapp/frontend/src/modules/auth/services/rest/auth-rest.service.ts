@@ -1,13 +1,12 @@
 import { Injectable } from "@angular/core";
 import { AuthResponseDto, AuthUserDto, UserResponseDto } from '@finapp/app-common';
 import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
-import { response } from 'express';
 import { Subscription } from 'rxjs';
 
 
 @Injectable({ providedIn: "root" })
 export class AuthRestService {
-  public baseUrl = 'http://localhost:5000/api/auth';
+  private baseUrl = 'http://localhost:5000/api/auth';
 
   constructor(
     private http: HttpClient,

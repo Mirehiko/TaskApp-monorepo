@@ -24,7 +24,7 @@ export class BaseTreeService<T extends TreeEntity<T>, U extends GetParamsData> {
    * @param relations
    */
   public async getTreeByID(id: number, relations: string[] = []): Promise<T> {
-    const entity = await this.repository.findOne({where: {id}, relations: relations});
+    const entity = await this.repository.findOne(id, { relations });
     if (entity) {
       await this.repository.findDescendantsTree(entity, {depth: 2 });
       return entity;
@@ -38,7 +38,7 @@ export class BaseTreeService<T extends TreeEntity<T>, U extends GetParamsData> {
    * @param relations
    */
   public async getByID(id: number, relations: string[] = []): Promise<T> {
-    const entity = await this.repository.findOne({where: {id}, relations: relations});
+    const entity = await this.repository.findOne(id, { relations });
     if (entity) {
       return entity;
     }

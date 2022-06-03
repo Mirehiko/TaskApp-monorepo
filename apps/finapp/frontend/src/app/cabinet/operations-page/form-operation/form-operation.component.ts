@@ -6,9 +6,9 @@ import { switchMap } from 'rxjs/operators';
 import { UtilService } from '../../../shared/services/util.service';
 import { UserRestService } from '../../../shared/services/user.service';
 import { BillService } from '../../../shared/services/bill.service';
-import { AuthService } from '../../../shared/services/auth.service';
 import { OperationService } from '../../../shared/services/operation.service';
 import { CategoryService } from '../../../shared/services/category.service';
+import { AuthService } from '../../../../modules/auth/services/auth.service';
 
 
 @Component({

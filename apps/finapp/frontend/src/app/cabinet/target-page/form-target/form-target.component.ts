@@ -6,7 +6,7 @@ import { switchMap } from 'rxjs/operators';
 import { Bill, Operation, Target } from '../../../shared/interfaces';
 import { UtilService } from '../../../shared/services/util.service';
 import { TargetService } from '../../../shared/services/target.service';
-import { AuthService } from '../../../shared/services/auth.service';
+import { AuthService } from '../../../../modules/auth/services/auth.service';
 
 
 @Component({

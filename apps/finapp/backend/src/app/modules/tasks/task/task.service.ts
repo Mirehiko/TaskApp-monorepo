@@ -71,8 +71,8 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param id
    * @param requestDto
    */
-  async update(@Param() id: number, requestDto: TaskRequestDto, author: User = null): Promise<Task> {
-    const task = await this.repository.findOne(id);
+  async update(@Param() id: number, requestDto: TaskRequestDto, author: User = null, relations: string[]): Promise<Task> {
+    const task = await this.repository.findOne(id, { relations });
     if (!task) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
@@ -174,8 +174,8 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param id
    * @param tagIds
    */
-  async setReviewer(id: number, reviewerId: number | null, editor: User): Promise<Task> {
-    const task = await this.repository.findOne(id);
+  async setReviewer(id: number, reviewerId: number | null, editor: User, relations: string[]): Promise<Task> {
+    const task = await this.repository.findOne(id, { relations });
     if (!task) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
@@ -204,8 +204,8 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param id
    * @param tagIds
    */
-  async assignTaskTo(id: number, assignTo: number | null, editor: User): Promise<Task> {
-    const task = await this.repository.findOne(id);
+  async assignTaskTo(id: number, assignTo: number | null, editor: User, relations: string[]): Promise<Task> {
+    const task = await this.repository.findOne(id, { relations });
     if (!task) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
@@ -294,7 +294,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * Search tasks
    * @param paramsData
    */
-  async searchTasksBy(paramsData: TaskGetParams): Promise<Task[]> {
+  async searchTasksBy(paramsData: TaskGetParams, relations: string[] = []): Promise<Task[]> {
     const qb = this.repository.createQueryBuilder('tasks')
       .where("CONCAT(tasks.name, ' ', tasks.description) LIKE :text", { text: `%${paramsData.name || ''}%` });
 

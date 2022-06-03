@@ -6,7 +6,7 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
 } from '@nestjs/websockets';
-import { Logger, UnauthorizedException } from '@nestjs/common';
+import { Logger, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import { UserService } from '../user/user.service';
 import { TaskService } from '../../tasks/task/task.service';
@@ -15,8 +15,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Task } from '../../tasks/task/schemas/task.entity';
 
 
-@WebSocketGateway({ cors: true })
-export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+@WebSocketGateway({ cors: { origin: ['http://localhost:5000', 'http://localhost:3000', 'http://localhost:4200'] } })
+export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
   @WebSocketServer()
   server: Server;
 
@@ -48,11 +48,12 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
   @SubscribeMessage('taskChanged')
   async taskChanged(client: Socket, task: Task): Promise<void> {
-    const users = [task.createdBy, task.reviewer, task.assignee];
+    let userIds = [task.createdBy, task.reviewer, task.assignee].filter(u => !!u).map(u => u.id);
     // users = users.filter(u => u.connections[0].socketId !== client.id);
-    const notifyUsers = await this.connectedUserService.getUsers(users);
+    const notifyUsers = await this.connectedUserService.getUsers(userIds);
     for (const user of notifyUsers) {
       // TODO: Is it need to change 'Task' to 'TaskResponseDto'?
+
       await this.server.to(user.socketId).emit('taskUpdated', { updatedBy: task.updatedBy, task });
     }
     // TODO: save changes to database
@@ -86,5 +87,9 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     socket.emit('Error', new UnauthorizedException());
     socket.disconnect();
     this.logger.log(`Client disconnected: ${socket.id}`);
+  }
+
+  async onModuleInit() {
+    await this.connectedUserService.deleteAll();
   }
 }

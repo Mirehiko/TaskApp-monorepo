@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthResponseDto, AuthUserDto, UserResponseDto } from '@finapp/app-common';
 import { Router } from '@angular/router';
-import { AuthRestService } from './auth-rest.service';
+import { AuthRestService } from './rest/auth-rest.service';
 
 
 @Injectable({

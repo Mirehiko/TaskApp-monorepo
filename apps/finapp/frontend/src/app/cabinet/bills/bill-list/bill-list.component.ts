@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { BillService } from '../../../shared/services/bill.service';
-import { AuthService } from '../../../shared/services/auth.service';
 import { Bill } from '../../../shared/interfaces';
+import { AuthService } from '../../../../modules/auth/services/auth.service';
 
 
 @Component({

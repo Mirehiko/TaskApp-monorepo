@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../../app/shared/services/auth.service';
 import { SocketNotificationService } from '../services/socket-notification.service';
+import { AuthService } from '../../auth/services/auth.service';
+import { TaskRestService } from '../services/rest/task-rest.service';
+import { TaskResponseDto } from '@finapp/app-common';
+import { map, Observable } from 'rxjs';
 
 
 @Component({
@@ -17,12 +20,17 @@ export class DashboardComponent implements OnInit {
   credits: any = {};
   savings: any = {};
 
+  task: TaskResponseDto;
+  sub: Observable<any>
+
   constructor(
     private authService: AuthService,
+    private taskRestService: TaskRestService,
     private socketService: SocketNotificationService,
   ) { }
 
   ngOnInit(): void {
+
     // this.socketService.connectToNotify();
     // this.analyticsService.userShotInfo(this.authService.user.id)
     //   .subscribe(data => {
@@ -31,6 +39,19 @@ export class DashboardComponent implements OnInit {
     //     this.cash = data.cashTotal;
     //     this.savings = data.savingTotal;
     //   });
+
+    this.socketService.getTaskChangedNotification().subscribe((data: TaskResponseDto) => {
+      console.log(data);
+      // this.task = data;
+    });
+
+  }
+
+  async getData(): Promise<void> {
+    this.task = await this.taskRestService.update(100, {
+      name: 'FrontTests'
+    });
+    this.socketService.sendTaskChangedNotification(this.task)
   }
 
 }

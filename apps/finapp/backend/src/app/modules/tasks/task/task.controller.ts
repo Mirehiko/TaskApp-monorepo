@@ -4,7 +4,7 @@ import {
   Delete,
   Get,
   Param, Patch,
-  Post, Req, UseGuards,
+  Post, Req, UseGuards, UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TaskService } from './task.service';
@@ -44,7 +44,7 @@ export class TaskController {
   @ApiOperation({summary: 'Поиск задач'})
   @Get('tasks/search')
   async searchTask(@Body() params): Promise<TaskResponseDto[]> {
-    const tasks = await this.service.searchTasksBy(params); // TODO: add relations to search object
+    const tasks = await this.service.searchTasksBy(params, ['assignee', 'reviewer', 'createdBy', 'updatedBy', 'list', 'tags']); // TODO: add relations to search object
     return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
   }
 
@@ -61,7 +61,7 @@ export class TaskController {
   @Get('task/:id')
   async getTaskTreeById(@Param('id') id: number): Promise<TaskResponseDto> {
     const task = await this.service.getTreeByID(id, ['assignee', 'reviewer', 'createdBy', 'updatedBy', 'list', 'tags']);
-    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
+    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true, enableImplicitConversion: true });
   }
 
 	@ApiOperation({summary: 'Создание задачи/подзадачи'})
@@ -82,7 +82,7 @@ export class TaskController {
   @Post('task/:id/assign')
   async assignTaskTo(
     @Body('assigneeId') assigneeId: number, @Param() id: number, @Req() req): Promise<TaskResponseDto> {
-    const task = await this.service.assignTaskTo(id, assigneeId, req.user);
+    const task = await this.service.assignTaskTo(id, assigneeId, req.user, ['assignee', 'reviewer', 'createdBy', 'updatedBy', 'list', 'tags']);
     return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
   }
 
@@ -90,15 +90,15 @@ export class TaskController {
   @Post('task/:id/reviewer')
   async setReviewer(
     @Body('reviewerId') reviewerId: number, @Param() id: number, @Req() req): Promise<TaskResponseDto> {
-    const task = await this.service.setReviewer(id, reviewerId, req.user);
+    const task = await this.service.setReviewer(id, reviewerId, req.user, ['assignee', 'reviewer', 'createdBy', 'updatedBy', 'list', 'tags']);
     return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Обновление задачи'})
   @Patch('task/:id')
   async update(@Body() requestDto: TaskRequestDto, @Param() id: number, @Req() req): Promise<TaskResponseDto> {
-    const task = await this.service.update(id, requestDto, req.user);
-    return plainToClass(TaskResponseDto, task, { excludeExtraneousValues: true });
+    const task = await this.service.update(id, requestDto, req.user, ['assignee', 'reviewer', 'createdBy', 'updatedBy', 'list', 'tags']);
+    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true, enableImplicitConversion: true });
   }
 
   @ApiOperation({summary: 'Изменение статуса задачи'})
