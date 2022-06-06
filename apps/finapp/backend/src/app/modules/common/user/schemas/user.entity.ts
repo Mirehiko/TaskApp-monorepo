@@ -1,11 +1,12 @@
 import { Exclude } from 'class-transformer';
 import { Entity, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
-import {ApiProperty} from "@nestjs/swagger";
-import {BaseEntity} from '../../../base-entity';
-import {Role} from "../../role/schemas/role.entity";
-import {UserStatusEnum} from "../user-status.enum";
+import { ApiProperty } from "@nestjs/swagger";
+import { BaseEntity } from '../../../base-entity';
+import { Role } from "../../role/schemas/role.entity";
+import { UserStatusEnum } from "../user-status.enum";
 import { Bill } from '../../../finance/bill/schemas/bill.entity';
 import { ConnectedUserEntity } from '../../gateway/schemas/connected-user.entity';
+import { TaskCommentEntity } from '../../../tasks/task-comment/schemas/task-comment.entity';
 
 
 @Entity()
@@ -49,6 +50,11 @@ export class User extends BaseEntity {
   // @JoinTable()
   bills: Bill[];
 
+  @ApiProperty({ example: '', description: 'Соединения пользователя'})
   @OneToMany(() => ConnectedUserEntity, connection => connection.user, {nullable: true})
   connections: ConnectedUserEntity[];
+
+  @ApiProperty({ example: 'Comment[]', description: 'Упомянут в комментариях'})
+  @ManyToMany(() => TaskCommentEntity, taskCommentEntity => taskCommentEntity.notifyUsers)
+  mentionedIn: TaskCommentEntity[];
 }

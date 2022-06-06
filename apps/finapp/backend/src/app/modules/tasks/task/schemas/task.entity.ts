@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, Tree, TreeChildren, TreeParent } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, Tree, TreeChildren, TreeParent } from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
 import { TaskBehavior, TaskPriority, TaskStatus } from '@finapp/app-common';
 import { Tag } from '../../tags/schemas/tag.entity';
 import { List } from '../../lists/schemas/list.entity';
 import { TreeEntity } from '../../../base-tree-repository';
+import { TaskCommentEntity } from '../../task-comment/schemas/task-comment.entity';
 
 
 @Entity()
@@ -100,6 +101,10 @@ export class Task extends BaseEntity implements TreeEntity<Task> {
   @ApiProperty({ example: '2022.01.21', description: 'Дата удаления'})
   @Column({type: "datetime", nullable: true})
   endDate: string = null;
+
+  @ApiProperty({ example: 'TaskCommentEntity[]', description: 'Комментарии к задаче'})
+  @OneToMany(() => TaskCommentEntity, taskCommentEntity => taskCommentEntity.task)
+  comments: TaskCommentEntity[];
 
   // TODO: move some information to different metadata?
 }

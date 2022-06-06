@@ -13,6 +13,9 @@ import { TaskService } from '../../tasks/task/task.service';
 import { ConnectedUserService } from './connected-user.service';
 import { JwtService } from '@nestjs/jwt';
 import { Task } from '../../tasks/task/schemas/task.entity';
+import { TaskCommentService } from '../../tasks/task-comment/task-comment.service';
+import { TaskCommentEntity } from '../../tasks/task-comment/schemas/task-comment.entity';
+import { User } from '../user/schemas/user.entity';
 
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:5000', 'http://localhost:3000', 'http://localhost:4200'] } })
@@ -25,6 +28,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   constructor(
     private userService: UserService,
     private taskService: TaskService,
+    private taskCommentService: TaskCommentService,
     private connectedUserService: ConnectedUserService,
     private jwtService: JwtService,
   ) {
@@ -34,29 +38,25 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     this.logger.log('Socket-server up');
   }
 
-  @SubscribeMessage('commentChanged')
-  commentChanged(client: Socket, comment: any): void {
-    // TODO: Create comments API
-    // const users = [task.createdBy, task.reviewer, task.assignee];
-    // // users = users.filter(u => u.connections[0].socketId !== client.id);
-    // const notifyUsers = await this.connectedUserService.getUsers(users);
-    // for (const user of notifyUsers) {
-    //   // TODO: Is it need to change 'Task' to 'TaskResponseDto'?
-    //   await this.server.to(user.socketId).emit('taskUpdated', { updatedBy: task.updatedBy, task });
-    // }
+  @SubscribeMessage('createComment')
+  async commentChanged(client: Socket, comment: TaskCommentEntity): Promise<void> {
+    let userIds = [comment.task.createdBy, comment.task.reviewer, comment.task.assignee,
+      ...comment.notifyUsers].filter(u => !!u).map(u => u.id);
+    const notifyUsers = await this.connectedUserService.getUsers(userIds);
+
+    for (const user of notifyUsers) {
+      await this.sendNotification<{updatedBy: User, comment: TaskCommentEntity}>(user.socketId, 'commentAdded', { updatedBy: comment.updatedBy, comment });
+    }
   }
 
   @SubscribeMessage('taskChanged')
   async taskChanged(client: Socket, task: Task): Promise<void> {
     let userIds = [task.createdBy, task.reviewer, task.assignee].filter(u => !!u).map(u => u.id);
-    // users = users.filter(u => u.connections[0].socketId !== client.id);
+
     const notifyUsers = await this.connectedUserService.getUsers(userIds);
     for (const user of notifyUsers) {
-      // TODO: Is it need to change 'Task' to 'TaskResponseDto'?
-
-      await this.server.to(user.socketId).emit('taskUpdated', { updatedBy: task.updatedBy, task });
+      await this.sendNotification<{updatedBy: User, task: Task}>(user.socketId, 'taskUpdated', { updatedBy: task.updatedBy, task });
     }
-    // TODO: save changes to database
   }
 
   async handleDisconnect(client: Socket) {
@@ -91,5 +91,11 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
   async onModuleInit() {
     await this.connectedUserService.deleteAll();
+  }
+
+  private async sendNotification<T>(socketId: string, eventType: string, data: T): Promise<void> {
+    // TODO: Is it need to change 'Task' to 'TaskResponseDto'?
+    await this.server.to(socketId).emit(eventType, data);
+    // TODO: save changes to database
   }
 }

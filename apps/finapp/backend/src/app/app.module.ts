@@ -20,6 +20,7 @@ import { TagModule } from './modules/tasks/tags/tag.module';
 import { ListModule } from './modules/tasks/lists/list.module';
 import { AppGateway } from './modules/common/gateway/gateway.gateway';
 import { GatewayModule } from './modules/common/gateway/gateway.module';
+import { TaskCommentModule } from './modules/tasks/task-comment/task-comment.module';
 
 
 @Module({
@@ -62,6 +63,7 @@ import { GatewayModule } from './modules/common/gateway/gateway.module';
     TagModule,
     ListModule,
     GatewayModule,
+    TaskCommentModule,
   ],
   providers: [FilesService, AppGateway],
   // controllers: [AppController],

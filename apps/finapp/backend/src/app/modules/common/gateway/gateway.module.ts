@@ -7,12 +7,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { TaskModule } from '../../tasks/task/task.module';
 import { UserRepository } from '../user/user-repository';
 import { UserModule } from '../user/user.module';
+import { TaskCommentModule } from '../../tasks/task-comment/task-comment.module';
 
 
 @Module({
   imports: [
     TypeOrmModule.forFeature(([ConnectedUserRepository, UserRepository])),
-    AuthModule, UserModule, JwtModule, TaskModule
+    AuthModule, UserModule, JwtModule, TaskModule, TaskCommentModule,
   ],
   providers: [ConnectedUserService],
   exports: [ConnectedUserService]

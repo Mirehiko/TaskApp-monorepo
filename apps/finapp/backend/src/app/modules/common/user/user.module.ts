@@ -12,7 +12,7 @@ import { ConnectedUserRepository } from '../gateway/connected-user-repository';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature(([UserRepository, ConnectedUserRepository, Role])),
+        TypeOrmModule.forFeature(([UserRepository, ConnectedUserRepository, Role, ])),
         RoleModule,
         FilesModule,
         forwardRef(() => AuthModule)

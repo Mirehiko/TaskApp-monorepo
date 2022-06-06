@@ -2,6 +2,7 @@ import { Expose } from 'class-transformer';
 import { UserResponseDto } from '../../../common';
 import { TaskPriority, TaskStatus } from '../../enums';
 import { TagResponseDto } from '../tag';
+import { TaskCommentResponseDto } from './task-comment-response-dto';
 
 
 export class TaskResponseDto {
@@ -47,4 +48,7 @@ export class TaskResponseDto {
 	@Expose()
 	pinned?: boolean;
 	// config
+
+  @Expose()
+  comments?: TaskCommentResponseDto[];
 }
