@@ -104,9 +104,8 @@ export class TaskController {
   @ApiOperation({summary: 'Изменение статуса задачи'})
   @Post('task/:id/status')
   async setStatus(
-    @Body('status') status: TaskStatus, @Param() id: number, @Req() req): Promise<TaskResponseDto> {
-    const task = await this.service.setStatus(id, status, req.user);
-    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
+    @Body('status') status: TaskStatus, @Param() id: number, @Req() req): Promise<void> {
+    await this.service.setStatus(id, status, req.user);
   }
 
   @ApiOperation({summary: 'Изменение приоритета задачи'})
@@ -118,9 +117,8 @@ export class TaskController {
   @ApiOperation({summary: 'Изменение времени задачи'})
   @Post('task/:id/dateDue')
   async setDateDue( @Body() body, @Param() id: number,
-    @Req() req): Promise<TaskResponseDto> {
-    const task = await this.service.setDateDue(id, { startDate: body.startDate, endDate: body.endDate }, req.user);
-    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
+    @Req() req): Promise<void> {
+    await this.service.setDateDue(id, { startDate: body.startDate, endDate: body.endDate }, req.user);
   }
 
   @ApiOperation({summary: 'Удаление задачи'})
