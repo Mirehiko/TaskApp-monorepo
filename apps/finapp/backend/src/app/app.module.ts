@@ -21,6 +21,7 @@ import { ListModule } from './modules/tasks/lists/list.module';
 import { AppGateway } from './modules/common/gateway/gateway.gateway';
 import { GatewayModule } from './modules/common/gateway/gateway.module';
 import { TaskCommentModule } from './modules/tasks/task-comment/task-comment.module';
+import { TaskFilterModule } from './modules/tasks/task-filter/task-filter.module';
 
 
 @Module({
@@ -64,6 +65,7 @@ import { TaskCommentModule } from './modules/tasks/task-comment/task-comment.mod
     ListModule,
     GatewayModule,
     TaskCommentModule,
+    TaskFilterModule,
   ],
   providers: [FilesService, AppGateway],
   // controllers: [AppController],

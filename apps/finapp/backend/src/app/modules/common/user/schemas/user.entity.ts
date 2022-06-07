@@ -22,11 +22,11 @@ export class User extends BaseEntity {
   @ApiProperty({example: 'asdfs12casd;', description: 'Пароль'})
   @Exclude()
   @Column({ length: 150 })
-  password: string = '';
+  password: string;
 
   @ApiProperty({example: 'example@email.ru', description: 'Аватарка'})
-  @Column('text')
-  avatar: string = '';
+  @Column('text', {nullable: true})
+  avatar: string;
 
   @ApiProperty({ example: '', description: 'Роли'})
   @ManyToMany(() => Role, role => role.id)
@@ -35,7 +35,7 @@ export class User extends BaseEntity {
 
   @ApiProperty({ example: '2022.01.21', description: 'Дата блокировки'})
   @Column({type: "timestamp", nullable: true})
-  suspendedAt: Date = null;
+  suspendedAt: Date;
 
   @ApiProperty({ example: 'active', description: 'Статус пользователя'})
   @Column({type: "enum", enum: Object.values(UserStatusEnum), default: UserStatusEnum.PENDING})
@@ -43,7 +43,7 @@ export class User extends BaseEntity {
 
   @ApiProperty({example: 'Bad behavior', description: 'Причина блокировки'})
   @Column({type: "text", nullable: true})
-  suspendReason: string = '';
+  suspendReason: string;
 
   @ApiProperty({ example: 'Счет пользователя пользователя', description: 'Счет пользователя'})
   @OneToMany(() => Bill, bill => bill.user)

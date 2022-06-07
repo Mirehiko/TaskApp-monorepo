@@ -1,8 +1,9 @@
-import { Column, Entity, JoinTable, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
 import { ITaskFilterParams, TaskFilterType } from '@finapp/app-common';
+import { TaskFilterMetadataEntity } from './task-filter-metadata.entity';
 
 
 @Entity()
@@ -29,7 +30,8 @@ export class TaskFilterEntity extends BaseEntity {
   @Column({type: "enum", enum: Object.values(TaskFilterType), default: TaskFilterType.CUSTOM})
   type: TaskFilterType = TaskFilterType.CUSTOM;
 
-  @ApiProperty({ example: '{}', description: 'Параметры фильтра'})
-  @Column({type: "json", nullable: true})
-  metadata?: ITaskFilterParams;
+  @ApiProperty({ example: 'TaskFilterMetadataEntity', description: 'Параметры фильтра'})
+  @OneToOne(() => TaskFilterMetadataEntity)
+  @JoinColumn()
+  metadata?: TaskFilterMetadataEntity;
 }
