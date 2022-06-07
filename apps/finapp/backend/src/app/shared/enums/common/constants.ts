@@ -10,4 +10,6 @@ export enum Constants {
   TASK_REPOSITORY = "taskRepository",
   TAG_REPOSITORY = 'tagRepository',
   LIST_REPOSITORY = 'listRepository',
+  TASK_FILTER_REPOSITORY = 'taskFilterRepository',
+  TASK_COMMENT_REPOSITORY = 'taskCommentRepository',
 }
