@@ -1,7 +1,13 @@
-import { ListResponseDto, TagResponseDto, TaskPriority, TaskStatus, UserResponseDto } from '@finapp/app-common';
+import {
+  IDateRange,
+  ListResponseDto,
+  TagResponseDto,
+  TaskPriority,
+  TaskStatus,
+  UserResponseDto
+} from '@finapp/app-common';
 import { Expose } from 'class-transformer';
 import { IsOptional } from 'class-validator';
-
 
 
 export class TaskFilterMetadataResponseDto {
@@ -39,7 +45,7 @@ export class TaskFilterMetadataResponseDto {
 
   @Expose()
   @IsOptional()
-  dates?: {startDate: string, endDate: string};
+  dates?: IDateRange;
 
   @Expose()
   @IsOptional()

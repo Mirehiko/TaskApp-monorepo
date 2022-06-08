@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { TaskGetParams, TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
-import { TaskDateDueDto, TaskPriority, TaskRequestDto, TaskStatus } from '@finapp/app-common';
+import { IDateRange, TaskPriority, TaskRequestDto, TaskStatus } from '@finapp/app-common';
 import { TaskTreeRepository } from './task-repository';
 import { ListRepository } from '../lists/list-repository';
 import { UserRepository } from '../../common/user/user-repository';
@@ -30,6 +30,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
   /**
    * Create new node. If a parent task defined the task will be subtask of this parent task
    * @param requestDto
+   * @param author
    */
   public async createTree(@Param() requestDto: TaskRequestDto, author: User = null): Promise<Task> {
     const newTask = new Task();
@@ -70,6 +71,8 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * Update task data
    * @param id
    * @param requestDto
+   * @param author
+   * @param relations
    */
   async update(@Param() id: number, requestDto: TaskRequestDto, author: User = null, relations: string[]): Promise<Task> {
     const task = await this.repository.findOne(id, { relations });
@@ -138,7 +141,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
   /**
    * Add task to lists
    * @param id
-   * @param listIds
+   * @param listId
    */
   async addLists(id: number, listId: number): Promise<Task> {
     const task = await this.repository.findOne(id, {relations: ['list']});
@@ -157,7 +160,6 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
   /**
    * Remove task from lists
    * @param id
-   * @param listIds
    */
   async removeLists(id: number): Promise<any> {
     const task = await this.repository.findOne(id, {relations: ['list']});
@@ -172,7 +174,9 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
   /**
    * Set/unset reviewer for the task
    * @param id
-   * @param tagIds
+   * @param reviewerId
+   * @param editor
+   * @param relations
    */
   async setReviewer(id: number, reviewerId: number | null, editor: User, relations: string[]): Promise<Task> {
     const task = await this.repository.findOne(id, { relations });
@@ -202,7 +206,9 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
   /**
    * Set/unset responsible for the task
    * @param id
-   * @param tagIds
+   * @param assignTo
+   * @param editor
+   * @param relations
    */
   async assignTaskTo(id: number, assignTo: number | null, editor: User, relations: string[]): Promise<Task> {
     const task = await this.repository.findOne(id, { relations });
@@ -235,7 +241,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param dateDue
    * @param editor
    */
-  async setDateDue(id: number, dateDue: TaskDateDueDto, editor: User): Promise<Task> {
+  async setDateDue(id: number, dateDue: IDateRange, editor: User): Promise<Task> {
     const entity = await this.repository.findOne(id);
     if (!entity) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
@@ -293,6 +299,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
   /**
    * Search tasks
    * @param paramsData
+   * @param relations
    */
   async searchTasksBy(paramsData: TaskGetParams, relations: string[] = []): Promise<Task[]> {
     const qb = this.repository.createQueryBuilder('tasks')

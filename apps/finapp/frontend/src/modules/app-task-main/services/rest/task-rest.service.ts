@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { AuthUserDto, MoveDto, TaskPriority, TaskRequestDto, TaskResponseDto, TaskStatus } from '@finapp/app-common';
+import { IDateRange, MoveDto, TaskPriority, TaskRequestDto, TaskResponseDto, TaskStatus } from '@finapp/app-common';
 import { HttpClient} from '@angular/common/http';
 import { BaseRestService } from './basic-rest.service';
 import { TaskGetParams } from '../../../../../../backend/src/app/modules/tasks/task/interfaces/task-params';
@@ -50,13 +50,20 @@ export class TaskRestService extends BaseRestService {
     return await this.POST<void>(`${this.baseUrl}/task/${taskId}/priority`, { priority });
   }
 
-  // TODO: Добавить интерфес для периода дат
-  public async setDateDue(taskId: number, priority: TaskPriority): Promise<void> {
-    return await this.POST<void>(`${this.baseUrl}/task/${taskId}/dateDue`, { priority });
+  public async setDateDue(taskId: number, dateRange: IDateRange): Promise<void> {
+    return await this.POST<void>(`${this.baseUrl}/task/${taskId}/dateDue`, dateRange);
   }
 
   public async move(moveDto: MoveDto): Promise<TaskResponseDto[]> {
     return await this.POST<TaskResponseDto[]>(`${this.baseUrl}/tasks/move`, moveDto);
+  }
+
+  public async addTaskTags(taskId: number, tagIds: number[]): Promise<void> {
+    return await this.POST<void>(`${this.baseUrl}/task/${taskId}/tags`, { tagIds });
+  }
+
+  public async removeTaskTags(taskId: number, tagIds: number[]): Promise<void> {
+    return await this.DELETE<void>(`${this.baseUrl}/task/${taskId}/tags`, { tagIds });
   }
 
   public async copy(targetId: number = -1, taskIds: number[]): Promise<TaskResponseDto[]> {
@@ -81,6 +88,10 @@ export class TaskRestService extends BaseRestService {
 
   public async moveTasksToTrash(taskIds: number[]): Promise<void> {
     return await this.DELETE<void>(`${this.baseUrl}/tasks/trash`, {taskIds});
+  }
+
+  public async getTaskTrash(): Promise<TaskResponseDto[]> {
+    return await this.GET<TaskResponseDto[]>(`${this.baseUrl}/tasks/trash`);
   }
 
   public async restore(taskId: number): Promise<void> {
