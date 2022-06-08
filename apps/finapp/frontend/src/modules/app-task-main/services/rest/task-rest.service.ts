@@ -66,12 +66,16 @@ export class TaskRestService extends BaseRestService {
     return await this.DELETE<void>(`${this.baseUrl}/task/${taskId}/tags`, { tagIds });
   }
 
-  public async copy(targetId: number = -1, taskIds: number[]): Promise<TaskResponseDto[]> {
-    return await this.POST<TaskResponseDto[]>(`${this.baseUrl}/tasks/copy`, {id: targetId, taskIds});
+  public async addTaskLists(taskId: number, listId: number): Promise<void> {
+    return await this.POST<void>(`${this.baseUrl}/task/${taskId}/list`, { listId });
   }
 
-  public async getTaskTrash(): Promise<TaskResponseDto[]> {
-    return await this.GET<TaskResponseDto[]>(`${this.baseUrl}/tasks/trash`);
+  public async removeTaskLists(taskId: number): Promise<void> {
+    return await this.DELETE<void>(`${this.baseUrl}/task/${taskId}/list`);
+  }
+
+  public async copy(targetId: number = -1, taskIds: number[]): Promise<TaskResponseDto[]> {
+    return await this.POST<TaskResponseDto[]>(`${this.baseUrl}/tasks/copy`, {id: targetId, taskIds});
   }
 
   public async deleteTask(taskId: number): Promise<void> {

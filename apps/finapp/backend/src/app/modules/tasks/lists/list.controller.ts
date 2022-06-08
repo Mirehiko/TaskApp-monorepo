@@ -100,8 +100,8 @@ export class ListController {
 
 	@ApiOperation({summary: 'Копирование задач'})
 	@Post('lists/copy')
-	async copyLists(@Body() body, @Req() req): Promise<ListResponseDto> {
-	  const lists = await this.service.duplicate(body.id, List, req.user);
+	async copyLists(@Body('id') id, @Req() req): Promise<ListResponseDto> {
+	  const lists = await this.service.duplicate(id, List, req.user);
 	  return plainToClass(ListResponseDto, lists, { excludeExtraneousValues: true });
 	}
 }
