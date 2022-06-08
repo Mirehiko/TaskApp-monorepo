@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { AuthUserDto, MoveDto, TaskPriority, TaskRequestDto, TaskResponseDto, TaskStatus } from '@finapp/app-common';
+import { IDateRange, MoveDto, TaskPriority, TaskRequestDto, TaskResponseDto, TaskStatus } from '@finapp/app-common';
 import { HttpClient} from '@angular/common/http';
 import { BaseRestService } from './basic-rest.service';
 import { TaskGetParams } from '../../../../../../backend/src/app/modules/tasks/task/interfaces/task-params';
@@ -50,9 +50,8 @@ export class TaskRestService extends BaseRestService {
     return await this.POST<void>(`${this.baseUrl}/task/${taskId}/priority`, { priority });
   }
 
-  // TODO: Добавить интерфес для периода дат
-  public async setDateDue(taskId: number, priority: TaskPriority): Promise<void> {
-    return await this.POST<void>(`${this.baseUrl}/task/${taskId}/dateDue`, { priority });
+  public async setDateDue(taskId: number, dateRange: IDateRange): Promise<void> {
+    return await this.POST<void>(`${this.baseUrl}/task/${taskId}/dateDue`, dateRange);
   }
 
   public async move(moveDto: MoveDto): Promise<TaskResponseDto[]> {

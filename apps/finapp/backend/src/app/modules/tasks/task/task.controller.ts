@@ -4,12 +4,13 @@ import {
   Delete,
   Get,
   Param, Patch,
-  Post, Req, UseGuards, UseInterceptors
+  Post, Req, UseGuards
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TaskService } from './task.service';
 import { plainToClass } from 'class-transformer';
 import {
+  IDateRange,
   MoveDto, TaskPriority,
   TaskRequestDto,
   TaskResponseDto, TaskStatus
@@ -116,9 +117,9 @@ export class TaskController {
 
   @ApiOperation({summary: 'Изменение времени задачи'})
   @Post('task/:id/dateDue')
-  async setDateDue( @Body() body, @Param() id: number,
+  async setDateDue( @Body() body: IDateRange, @Param() id: number,
     @Req() req): Promise<void> {
-    await this.service.setDateDue(id, { startDate: body.startDate, endDate: body.endDate }, req.user);
+    await this.service.setDateDue(id, body, req.user);
   }
 
   @ApiOperation({summary: 'Удаление задачи'})
