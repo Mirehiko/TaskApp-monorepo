@@ -1,16 +1,15 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { GetParamsData } from '../../base-service';
 import { CategoryTreeRepository } from './category-repository';
 import { Category } from './schemas/category.entity';
-import { CategoryRequestDto } from '@finapp/app-common';
+import { CategoryRequestDto, IGetParamsData } from '@finapp/app-common';
 import { UserRepository } from '../../common/user/user-repository';
 import { User } from '../../common/user/schemas/user.entity';
-import { CategoryGetParams } from './interfaces/category-params';
 import { BaseTreeService } from '../../base-tree-service';
+import { ICategoryGetParams } from '../../../../../../../../libs/app-common/src/lib/finance/interfaces';
 
 
 @Injectable()
-export class CategoryService extends BaseTreeService<Category, GetParamsData> {
+export class CategoryService extends BaseTreeService<Category, IGetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такого счета';
 	protected entityOrRelationNotFoundMessage: string = '';
 	protected relations: string[] = ['createdBy', 'createdBy.users'];
@@ -76,7 +75,7 @@ export class CategoryService extends BaseTreeService<Category, GetParamsData> {
    * Search categories
    * @param paramsData
    */
-  async searchCategoriesBy(paramsData: CategoryGetParams): Promise<Category[]> {
+  async searchCategoriesBy(paramsData: ICategoryGetParams): Promise<Category[]> {
     const qb = this.repository.createQueryBuilder('category')
       .where("CONCAT(tasks.name, ' ', tasks.description) LIKE :text", { text: `%${paramsData.name || ''}%` });
 

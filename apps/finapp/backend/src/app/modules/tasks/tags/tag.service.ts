@@ -1,16 +1,14 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { GetParamsData } from '../../base-service';
 import { Tag } from './schemas/tag.entity';
 import { TagTreeRepository } from './tag-repository';
 import { TaskTreeRepository } from '../task/task-repository';
-import { TagRequestDto } from '@finapp/app-common';
+import { IGetParamsData, ITagGetParams, TagRequestDto } from '@finapp/app-common';
 import { User } from '../../common/user/schemas/user.entity';
-import { TagGetParams } from './interfaces/tag-params';
 import { BaseTreeService } from '../../base-tree-service';
 
 
 @Injectable()
-export class TagService extends BaseTreeService<Tag, GetParamsData> {
+export class TagService extends BaseTreeService<Tag, IGetParamsData> {
   protected entityNotFoundMessage: string = 'Нет такого счета';
   protected entityOrRelationNotFoundMessage: string = '';
   protected relations: string[] = [];
@@ -74,7 +72,7 @@ export class TagService extends BaseTreeService<Tag, GetParamsData> {
    * Search tags
    * @param paramsData
    */
-  async searchTagsBy(paramsData: TagGetParams): Promise<Tag[]> {
+  async searchTagsBy(paramsData: ITagGetParams): Promise<Tag[]> {
     const qb = this.repository.createQueryBuilder('tags')
       .where("tags.name LIKE :text", { text: `%${paramsData.name || ''}%` });
 

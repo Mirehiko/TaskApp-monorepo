@@ -14,7 +14,7 @@ import { RolesGuard } from '../../common/auth/roles.guard';
 import { OperationService } from './operation.service';
 import { OperationRequestDto, OperationResponseDto } from '@finapp/app-common';
 import { plainToClass } from 'class-transformer';
-import { OperationGetParamsData } from './interfaces/operation-params';
+import { IOperationGetParamsData } from '../../../../../../../../libs/app-common/src/lib/finance/interfaces';
 
 
 @ApiTags('Операции')
@@ -49,7 +49,7 @@ export class OperationController {
   @UseInterceptors(ClassSerializerInterceptor)
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/')
-  async getBy(@Query() requestDto: OperationGetParamsData): Promise<OperationResponseDto> {
+  async getBy(@Query() requestDto: IOperationGetParamsData): Promise<OperationResponseDto> {
     const operation = await this.service.getBy(requestDto, ['createdBy', 'createdBy.users']);
     return plainToClass(OperationResponseDto, operation, { excludeExtraneousValues: true });
 	}

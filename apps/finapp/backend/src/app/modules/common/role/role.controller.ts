@@ -11,7 +11,6 @@ import {
   UseGuards,
   UseInterceptors
 } from '@nestjs/common';
-import { GetParamsData } from '../../base-service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles-auth.decorator';
 import { RolesGuard } from '../auth/roles.guard';
@@ -19,7 +18,7 @@ import {RoleService} from "./role.service";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import { Role } from './schemas/role.entity';
 import {TransformInterceptor} from "../../../interceptors/transform.interceptor";
-import { RoleRequestDto, RoleResponseDto } from '@finapp/app-common';
+import { IGetParamsData, RoleRequestDto, RoleResponseDto } from '@finapp/app-common';
 import { plainToClass } from 'class-transformer';
 
 
@@ -53,7 +52,7 @@ export class RoleController {
   @ApiResponse({status: 200, type: Role})
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('role/:id')
-  async getRoleBy(@Query() requestParams: GetParamsData): Promise<RoleResponseDto> {
+  async getRoleBy(@Query() requestParams: IGetParamsData): Promise<RoleResponseDto> {
     const role = await this.service.getBy(requestParams, ['permissions']);
     return plainToClass(RoleResponseDto, role, { enableCircularCheck: true });
   }

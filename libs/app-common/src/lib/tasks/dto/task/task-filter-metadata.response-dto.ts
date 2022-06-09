@@ -1,13 +1,8 @@
-import {
-  IDateRange,
-  ListResponseDto,
-  TagResponseDto,
-  TaskPriority,
-  TaskStatus,
-  UserResponseDto
-} from '@finapp/app-common';
 import { Expose } from 'class-transformer';
 import { IsOptional } from 'class-validator';
+import { ListResponseDto, TagResponseDto } from '../..';
+import { IDateRange, UserResponseDto } from '../../../common';
+import { TaskPriority, TaskStatus } from '../../enums';
 
 
 export class TaskFilterMetadataResponseDto {

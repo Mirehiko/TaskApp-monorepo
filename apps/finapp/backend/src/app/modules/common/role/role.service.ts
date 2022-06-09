@@ -1,13 +1,13 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { BaseService, GetParamsData } from '../../base-service';
+import { BaseService } from '../../base-service';
 import { Role } from './schemas/role.entity';
-import { RoleRequestDto } from '@finapp/app-common';
+import { IGetParamsData, RoleRequestDto } from '@finapp/app-common';
 import { PermissionService } from '../permission/permission.service';
 import { RoleRepository } from './role-repository';
 
 
 @Injectable()
-export class RoleService extends BaseService<Role, GetParamsData, RoleRepository> {
+export class RoleService extends BaseService<Role, IGetParamsData, RoleRepository> {
   protected entityNotFoundMessage: string = 'Нет такой роли';
 
   constructor(

@@ -1,12 +1,11 @@
-import { MoveDto } from "@finapp/app-common";
+import { IGetParamsData, MoveDto } from '@finapp/app-common';
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { In, Not, IsNull } from "typeorm";
-import { GetParamsData } from "./base-service";
 import { TreeEntity, BaseTreeRepository } from "./base-tree-repository";
 import { User } from "./common/user/schemas/user.entity";
 
 
-export class BaseTreeService<T extends TreeEntity<T>, U extends GetParamsData> {
+export class BaseTreeService<T extends TreeEntity<T>, U extends IGetParamsData> {
   protected repository: BaseTreeRepository<T>;
   protected entityNotFoundMessage: string;
 

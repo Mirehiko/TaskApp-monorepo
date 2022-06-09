@@ -12,13 +12,12 @@ import {
   UseInterceptors
 } from '@nestjs/common';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
-import { GetParamsData } from '../../base-service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles-auth.decorator';
 import { RolesGuard } from '../auth/roles.guard';
 import {PermissionService} from "./permission.service";
 import {Permission} from "./schemas/permission.entity";
-import { PermissionRequestDto, PermissionResponseDto, UserResponseDto } from '@finapp/app-common';
+import { IGetParamsData, PermissionRequestDto, PermissionResponseDto, UserResponseDto } from '@finapp/app-common';
 import { plainToClass } from 'class-transformer';
 import { TransformInterceptor } from '../../../interceptors/transform.interceptor';
 
@@ -50,7 +49,7 @@ export class PermissionController {
   @ApiOperation({summary: 'Получение разрешения по полю'})
   @ApiResponse({status: 200, type: Permission})
   @Get('category/:id')
-  async getPermissionBy(@Body() requestParams: GetParamsData): Promise<PermissionResponseDto> {
+  async getPermissionBy(@Body() requestParams: IGetParamsData): Promise<PermissionResponseDto> {
     const permission = await this.permissionService.getBy(requestParams);
     return plainToClass(PermissionResponseDto, permission, { enableCircularCheck: true });
   }

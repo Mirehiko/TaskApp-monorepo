@@ -1,8 +1,7 @@
 import { Injectable } from "@angular/core";
-import { MoveDto, TagRequestDto, TagResponseDto } from '@finapp/app-common';
+import { ITagGetParams, MoveDto, TagRequestDto, TagResponseDto } from '@finapp/app-common';
 import { HttpClient} from '@angular/common/http';
 import { BaseRestService } from './basic-rest.service';
-import { TagGetParams } from '../../../../../../backend/src/app/modules/tasks/tags/interfaces/tag-params';
 
 
 @Injectable({ providedIn: "root" })
@@ -30,7 +29,7 @@ export class TagRestService extends BaseRestService {
     return await this.GET<TagResponseDto[]>(`${this.baseUrl}/tags`);
   }
 
-  public async search(params: TagGetParams): Promise<TagResponseDto[]> {
+  public async search(params: ITagGetParams): Promise<TagResponseDto[]> {
     return await this.GET<TagResponseDto[]>(`${this.baseUrl}/tags/search`, params);
   }
 

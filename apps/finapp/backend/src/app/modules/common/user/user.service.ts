@@ -1,16 +1,15 @@
 import {HttpException, HttpStatus, Injectable, Param} from '@nestjs/common';
 import { BaseService } from '../../base-service';
-import { UserGetParamsData } from './interfaces/user-params';
 import {User} from "./schemas/user.entity";
 import {RoleService} from "../role/role.service";
 import {FilesService} from "../../../files/files.service";
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from './user-repository';
-import { BanUserDto, UserRequestDto, UserRolesDto } from '@finapp/app-common';
+import { BanUserDto, IUserGetParamsData, UserRequestDto, UserRolesDto } from '@finapp/app-common';
 
 
 @Injectable()
-export class UserService extends BaseService<User, UserGetParamsData, UserRepository> {
+export class UserService extends BaseService<User, IUserGetParamsData, UserRepository> {
   private readonly saltRounds = 10;
   protected entityNotFoundMessage: string = 'Нет такого пользователя';
   protected entityOrRelationNotFoundMessage: string = 'Пользователь или роль не найдены';

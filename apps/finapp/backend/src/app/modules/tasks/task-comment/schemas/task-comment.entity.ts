@@ -29,7 +29,7 @@ export class TaskCommentEntity extends BaseEntity {
 
   @ApiProperty({ example: 'Markdown', description: 'Формат вводимого текста'})
   @Column({type: "enum", enum: Object.values(TextType), default: TextType.DEFAULT})
-  textType: TextType = TextType.DEFAULT;
+  textType: TextType;
 
   @ApiProperty({ example: '{}', description: 'Задача, к которой линкуются комментарии'})
   @ManyToOne(() => Task, task => task.comments)

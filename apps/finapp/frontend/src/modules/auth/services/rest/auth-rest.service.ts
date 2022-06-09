@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { AuthResponseDto, AuthUserDto, UserResponseDto } from '@finapp/app-common';
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
 

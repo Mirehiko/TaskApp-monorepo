@@ -1,4 +1,4 @@
-import { MoveDto } from '@finapp/app-common';
+import { IGetParamsData, MoveDto } from '@finapp/app-common';
 import { HttpException, HttpStatus, Param } from '@nestjs/common';
 import { FindOneOptions, In, IsNull, Not, Repository } from 'typeorm';
 import { TreeEntity } from './base-tree-repository';
@@ -6,7 +6,7 @@ import { User } from './common/user/schemas/user.entity';
 import { BaseListRepository } from './base-list-repository';
 
 
-export class BaseService<T, U extends GetParamsData, V extends Repository<T>> {
+export class BaseService<T, U extends IGetParamsData, V extends Repository<T>> {
 	protected repository: V;
 	protected entityNotFoundMessage: string;
 
@@ -57,7 +57,7 @@ export class BaseService<T, U extends GetParamsData, V extends Repository<T>> {
 
 			throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
 		}
-		catch (e: any) {
+		catch (e) {
 			throw new Error(e);
 		}
 	}
@@ -72,7 +72,7 @@ export class BaseService<T, U extends GetParamsData, V extends Repository<T>> {
         await this.repository.remove(entities);
         return {status: HttpStatus.OK, statusText: 'Deleted successfully'};
       }
-      catch (e: any) {
+      catch (e) {
         throw new Error(e);
       }
     }
@@ -90,7 +90,7 @@ export class BaseService<T, U extends GetParamsData, V extends Repository<T>> {
         await this.repository.restore(ids);
         return {status: HttpStatus.OK, statusText: 'Recovered successfully'};
       }
-      catch (e: any) {
+      catch (e) {
         throw new Error(e);
       }
     }
@@ -118,13 +118,13 @@ export class BaseService<T, U extends GetParamsData, V extends Repository<T>> {
       await this.repository.softDelete(ids);
       return {status: HttpStatus.OK, statusText: 'Moved to trash successfully'};
     }
-    catch (e: any) {
+    catch (e) {
       throw new Error(e);
     }
   }
 }
 
-export class BaseListService<T extends TreeEntity<T>, U extends GetParamsData, V extends BaseListRepository<T>> extends BaseService<T, U, V> {
+export class BaseListService<T extends TreeEntity<T>, U extends IGetParamsData, V extends BaseListRepository<T>> extends BaseService<T, U, V> {
 
   /**
    *
@@ -150,23 +150,3 @@ export class BaseListService<T extends TreeEntity<T>, U extends GetParamsData, V
   }
 }
 
-
-export interface GetParamsData {
-	withRelations?: boolean;
-	checkOnly?: boolean;
-	params?: GetParams;
-}
-
-export interface GetParams {
-	id?: number;
-	name?: string;
-	createdAt?: {
-		startDate: string;
-		endDate: string;
-	};
-	updatedAt?: {
-		startDate: string;
-		endDate: string;
-	};
-  withDeleted?: boolean;
-}

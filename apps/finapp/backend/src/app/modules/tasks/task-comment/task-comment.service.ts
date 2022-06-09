@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { BaseService, GetParamsData } from '../../base-service';
-import { TaskCommentRequestDto, TextType } from '@finapp/app-common';
+import { BaseService } from '../../base-service';
+import { IGetParamsData, TaskCommentRequestDto, TextType } from '@finapp/app-common';
 import { TaskCommentEntity } from './schemas/task-comment.entity';
 import { TaskCommentRepository } from './task-comment-repository';
 import { User } from '../../common/user/schemas/user.entity';
@@ -10,7 +10,7 @@ import { TaskTreeRepository } from '../task/task-repository';
 
 
 @Injectable()
-export class TaskCommentService extends BaseService<TaskCommentEntity, GetParamsData, TaskCommentRepository> {
+export class TaskCommentService extends BaseService<TaskCommentEntity, IGetParamsData, TaskCommentRepository> {
   protected entityNotFoundMessage: string = 'Нет такой роли';
 
   constructor(

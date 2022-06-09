@@ -1,14 +1,14 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { BaseService, GetParamsData } from '../../base-service';
+import { BaseService } from '../../base-service';
 import { OperationRepository } from './operation-repository';
 import { Operation } from './schemas/operation.entity';
-import { OperationRequestDto, OperationType } from '@finapp/app-common';
+import { IGetParamsData, OperationRequestDto, OperationType } from '@finapp/app-common';
 import { BillRepository } from '../bill/bill-repository';
 import { In } from 'typeorm';
 
 
 @Injectable()
-export class OperationService extends BaseService<Operation, GetParamsData, OperationRepository> {
+export class OperationService extends BaseService<Operation, IGetParamsData, OperationRepository> {
 	protected entityNotFoundMessage: string = 'Нет такой операции';
 	protected entityOrRelationNotFoundMessage: string = '';
 

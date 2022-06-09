@@ -1,8 +1,7 @@
 import { Injectable } from "@angular/core";
-import { ListRequestDto, ListResponseDto, MoveDto } from '@finapp/app-common';
+import { IListGetParams, ListRequestDto, ListResponseDto, MoveDto } from '@finapp/app-common';
 import { HttpClient} from '@angular/common/http';
 import { BaseRestService } from './basic-rest.service';
-import { ListGetParams } from '../../../../../../backend/src/app/modules/tasks/lists/interfaces/list-params';
 
 
 @Injectable({ providedIn: "root" })
@@ -30,7 +29,7 @@ export class ListRestService extends BaseRestService {
     return await this.GET<ListResponseDto[]>(`${this.baseUrl}/lists`);
   }
 
-  public async search(params: ListGetParams): Promise<ListResponseDto[]> {
+  public async search(params: IListGetParams): Promise<ListResponseDto[]> {
     return await this.GET<ListResponseDto[]>(`${this.baseUrl}/lists/search`, params);
   }
 

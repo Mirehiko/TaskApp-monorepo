@@ -1,5 +1,6 @@
 import { IsObject, IsOptional, IsString } from 'class-validator';
-import { ITaskFilterParams, TaskFilterType } from '@finapp/app-common';
+import { TaskFilterType } from '../../enums';
+import { ITaskFilterParams } from '../../interfaces';
 
 
 export class TaskFilterRequestDto {
