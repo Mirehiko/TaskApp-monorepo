@@ -10,13 +10,12 @@ import { BanUserDto, UserRequestDto, UserRolesDto } from '@finapp/app-common';
 
 
 @Injectable()
-export class UserService extends BaseService<User, UserGetParamsData> {
+export class UserService extends BaseService<User, UserGetParamsData, UserRepository> {
   private readonly saltRounds = 10;
   protected entityNotFoundMessage: string = 'Нет такого пользователя';
   protected entityOrRelationNotFoundMessage: string = 'Пользователь или роль не найдены';
 
   constructor(
-    public repository: UserRepository,
     private roleService: RoleService,
     private fileService: FilesService,
   ) {
@@ -32,7 +31,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     if (candidate) {
       throw new HttpException('Такой email уже существует. Введите другой email', HttpStatus.CONFLICT);
     }
-    
+
     const newUser = await this.repository.create({...requestDto});
 
     try {

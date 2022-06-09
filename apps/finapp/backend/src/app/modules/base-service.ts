@@ -6,10 +6,12 @@ import { User } from './common/user/schemas/user.entity';
 import { BaseListRepository } from './base-list-repository';
 
 
-export class BaseService<T, U extends GetParamsData> {
-	protected repository: Repository<T>;
+export class BaseService<T, U extends GetParamsData, V extends Repository<T>> {
+	protected repository: V;
 	protected entityNotFoundMessage: string;
 
+	constructor() {
+  }
   /**
    * Get list of entities
    * @param relations
@@ -49,13 +51,13 @@ export class BaseService<T, U extends GetParamsData> {
 				return entity;
 			}
 
-			if (paramsData.checkOnly) {
-				return;
-			}
+			// if (paramsData.checkOnly) {
+			// 	return;
+			// }
 
 			throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
 		}
-		catch (e) {
+		catch (e: any) {
 			throw new Error(e);
 		}
 	}
@@ -70,7 +72,7 @@ export class BaseService<T, U extends GetParamsData> {
         await this.repository.remove(entities);
         return {status: HttpStatus.OK, statusText: 'Deleted successfully'};
       }
-      catch (e) {
+      catch (e: any) {
         throw new Error(e);
       }
     }
@@ -88,7 +90,7 @@ export class BaseService<T, U extends GetParamsData> {
         await this.repository.restore(ids);
         return {status: HttpStatus.OK, statusText: 'Recovered successfully'};
       }
-      catch (e) {
+      catch (e: any) {
         throw new Error(e);
       }
     }
@@ -116,16 +118,13 @@ export class BaseService<T, U extends GetParamsData> {
       await this.repository.softDelete(ids);
       return {status: HttpStatus.OK, statusText: 'Moved to trash successfully'};
     }
-    catch (e) {
+    catch (e: any) {
       throw new Error(e);
     }
   }
-
 }
 
-export class BaseListService<T extends TreeEntity<T>, U extends GetParamsData> extends BaseService<T, U> {
-  protected repository: BaseListRepository<T>;
-	protected entityNotFoundMessage: string;
+export class BaseListService<T extends TreeEntity<T>, U extends GetParamsData, V extends BaseListRepository<T>> extends BaseService<T, U, V> {
 
   /**
    *

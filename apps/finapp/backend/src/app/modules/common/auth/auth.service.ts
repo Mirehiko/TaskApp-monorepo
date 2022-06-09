@@ -130,7 +130,7 @@ export class AuthService {
 
     if (user && user.status === UserStatusEnum.PENDING) {
       user.status = UserStatusEnum.ACTIVE;
-      return await this.userService.repository.save(user);
+      return await this.userService.updateUser(user.id, user);
     }
     throw new BadRequestException('Confirmation error');
   }

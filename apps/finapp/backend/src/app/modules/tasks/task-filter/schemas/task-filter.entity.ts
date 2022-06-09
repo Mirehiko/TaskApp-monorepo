@@ -1,16 +1,13 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToOne } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
-import { ITaskFilterParams, TaskFilterType } from '@finapp/app-common';
+import { TaskFilterType } from '@finapp/app-common';
 import { TaskFilterMetadataEntity } from './task-filter-metadata.entity';
 
 
 @Entity()
 export class TaskFilterEntity extends BaseEntity {
-  @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
-  @PrimaryGeneratedColumn()
-  id: number;
 
   @ApiProperty({example: 'Comment text', description: 'Название фильтра'})
   @Column({ length: 150 })

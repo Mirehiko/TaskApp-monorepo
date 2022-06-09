@@ -9,12 +9,11 @@ import { BillGetParamsData } from './interfaces/bill-params';
 
 
 @Injectable()
-export class BillService extends BaseService<Bill, BillGetParamsData> {
+export class BillService extends BaseService<Bill, BillGetParamsData, BillRepository> {
 	protected entityNotFoundMessage: string = 'Нет такого счета';
 	protected entityOrRelationNotFoundMessage: string = '';
 
 	constructor(
-    protected repository: BillRepository,
     protected userRepository: UserRepository,
 	) {
 		super();

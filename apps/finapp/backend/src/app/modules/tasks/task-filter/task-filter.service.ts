@@ -13,11 +13,10 @@ import { In } from 'typeorm';
 
 
 @Injectable()
-export class TaskFilterService extends BaseService<TaskFilterEntity, GetParamsData> {
+export class TaskFilterService extends BaseService<TaskFilterEntity, GetParamsData, TaskFilterRepository> {
   protected entityNotFoundMessage: string = 'Нет такой роли';
 
   constructor(
-    protected repository: TaskFilterRepository,
     protected metadataRepository: TaskFilterMetadataRepository,
     protected userRepository: UserRepository,
     protected tagRepository: TagTreeRepository,

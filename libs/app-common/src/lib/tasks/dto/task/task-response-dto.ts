@@ -3,6 +3,7 @@ import { UserResponseDto } from '../../../common';
 import { TaskPriority, TaskStatus } from '../../enums';
 import { TagResponseDto } from '../tag';
 import { TaskCommentResponseDto } from './task-comment-response-dto';
+import { IsOptional } from 'class-validator';
 
 
 export class TaskResponseDto {
@@ -46,7 +47,8 @@ export class TaskResponseDto {
 	priority: TaskPriority;
 
 	@Expose()
-	pinned?: boolean;
+  @IsOptional()
+	pinned: boolean;
 	// config
 
   @Expose()

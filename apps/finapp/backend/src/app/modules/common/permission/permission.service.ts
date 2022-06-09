@@ -1,19 +1,15 @@
 import {HttpException, HttpStatus, Injectable, Param} from '@nestjs/common';
 import { BaseService, GetParamsData } from '../../base-service';
-import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
 import { Permission } from './schemas/permission.entity';
 import { PermissionRequestDto } from '@finapp/app-common';
+import { PermissionRepository } from './permission-repository';
 
 
 @Injectable()
-export class PermissionService extends BaseService<Permission, GetParamsData> {
+export class PermissionService extends BaseService<Permission, GetParamsData, PermissionRepository> {
   protected entityNotFoundMessage: string = 'Нет такого пермишена';
 
-  constructor(
-    @InjectRepository(Permission)
-    protected repository: Repository<Permission>,
-  ) {
+  constructor() {
     super();
   }
 

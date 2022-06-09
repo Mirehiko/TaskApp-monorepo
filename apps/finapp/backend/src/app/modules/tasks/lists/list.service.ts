@@ -9,12 +9,11 @@ import { ListGetParams, ListGetParamsData } from './interfaces/list-params';
 
 
 @Injectable()
-export class ListService extends BaseListService<List, ListGetParamsData> {
+export class ListService extends BaseListService<List, ListGetParamsData, ListRepository> {
   protected entityNotFoundMessage: string = 'Нет такого счета';
   protected entityOrRelationNotFoundMessage: string = '';
 
   constructor(
-    protected repository: ListRepository,
     protected taskTreeRepository: TaskTreeRepository,
   ) {
     super();

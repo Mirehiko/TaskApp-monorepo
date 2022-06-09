@@ -8,8 +8,9 @@ export class TaskRequestDto implements RequestObjectWithId {
   @IsNumber()
 	id?: number;
 
+  @IsOptional()
   @IsString()
-	name: string;
+	name?: string;
 
   @IsString()
   @IsOptional()

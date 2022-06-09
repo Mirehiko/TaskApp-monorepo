@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
@@ -8,10 +8,6 @@ import { Task } from '../../task/schemas/task.entity';
 
 @Entity()
 export class TaskCommentEntity extends BaseEntity {
-  @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
-  @PrimaryGeneratedColumn()
-  id: number;
-
   @ApiProperty({example: 'Comment text', description: 'Текст комментария'})
   @Column({ length: 500 })
   body: string;
