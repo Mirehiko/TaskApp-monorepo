@@ -9,16 +9,21 @@ const routes: Routes = [
     loadChildren: () => import("../modules/auth/auth.module").then(m => m.AuthModule),
   },
   {
-    path: 'main',
+    path: 'taskapp',
     // canActivate: [ AuthGuard ],
-    loadChildren: () => import("../modules/app-task-main/main.module").then(m => m.MainModule),
+    loadChildren: () => import("../modules/app-task-main/task-app.module").then(m => m.TaskAppModule),
   },
+  // {
+  //   path: 'finapp',
+  //   // canActivate: [ AuthGuard ],
+  //   loadChildren: () => import("../modules/app-fin-main/fin-app.module").then(m => m.FinAppModule),
+  // },
   {
     path: 'administration',
     loadChildren: () => import("../modules/admin/admin.module").then(m => m.AdminModule),
   },
   // { path: 'error', component: ErrorPageComponent },
-  { path: '**', redirectTo: '/main/' }
+  { path: '**', redirectTo: '/main/' } // TODO: Redirect to landing page
 ];
 
 @NgModule({

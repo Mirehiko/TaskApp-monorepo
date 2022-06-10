@@ -17,7 +17,7 @@ export abstract class BaseRestService {
           if (sub) {
             sub.unsubscribe();
           }
-          ok(response.body as T)
+          ok(response as T);
         }, (error) => {
           if (sub) {
             sub.unsubscribe();

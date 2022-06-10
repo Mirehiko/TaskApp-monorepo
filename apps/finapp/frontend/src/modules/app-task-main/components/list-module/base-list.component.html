@@ -1,0 +1,14 @@
+<section>
+  <h1>{{listName}}</h1>
+  <div class="list-group" *ngFor="let groupItem of groupedList">
+    <h3>{{groupItem.group.name}}</h3>
+    <div class="list">
+      <div class="list-item" *ngFor="let listItem of groupItem.list" (click)="onItemClicked(listItem.id)">
+        <input type="checkbox" *ngIf="config.selectable">
+        <ng-container *ngFor="let field of listItem | keyvalue">
+          <span *ngIf="field.key !== 'id'">{{field.value}}</span>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</section>

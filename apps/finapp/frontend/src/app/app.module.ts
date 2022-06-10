@@ -8,6 +8,8 @@ import { AppComponent } from './app.component';
 import { CabinetModule } from './cabinet/cabinet.module';
 import { AdminModule } from './admin/admin.module';
 import { JwtModule } from '@auth0/angular-jwt';
+import { CommonModule } from '@angular/common';
+import { CustomElementsModule } from '../modules/app-task-main/components/custom-elements.module';
 
 
 export function tokenGetter() {
@@ -26,12 +28,17 @@ export function tokenGetter() {
     HttpClientModule,
     CabinetModule,
     AdminModule,
+    CommonModule,
+    CustomElementsModule,
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
         allowedDomains: ['localhost:5000']
       }
     })
+  ],
+  exports: [
+    CustomElementsModule,
   ],
   // providers: [{
   //   provide: HTTP_INTERCEPTORS,

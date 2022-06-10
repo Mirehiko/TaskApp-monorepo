@@ -18,8 +18,8 @@ import { LoginPageComponent } from './login-page/login-page.component';
     AuthRoutingModule,
   ],
   exports: [
-    FormsModule,
-    CommonModule,
+    // FormsModule,
+    // CommonModule,
     RouterModule,
   ],
 })
