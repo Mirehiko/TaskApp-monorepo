@@ -9,12 +9,13 @@ import { BanUserDto, IUserGetParamsData, UserRequestDto, UserRolesDto } from '@f
 
 
 @Injectable()
-export class UserService extends BaseService<User, IUserGetParamsData, UserRepository> {
+export class UserService extends BaseService<User, IUserGetParamsData> {
   private readonly saltRounds = 10;
   protected entityNotFoundMessage: string = 'Нет такого пользователя';
   protected entityOrRelationNotFoundMessage: string = 'Пользователь или роль не найдены';
 
   constructor(
+    protected repository: UserRepository,
     private roleService: RoleService,
     private fileService: FilesService,
   ) {

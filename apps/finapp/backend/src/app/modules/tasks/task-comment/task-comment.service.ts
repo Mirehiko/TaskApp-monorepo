@@ -10,10 +10,11 @@ import { TaskTreeRepository } from '../task/task-repository';
 
 
 @Injectable()
-export class TaskCommentService extends BaseService<TaskCommentEntity, IGetParamsData, TaskCommentRepository> {
+export class TaskCommentService extends BaseService<TaskCommentEntity, IGetParamsData> {
   protected entityNotFoundMessage: string = 'Нет такой роли';
 
   constructor(
+    protected repository: TaskCommentRepository,
     private userRepository: UserRepository,
     private taskRepository: TaskTreeRepository,
   ) {

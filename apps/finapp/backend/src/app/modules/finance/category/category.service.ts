@@ -1,11 +1,10 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { CategoryTreeRepository } from './category-repository';
 import { Category } from './schemas/category.entity';
-import { CategoryRequestDto, IGetParamsData } from '@finapp/app-common';
+import { CategoryRequestDto, ICategoryGetParams, IGetParamsData } from '@finapp/app-common';
 import { UserRepository } from '../../common/user/user-repository';
 import { User } from '../../common/user/schemas/user.entity';
 import { BaseTreeService } from '../../base-tree-service';
-import { ICategoryGetParams } from '../../../../../../../../libs/app-common/src/lib/finance/interfaces';
 
 
 @Injectable()

@@ -8,11 +8,12 @@ import { In } from 'typeorm';
 
 
 @Injectable()
-export class OperationService extends BaseService<Operation, IGetParamsData, OperationRepository> {
+export class OperationService extends BaseService<Operation, IGetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такой операции';
 	protected entityOrRelationNotFoundMessage: string = '';
 
 	constructor(
+    protected repository: OperationRepository,
     protected billRepository: BillRepository,
 	) {
 		super();

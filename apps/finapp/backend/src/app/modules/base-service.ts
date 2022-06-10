@@ -6,12 +6,10 @@ import { User } from './common/user/schemas/user.entity';
 import { BaseListRepository } from './base-list-repository';
 
 
-export class BaseService<T, U extends IGetParamsData, V extends Repository<T>> {
-	protected repository: V;
+export class BaseService<T, U extends IGetParamsData> {
+  protected repository: Repository<T>;
 	protected entityNotFoundMessage: string;
 
-	constructor() {
-  }
   /**
    * Get list of entities
    * @param relations
@@ -124,8 +122,8 @@ export class BaseService<T, U extends IGetParamsData, V extends Repository<T>> {
   }
 }
 
-export class BaseListService<T extends TreeEntity<T>, U extends IGetParamsData, V extends BaseListRepository<T>> extends BaseService<T, U, V> {
-
+export class BaseListService<T extends TreeEntity<T>, U extends IGetParamsData> extends BaseService<T, U> {
+  protected repository: BaseListRepository<T>;
   /**
    *
    * @param moveDto

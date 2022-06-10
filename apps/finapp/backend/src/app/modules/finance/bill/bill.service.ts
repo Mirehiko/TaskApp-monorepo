@@ -7,11 +7,12 @@ import { UserRepository } from '../../common/user/user-repository';
 
 
 @Injectable()
-export class BillService extends BaseService<Bill, IBillGetParamsData, BillRepository> {
+export class BillService extends BaseService<Bill, IBillGetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такого счета';
 	protected entityOrRelationNotFoundMessage: string = '';
 
 	constructor(
+    protected repository: BillRepository,
     protected userRepository: UserRepository,
 	) {
 		super();

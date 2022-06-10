@@ -6,10 +6,12 @@ import { PermissionRepository } from './permission-repository';
 
 
 @Injectable()
-export class PermissionService extends BaseService<Permission, IGetParamsData, PermissionRepository> {
+export class PermissionService extends BaseService<Permission, IGetParamsData> {
   protected entityNotFoundMessage: string = 'Нет такого пермишена';
 
-  constructor() {
+  constructor(
+    protected repository: PermissionRepository
+  ) {
     super();
   }
 

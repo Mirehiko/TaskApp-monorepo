@@ -7,11 +7,12 @@ import { RoleRepository } from './role-repository';
 
 
 @Injectable()
-export class RoleService extends BaseService<Role, IGetParamsData, RoleRepository> {
+export class RoleService extends BaseService<Role, IGetParamsData> {
   protected entityNotFoundMessage: string = 'Нет такой роли';
 
   constructor(
     // TODO: Replace with Permission Repository
+    protected repository: RoleRepository,
     private permissionService: PermissionService
   ) {
     super();
