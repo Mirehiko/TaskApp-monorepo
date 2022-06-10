@@ -4,6 +4,7 @@ import { Input, OnChanges, Output, SimpleChanges, EventEmitter, Component, OnIni
 export interface IBaseListGroup {
   group: IListGroup;
   list: any[];
+  // list: IDataList[];
 }
 
 export interface IListGroup {
@@ -11,7 +12,7 @@ export interface IListGroup {
   type: any;
 }
 
-export interface IListDescription {
+export interface IListItemFieldDescription {
   field: string;
   header?: String;
   valueGetter?: (params: any) => string;
@@ -19,8 +20,18 @@ export interface IListDescription {
   hidden?: boolean;
 }
 
+interface IListItemField extends IListItemFieldDescription {
+  value: any;
+}
+
+interface IListItem {
+  id: number;
+  fields: IListItemField[];
+  data: any;
+}
+
 export interface IListConfig {
-  listDescription: IListDescription[];
+  listDescription: IListItemFieldDescription[];
   groups?: IListGroup[];
   groupDivider?: (data: any[], type: any) => any[];
   selectable?: boolean;
@@ -40,9 +51,9 @@ export class BaseListComponent implements OnInit, OnChanges {
   @Output() itemAction: EventEmitter<IListItemAction> = new EventEmitter<IListItemAction>();
 
   groupedList: IBaseListGroup[] = [];
-  fields: string[];
   filteredList: any[] = [];
   groupDivider: (data: any[], type: any) => any[];
+  gl: BaseListGroup[];
 
   async ngOnInit(): Promise<void> {
     this.groupDivider = this.config.groupDivider ? this.config.groupDivider : this.groupDivider;
@@ -57,7 +68,6 @@ export class BaseListComponent implements OnInit, OnChanges {
   async refresh(): Promise<void> {
     if (!!this.groupDivider) {
       await this.divideOnGroups();
-      await this.filtrateDataByDescribedFields();
     }
   }
 
@@ -66,39 +76,37 @@ export class BaseListComponent implements OnInit, OnChanges {
   //   this.saveChanges(entity.id, entity.pinned);
   // }
 
-  async filtrateDataByDescribedFields(): Promise<void> {
-    this.groupedList.map(group => {
-      group.list = group.list.map(entity => {
-        const filteredItem: any = {};
-        this.config.listDescription.map((listDesc: IListDescription) => {
-          filteredItem[listDesc.field] = listDesc.valueGetter ? listDesc.valueGetter(entity) : entity[listDesc.field];
-        });
-        filteredItem['id'] = entity.id;
-        // console.log(filteredItem)
-        return filteredItem;
-      });
-      return group;
-    });
-  }
-
   async divideOnGroups(): Promise<void> {
-    this.groupedList = [];
+    this.gl = [];
     if (this.config.groups && this.config.groups.length && this.config.groupDivider) {
       this.config.groups.forEach(group => {
-        group = group as IListGroup;
-        this.groupedList.push({
-          group: group,
-          list: this.groupDivider(this.dataList, group.type)
+        const groupInst = new BaseListGroup(group.name);
+        const filteredData = this.groupDivider(this.dataList, group.type);
+
+        filteredData.map(item => {
+          const dataItem: IListItem = {
+            id: item.id,
+            data: item,
+            fields: []
+          };
+          this.config.listDescription.map((listDesc: IListItemFieldDescription) => {
+            dataItem.fields.push({
+              value: listDesc.valueGetter ? listDesc.valueGetter(item) : item[listDesc.field],
+              ...listDesc
+            });
+          });
+          groupInst.add(dataItem);
         });
+        this.gl.push(groupInst);
       });
     }
     else {
-      this.groupedList.push({
-        group: { name: '', type: null },
-        list: this.dataList
+      const groupInst = new BaseListGroup('');
+      this.dataList.forEach(item => {
+        groupInst.add({id: item.id, fields: [], data: item});
       });
+      this.gl.push(groupInst);
     }
-    console.log(this.groupedList)
   }
 
   onItemClicked(id: number): void {
@@ -120,6 +128,35 @@ export class BaseListComponent implements OnInit, OnChanges {
   // insertItemTo(id: number, insertTo: InsertListItem, data: T[]): void {
   //
   // }
+}
+
+class BaseListGroup {
+  private _list: IListItem[] = [];
+  public name: string;
+
+  constructor(name: string) {
+    this.name = name;
+  };
+
+  changeGroupName(name: string): void {
+    this.name = name;
+  }
+
+  add(item: any): void {
+    this._list.push(item);
+  }
+
+  remove(item: IListItem): void {
+    this._list = this.list.filter(i => item.id !== i.id);
+  }
+
+  get list(): IListItem[] {
+    return this._list;
+  }
+
+  clear(): void {
+    this._list = [];
+  }
 }
 
 export enum InsertListItem {
