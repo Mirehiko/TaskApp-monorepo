@@ -1,0 +1,6 @@
+<div class="task task-list__item" (click)="onItemClicked(item)">
+  <input class="list-item__checkbox" type="checkbox" *ngIf="selectable">
+  <ng-container *ngFor="let field of item.fields">
+    <span class="task__field">{{field.value}}</span>
+  </ng-container>
+</div>

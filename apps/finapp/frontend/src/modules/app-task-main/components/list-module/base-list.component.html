@@ -1,14 +1,29 @@
 <section>
   <h1>{{listName}}</h1>
-  <div class="list-group" *ngFor="let groupItem of gl">
+  <div class="list-group" *ngIf="groupedList.pinnedGroup.list.length && config.pinnable">
+    <h3>{{groupedList.pinnedGroup.name}}</h3>
+    <div class="list">
+      <ng-container *ngFor="let item of groupedList.pinnedGroup.list">
+        <ng-container
+          [ngTemplateOutlet]="customTemplate || defaultTemplate"
+          [ngTemplateOutletContext]="{item: item, context: this}"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+  <div class="list-group" *ngFor="let groupItem of groupedList.list">
     <h3>{{groupItem.name}}</h3>
     <div class="list">
-      <div class="list-item" *ngFor="let listItem of groupItem.list" (click)="onItemClicked(listItem.id)">
-        <input type="checkbox" *ngIf="config.selectable">
-        <ng-container *ngFor="let field of listItem.fields">
-          <span>{{field.value}}</span>
-        </ng-container>
-      </div>
+      <ng-container *ngFor="let item of groupItem.list">
+        <ng-container
+          [ngTemplateOutlet]="customTemplate || defaultTemplate"
+          [ngTemplateOutletContext]="{item: item, context: this}"></ng-container>
+      </ng-container>
     </div>
   </div>
 </section>
+<ng-template #defaultTemplate let-item='item' let-context="context">
+  <app-base-list-item
+    [item]="item"
+    [selectable]="context.selectable"
+    (itemClicked)="context.onItemClicked(item)"></app-base-list-item>
+</ng-template>

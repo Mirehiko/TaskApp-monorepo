@@ -8,7 +8,6 @@ import { IListConfig } from '../components/list-module/base-list.component';
 
 enum AdditionTaskGroups {
   FINISHED = 'finished',
-  PINNED = 'pinned'
 }
 
 type TaskGroupsByPriority = TaskPriority | AdditionTaskGroups;
@@ -26,13 +25,14 @@ const taskListConfig: IListConfig = {
   {
     name: 'Low',
     type: TaskPriority.LOW
+  },
+  {
+    name: 'None',
+    type: TaskPriority.NONE
   }],
   groupDivider(list: TaskResponseDto[], priority: TaskGroupsByPriority): TaskResponseDto[] {
     return list.filter(task => {
-      console.log(task.priority, priority)
       switch (priority) {
-        case TaskGroupsByPriority.PINNED:
-          return !!task.pinned;
         case TaskGroupsByPriority.FINISHED:
           return [TaskStatus.DONE, TaskStatus.WONT_DO].includes(task.status);
         default:
@@ -40,6 +40,7 @@ const taskListConfig: IListConfig = {
         }
     });
   },
+  pinnable: true,
   listDescription: [{
     field: 'name',
   },
