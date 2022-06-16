@@ -57,6 +57,7 @@ const taskListConfig: IListConfig = {
 export class TaskListComponent implements OnInit {
   public tasks: TaskResponseDto[] = [];
   public taskListConfig = taskListConfig;
+  public dataLoaded = false;
 
   constructor(
     private authService: AuthService,
@@ -71,5 +72,6 @@ export class TaskListComponent implements OnInit {
 
   async getTasks(): Promise<void> {
     this.tasks = await this.taskRestService.getList();
+    this.dataLoaded = true;
   }
 }

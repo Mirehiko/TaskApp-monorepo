@@ -12,18 +12,12 @@ import {
 import { nanoid } from 'nanoid';
 
 
-export interface IBaseListGroup {
-  group: IListGroup;
-  list: any[];
-  // list: IDataList[];
-}
-
 export interface IListGroup {
   name: string;
   type: any;
 }
 
-interface IListItemFieldDescription {
+export interface IListItemFieldDescription {
   field: string;
   header?: String;
   valueGetter?: (params: any) => string;
@@ -31,7 +25,7 @@ interface IListItemFieldDescription {
   hidden?: boolean;
 }
 
-interface IListItemField extends IListItemFieldDescription {
+export interface IListItemField extends IListItemFieldDescription {
   value: any;
 }
 
@@ -41,7 +35,6 @@ export interface IListItem {
   data: any;
   pinned?: boolean;
   position?: number;
-  children?: IListItem[];
 }
 
 export interface IListConfig {
@@ -69,9 +62,10 @@ export class BaseListComponent implements OnInit, OnChanges {
 
   filteredList: any[] = [];
   groupDivider: (data: any[], type: any) => any[];
-  groupedList: BaseGroupList = new BaseGroupList('Tasks');
+  groupedList: BaseGroupList;
 
   async ngOnInit(): Promise<void> {
+    this.groupedList = new BaseGroupList(this.listName);
     this.groupDivider = this.config.groupDivider ? this.config.groupDivider : this.groupDivider;
     this.refresh();
   }
@@ -97,7 +91,7 @@ export class BaseListComponent implements OnInit, OnChanges {
     this.groupedList.clear();
     if (this.config.groups && this.config.groups.length && this.config.groupDivider) {
       this.config.groups.forEach(group => {
-        const groupInst = new BaseListGroup(group.name);
+        const groupInst = new BaseListOfGroup(group.name);
         const filteredGroupData = this.groupDivider(this.dataList, group.type);
         filteredGroupData.map(item => {
           groupInst.insertTo(this.getMappedItem(item));
@@ -106,7 +100,7 @@ export class BaseListComponent implements OnInit, OnChanges {
       });
     }
     else {
-      const groupInst = new BaseListGroup('');
+      const groupInst = new BaseListOfGroup('');
       this.dataList.forEach(item => {
         groupInst.insertTo(this.getMappedItem(item));
       });
@@ -127,12 +121,6 @@ export class BaseListComponent implements OnInit, OnChanges {
       });
       if (item?.pinned) {
         dataItem.pinned = item.pinned;
-      }
-      if (item?.children?.length) {
-        dataItem.children = [];
-        item.children.map((child: any) => {
-          dataItem.children?.push(this.getMappedItem(child));
-        });
       }
     });
     return dataItem;
@@ -158,7 +146,7 @@ export class BaseListComponent implements OnInit, OnChanges {
 
 
 
-class BaseListGroup {
+export class BaseListOfGroup {
   private _list: IListItem[] = [];
   private _name: string;
   readonly _id: string;
@@ -222,15 +210,15 @@ class BaseListGroup {
 
 }
 
-class BaseGroupList {
-  private _list: BaseListGroup[] = [];
+export class BaseGroupList {
+  private _list: BaseListOfGroup[] = [];
   private _name: string;
-  private _pinnedRows: BaseListGroup;
+  private _pinnedRows: BaseListOfGroup;
 
   constructor(name: string, items: any = []) {
     this._name = name;
     this._list = items;
-    this._pinnedRows = new BaseListGroup('Pinned');
+    this._pinnedRows = new BaseListOfGroup('Pinned');
   };
 
   public set name(name: string) {
@@ -241,11 +229,11 @@ class BaseGroupList {
     return this._name;
   }
 
-  public addGroup(group: BaseListGroup): void {
+  public addGroup(group: BaseListOfGroup): void {
     this._list.push(group);
   }
 
-  public get list(): BaseListGroup[] {
+  public get list(): BaseListOfGroup[] {
     return this._list;
   }
 
@@ -271,7 +259,7 @@ class BaseGroupList {
     this._list = this._list.filter(g => g.id !== id);
   }
 
-  public get pinnedGroup(): BaseListGroup {
+  public get pinnedGroup(): BaseListOfGroup {
     return this._pinnedRows;
   }
 

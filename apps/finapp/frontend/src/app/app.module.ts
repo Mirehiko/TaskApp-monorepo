@@ -35,7 +35,8 @@ export function tokenGetter() {
         tokenGetter: tokenGetter,
         allowedDomains: ['localhost:5000']
       }
-    })
+    }),
+
   ],
   exports: [
     CustomElementsModule,

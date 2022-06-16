@@ -1,6 +1,9 @@
-<app-base-list class="task-list" [config]="taskListConfig" [dataList]="tasks" [listName]="'All tasks'">
-  <ng-template #customTemplate let-item='item' let-context="context">
-    <app-task-list-item [item]="item" [selectable]="context.selectable" (itemClicked)="context.onItemClicked(item)"></app-task-list-item>
-  </ng-template>
-</app-base-list>
+<!--<app-base-list class="task-list" [config]="taskListConfig" [dataList]="tasks" [listName]="'All tasks'">-->
+<!--  <ng-template #customTemplate let-item='item' let-context="context">-->
+<!--    <app-task-list-item [item]="item" [selectable]="context.selectable" (itemClicked)="context.onItemClicked(item)"></app-task-list-item>-->
+<!--  </ng-template>-->
+<!--</app-base-list>-->
+<div *ngIf="dataLoaded">
+  <app-dnd-tree [dataList]="tasks" [config]="taskListConfig"></app-dnd-tree>
+</div>
 <router-outlet></router-outlet>
