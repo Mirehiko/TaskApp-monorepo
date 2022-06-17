@@ -1,0 +1,35 @@
+.mat-tree-node__content {
+  display: flex;
+  align-items: center;
+}
+.mat-tree-node__divider {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+  align-items: center;
+}
+
+.mat-tree-node__icons {
+  white-space: nowrap;
+}
+.w-100 {
+  width: 100%;
+}
+
+.toggle-btn {
+  width: 12px;
+  font-size: 12px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  .mat-icon {
+    width: 100%;
+    height: auto;
+    font-size: 16px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+}

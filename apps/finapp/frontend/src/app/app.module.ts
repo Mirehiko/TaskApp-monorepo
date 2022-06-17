@@ -9,7 +9,7 @@ import { CabinetModule } from './cabinet/cabinet.module';
 import { AdminModule } from './admin/admin.module';
 import { JwtModule } from '@auth0/angular-jwt';
 import { CommonModule } from '@angular/common';
-import { CustomElementsModule } from '../modules/app-task-main/components/custom-elements.module';
+import { CustomModulesModule } from '../modules/app-task-main/components/custom-modules.module';
 
 
 export function tokenGetter() {
@@ -29,7 +29,7 @@ export function tokenGetter() {
     CabinetModule,
     AdminModule,
     CommonModule,
-    CustomElementsModule,
+    CustomModulesModule,
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
@@ -39,7 +39,7 @@ export function tokenGetter() {
 
   ],
   exports: [
-    CustomElementsModule,
+    CustomModulesModule,
   ],
   // providers: [{
   //   provide: HTTP_INTERCEPTORS,

@@ -6,14 +6,14 @@ import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree'
 import {
   BaseGroupList,
   BaseListOfGroup,
-  IListConfig,
+  IListConfig, IListItem,
   IListItemAction,
   IListItemFieldDescription
 } from '../list-module/base-list.component';
 
 
-class TreeItemFlatNode {
-  item: any;
+class TreeItemFlatNode<T> {
+  item: IListItem<T>;
   level: number;
   expandable: boolean;
 }
@@ -35,17 +35,17 @@ export class DndTreeComponent<T> implements OnInit {
   _groupedList: BaseGroupList<T> = new BaseGroupList<T>('');
 
 
-  flatNodeMap = new Map<TreeItemFlatNode, TreeItem>();
-  nestedNodeMap = new Map<TreeItem, TreeItemFlatNode>();
+  flatNodeMap = new Map<TreeItemFlatNode<T>, TreeItem>();
+  nestedNodeMap = new Map<TreeItem, TreeItemFlatNode<T>>();
 
-  selectedParent: TreeItemFlatNode | null = null;
+  selectedParent: TreeItemFlatNode<T> | null = null;
 
   newItemName = '';
-  treeControl: FlatTreeControl<TreeItemFlatNode>
+  treeControl: FlatTreeControl<TreeItemFlatNode<T>>
 
-  treeFlattener: MatTreeFlattener<TreeItem, TreeItemFlatNode>;
-  dataSource: MatTreeFlatDataSource<TreeItem, TreeItemFlatNode>;
-  selection = new SelectionModel<TreeItemFlatNode>(true);
+  treeFlattener: MatTreeFlattener<TreeItem, TreeItemFlatNode<T>>;
+  dataSource: MatTreeFlatDataSource<TreeItem, TreeItemFlatNode<T>>;
+  selection = new SelectionModel<TreeItemFlatNode<T>>(true);
 
   constructor(private _database: DndTreeDatabaseService) {
     this.treeFlattener = new MatTreeFlattener(
@@ -54,7 +54,7 @@ export class DndTreeComponent<T> implements OnInit {
       this.isExpandable,
       this.getChildren,
     );
-    this.treeControl = new FlatTreeControl<TreeItemFlatNode>(this.getLevel, this.isExpandable);
+    this.treeControl = new FlatTreeControl<TreeItemFlatNode<T>>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
     _database._dataChange.subscribe(data => {
@@ -68,11 +68,11 @@ export class DndTreeComponent<T> implements OnInit {
   }
 
 
-  getLevel = (node: TreeItemFlatNode) => node.level;
-  isExpandable = (node: TreeItemFlatNode) => node.expandable;
+  getLevel = (node: TreeItemFlatNode<T>) => node.level;
+  isExpandable = (node: TreeItemFlatNode<T>) => node.expandable;
   getChildren = (node: TreeItem): TreeItem[] => node.children;
-  hasChild = (_: number, _nodeData: TreeItemFlatNode) => _nodeData.expandable;
-  hasNoContent = (_: number, _nodeData: TreeItemFlatNode) => _nodeData.item === '';
+  hasChild = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.expandable;
+  hasNoContent = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.item === undefined;
 
   private async divideOnGroups(): Promise<void> {
     this._groupedList.clear();
@@ -93,6 +93,10 @@ export class DndTreeComponent<T> implements OnInit {
       });
       this._groupedList.addGroup(groupInst);
     }
+  }
+
+  public openDetailView(item: TreeItemFlatNode<T>): void {
+
   }
 
   private getMappedItem(item: any): TreeItem {
@@ -116,7 +120,7 @@ export class DndTreeComponent<T> implements OnInit {
   transformer = (node: any, level: number) => {
     const existingNode = this.nestedNodeMap.get(node);
     const flatNode =
-      existingNode && existingNode.item.id === node.id ? existingNode : new TreeItemFlatNode();
+      existingNode && existingNode.item.id === node.id ? existingNode : new TreeItemFlatNode<T>();
     flatNode.item = this.getMappedItem(node);
     flatNode.level = level;
     flatNode.expandable = !!node.children?.length;
@@ -126,7 +130,7 @@ export class DndTreeComponent<T> implements OnInit {
   };
 
   /** Whether all the descendants of the node are selected. */
-  descendantsAllSelected(node: TreeItemFlatNode): boolean {
+  descendantsAllSelected(node: TreeItemFlatNode<T>): boolean {
     const descendants = this.treeControl.getDescendants(node);
     const descAllSelected =
       descendants.length > 0 &&
@@ -137,14 +141,14 @@ export class DndTreeComponent<T> implements OnInit {
   }
 
   /** Whether part of the descendants are selected */
-  descendantsPartiallySelected(node: TreeItemFlatNode): boolean {
+  descendantsPartiallySelected(node: TreeItemFlatNode<T>): boolean {
     const descendants = this.treeControl.getDescendants(node);
     const result = descendants.some(child => this.selection.isSelected(child));
     return result && !this.descendantsAllSelected(node);
   }
 
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
-  todoItemSelectionToggle(node: TreeItemFlatNode): void {
+  todoItemSelectionToggle(node: TreeItemFlatNode<T>): void {
     this.selection.toggle(node);
     const descendants = this.treeControl.getDescendants(node);
     this.selection.isSelected(node)
@@ -157,14 +161,14 @@ export class DndTreeComponent<T> implements OnInit {
   }
 
   /** Toggle a leaf to-do item selection. Check all the parents to see if they changed */
-  todoLeafItemSelectionToggle(node: TreeItemFlatNode): void {
+  todoLeafItemSelectionToggle(node: TreeItemFlatNode<T>): void {
     this.selection.toggle(node);
     this.checkAllParentsSelection(node);
   }
 
   /* Checks all the parents when a leaf node is selected/unselected */
-  checkAllParentsSelection(node: TreeItemFlatNode): void {
-    let parent: TreeItemFlatNode | null = this.getParentNode(node);
+  checkAllParentsSelection(node: TreeItemFlatNode<T>): void {
+    let parent: TreeItemFlatNode<T> | null = this.getParentNode(node);
     while (parent) {
       this.checkRootNodeSelection(parent);
       parent = this.getParentNode(parent);
@@ -172,7 +176,7 @@ export class DndTreeComponent<T> implements OnInit {
   }
 
   /** Check root node checked state and change it accordingly */
-  checkRootNodeSelection(node: TreeItemFlatNode): void {
+  checkRootNodeSelection(node: TreeItemFlatNode<T>): void {
     const nodeSelected = this.selection.isSelected(node);
     const descendants = this.treeControl.getDescendants(node);
     const descAllSelected =
@@ -188,7 +192,7 @@ export class DndTreeComponent<T> implements OnInit {
   }
 
   /* Get the parent node of a node */
-  getParentNode(node: TreeItemFlatNode): TreeItemFlatNode | null {
+  getParentNode(node: TreeItemFlatNode<T>): TreeItemFlatNode<T> | null {
     const currentLevel = this.getLevel(node);
 
     if (currentLevel < 1) {
@@ -208,7 +212,7 @@ export class DndTreeComponent<T> implements OnInit {
   }
 
   /** Select the category so we can insert the new item. */
-  addNewItem(node: TreeItemFlatNode) {
+  addNewItem(node: TreeItemFlatNode<T>) {
     const parentNode = this.flatNodeMap.get(node);
     const newItem = new TreeItem();
     this._database.insertItem(parentNode ? parentNode : null, [newItem]);
@@ -216,7 +220,7 @@ export class DndTreeComponent<T> implements OnInit {
   }
 
   /** Save the node to database */
-  saveNode(node: TreeItemFlatNode, itemValue: string) {
+  saveNode(node: TreeItemFlatNode<T>, itemValue: string) {
     const nestedNode = this.flatNodeMap.get(node);
     this._database.updateItem(nestedNode!, itemValue);
   }

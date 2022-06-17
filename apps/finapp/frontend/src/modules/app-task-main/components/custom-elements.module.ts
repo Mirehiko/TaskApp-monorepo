@@ -1,12 +1,17 @@
 import { NgModule } from '@angular/core';
-import { CustomListModule } from './list-module/custom-list.module';
-import { DndTreeModule } from './dnd-tree/dnd-tree.module';
+import { CustomCheckboxComponent } from './custom-checkbox/custom-checkbox.component';
+import { CommonModule } from '@angular/common';
 
 
 @NgModule({
+  declarations: [
+    CustomCheckboxComponent,
+  ],
+  imports: [
+    CommonModule,
+  ],
   exports: [
-    CustomListModule,
-    DndTreeModule,
+    CustomCheckboxComponent,
   ]
 })
 export class CustomElementsModule {}

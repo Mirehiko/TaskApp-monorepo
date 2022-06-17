@@ -1,9 +1,25 @@
-<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
-    <button mat-icon-button disabled></button>
-    <mat-checkbox class="checklist-leaf-node"
-                  [checked]="selection.isSelected(node)"
-                  (change)="todoLeafItemSelectionToggle(node)">{{node.item.data.name}}</mat-checkbox>
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100">
+
+  <mat-tree-node
+    *matTreeNodeDef="let node"
+    matTreeNodeToggle
+    matTreeNodePadding
+    class="mat-tree-node__item w-100"
+    [matTreeNodePaddingIndent]="15"
+    (click)="openDetailView(node)"
+  >
+    <div class="mat-tree-node__content w-100">
+      <button class="toggle-btn" disabled></button>
+      <div class="mat-tree-node__divider w-100">
+        <app-custom-checkbox
+          class="w-100"
+          (checkedChange)="todoLeafItemSelectionToggle(node)"
+          [checked]="selection.isSelected(node)">
+          <div class="mat-tree-node__name ">{{node.item.data.name}}</div>
+        </app-custom-checkbox>
+        <div class="mat-tree-node__icons">some icons</div>
+      </div>
+    </div>
   </mat-tree-node>
 
   <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
@@ -15,16 +31,30 @@
     <button mat-button (click)="saveNode(node, itemValue.value)">Save</button>
   </mat-tree-node>
 
-  <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
-    <button mat-icon-button matTreeNodeToggle
-            [attr.aria-label]="'Toggle ' + node.item.data.name">
-      <mat-icon class="mat-icon-rtl-mirror">
-        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-      </mat-icon>
-    </button>
-    <mat-checkbox [checked]="descendantsAllSelected(node)"
-                  [indeterminate]="descendantsPartiallySelected(node)"
-                  (change)="todoItemSelectionToggle(node)">{{node.item.data.name}}</mat-checkbox>
-    <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>
+  <mat-tree-node
+    *matTreeNodeDef="let node; when: hasChild"
+    matTreeNodePadding
+    class="mat-tree-node__item w-100"
+    [matTreeNodePaddingIndent]="15"
+    (click)="openDetailView(node)"
+  >
+    <div class="mat-tree-node__content w-100">
+      <button matTreeNodeToggle class="toggle-btn"
+              [attr.aria-label]="'Toggle ' + node.item.data.name">
+        <mat-icon class="mat-icon-rtl-mirror">
+          {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        </mat-icon>
+      </button>
+      <div class="mat-tree-node__divider w-100">
+        <app-custom-checkbox
+          class="w-100"
+          (checkedChange)="todoLeafItemSelectionToggle(node)"
+          [checked]="selection.isSelected(node)">
+          <div class="mat-tree-node__name ">{{node.item.data.name}}</div>
+        </app-custom-checkbox>
+        <div class="mat-tree-node__icons">some icons</div>
+      </div>
+<!--      <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>-->
+    </div>
   </mat-tree-node>
 </mat-tree>
