@@ -24,7 +24,7 @@ class TreeItemFlatNode {
   styleUrls: ['dnd-tree.component.scss'],
   providers: [DndTreeDatabaseService]
 })
-export class DndTreeComponent implements OnInit {
+export class DndTreeComponent<T> implements OnInit {
   @Input() listName: string;
   @Input() dataList: any[] = [];
   @Input() config: IListConfig;
@@ -32,7 +32,7 @@ export class DndTreeComponent implements OnInit {
   @Output() itemAction: EventEmitter<IListItemAction> = new EventEmitter<IListItemAction>();
   @ContentChild('customTemplate') customTemplate: TemplateRef<any>;
   groupDivider: (data: any[], type: any) => any[];
-  _groupedList: BaseGroupList = new BaseGroupList('');
+  _groupedList: BaseGroupList<T> = new BaseGroupList<T>('');
 
 
   flatNodeMap = new Map<TreeItemFlatNode, TreeItem>();
@@ -78,7 +78,7 @@ export class DndTreeComponent implements OnInit {
     this._groupedList.clear();
     if (this.config.groups && this.config.groups.length && this.config.groupDivider) {
       this.config.groups.forEach(group => {
-        const groupInst = new BaseListOfGroup(group.name);
+        const groupInst = new BaseListOfGroup<T>(group.name);
         const filteredGroupData = this.groupDivider(this.dataList, group.type);
         filteredGroupData.map(item => {
           groupInst.insertTo(this.getMappedItem(item));
@@ -87,7 +87,7 @@ export class DndTreeComponent implements OnInit {
       });
     }
     else {
-      const groupInst = new BaseListOfGroup('');
+      const groupInst = new BaseListOfGroup<T>('');
       this.dataList.forEach(item => {
         groupInst.insertTo(this.getMappedItem(item));
       });

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { BaseListItemComponent } from '../base-list-item.component';
+import { TaskResponseDto } from '@finapp/app-common';
 
 
 @Component({
@@ -7,5 +8,5 @@ import { BaseListItemComponent } from '../base-list-item.component';
   templateUrl: './task-list-item.component.html',
   styleUrls: ['task-list-item.component.scss']
 })
-export class TaskListItemComponent extends BaseListItemComponent {
+export class TaskListItemComponent extends BaseListItemComponent<TaskResponseDto> {
 }

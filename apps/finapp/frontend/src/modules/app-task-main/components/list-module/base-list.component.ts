@@ -12,6 +12,8 @@ import {
 import { nanoid } from 'nanoid';
 
 
+export type BaseList<T> = T[];
+
 export interface IListGroup {
   name: string;
   type: any;
@@ -29,12 +31,13 @@ export interface IListItemField extends IListItemFieldDescription {
   value: any;
 }
 
-export interface IListItem {
+export interface IListItem<T> {
   id: number;
   fields: IListItemField[];
-  data: any;
+  data: T;
   pinned?: boolean;
   position?: number;
+  children: IListItem<T>[]
 }
 
 export interface IListConfig {
@@ -51,9 +54,9 @@ export interface IListConfig {
   templateUrl: 'base-list.component.html',
   styleUrls: ['base-list.component.scss']
 })
-export class BaseListComponent implements OnInit, OnChanges {
+export class BaseListComponent<T> implements OnInit, OnChanges {
   @Input() listName: string;
-  @Input() dataList: any[] = [];
+  @Input() dataList: T[] = [];
   @Input() config: IListConfig;
   @Output() itemClicked: EventEmitter<number> = new EventEmitter<number>();
   @Output() itemAction: EventEmitter<IListItemAction> = new EventEmitter<IListItemAction>();
@@ -62,20 +65,19 @@ export class BaseListComponent implements OnInit, OnChanges {
 
   filteredList: any[] = [];
   groupDivider: (data: any[], type: any) => any[];
-  groupedList: BaseGroupList;
+  groupedList: BaseGroupList<T>;
 
   async ngOnInit(): Promise<void> {
-    this.groupedList = new BaseGroupList(this.listName);
+    this.groupedList = new BaseGroupList<T>(this.listName);
     this.groupDivider = this.config.groupDivider ? this.config.groupDivider : this.groupDivider;
     this.refresh();
   }
 
   async ngOnChanges(changes: SimpleChanges): Promise<void> {
+    if (!this.groupedList) { return; }
+
     this.dataList = changes['dataList'].currentValue;
     this.refresh();
-    this.groupedList.list.map(g => {
-      g.setItemPosition(100,1);
-    });
   }
 
   async refresh(): Promise<void> {
@@ -91,7 +93,7 @@ export class BaseListComponent implements OnInit, OnChanges {
     this.groupedList.clear();
     if (this.config.groups && this.config.groups.length && this.config.groupDivider) {
       this.config.groups.forEach(group => {
-        const groupInst = new BaseListOfGroup(group.name);
+        const groupInst = new BaseListOfGroup<T>(group.name);
         const filteredGroupData = this.groupDivider(this.dataList, group.type);
         filteredGroupData.map(item => {
           groupInst.insertTo(this.getMappedItem(item));
@@ -100,7 +102,7 @@ export class BaseListComponent implements OnInit, OnChanges {
       });
     }
     else {
-      const groupInst = new BaseListOfGroup('');
+      const groupInst = new BaseListOfGroup<T>('');
       this.dataList.forEach(item => {
         groupInst.insertTo(this.getMappedItem(item));
       });
@@ -108,11 +110,12 @@ export class BaseListComponent implements OnInit, OnChanges {
     }
   }
 
-  private getMappedItem(item: any): IListItem {
-    const dataItem: IListItem = {
+  private getMappedItem(item: any): IListItem<T> {
+    const dataItem: IListItem<T> = {
       id: item.id,
       data: item,
-      fields: []
+      fields: [],
+      children: [],
     };
     this.config.listDescription.map((listDesc: IListItemFieldDescription) => {
       dataItem.fields.push({
@@ -122,11 +125,16 @@ export class BaseListComponent implements OnInit, OnChanges {
       if (item?.pinned) {
         dataItem.pinned = item.pinned;
       }
+      if (item.children?.length) {
+        item.children.forEach((child: T) => {
+          dataItem.children.push(this.getMappedItem(child));
+        });
+      }
     });
     return dataItem;
   }
 
-  onItemClicked(item: IListItem): void {
+  onItemClicked(item: IListItem<T>): void {
     this.itemClicked.emit(item.id);
     console.log(item)
   }
@@ -146,8 +154,8 @@ export class BaseListComponent implements OnInit, OnChanges {
 
 
 
-export class BaseListOfGroup {
-  private _list: IListItem[] = [];
+export class BaseListOfGroup<T> {
+  private _list: IListItem<T>[] = [];
   private _name: string;
   readonly _id: string;
 
@@ -175,11 +183,11 @@ export class BaseListOfGroup {
     this.recalculatePositions();
   }
 
-  public remove(item: IListItem): void {
+  public remove(item: IListItem<T>): void {
     this._list = this.list.filter(i => item.id !== i.id);
   }
 
-  public get list(): IListItem[] {
+  public get list(): IListItem<T>[] {
     return this._list;
   }
 
@@ -210,15 +218,15 @@ export class BaseListOfGroup {
 
 }
 
-export class BaseGroupList {
-  private _list: BaseListOfGroup[] = [];
+export class BaseGroupList<T> {
+  private _list: BaseListOfGroup<T>[] = [];
   private _name: string;
-  private _pinnedRows: BaseListOfGroup;
+  private _pinnedRows: BaseListOfGroup<T>;
 
-  constructor(name: string, items: any = []) {
+  constructor(name: string, items: BaseListOfGroup<T>[] = []) {
     this._name = name;
     this._list = items;
-    this._pinnedRows = new BaseListOfGroup('Pinned');
+    this._pinnedRows = new BaseListOfGroup<T>('Pinned');
   };
 
   public set name(name: string) {
@@ -229,15 +237,15 @@ export class BaseGroupList {
     return this._name;
   }
 
-  public addGroup(group: BaseListOfGroup): void {
+  public addGroup(group: BaseListOfGroup<T>): void {
     this._list.push(group);
   }
 
-  public get list(): BaseListOfGroup[] {
+  public get list(): BaseListOfGroup<T>[] {
     return this._list;
   }
 
-  public pin(groupId: string, item: IListItem): void {
+  public pin(groupId: string, item: IListItem<T>): void {
     this._pinnedRows.insertTo(item);
     this._list.map(group => {
       if (group._id === groupId) {
@@ -246,7 +254,7 @@ export class BaseGroupList {
     });
   }
 
-  public unpin(groupId: string, item: IListItem): void {
+  public unpin(groupId: string, item: IListItem<T>): void {
     this._pinnedRows.remove(item);
     this._list.map(group => {
       if (group._id === groupId) {
@@ -259,7 +267,7 @@ export class BaseGroupList {
     this._list = this._list.filter(g => g.id !== id);
   }
 
-  public get pinnedGroup(): BaseListOfGroup {
+  public get pinnedGroup(): BaseListOfGroup<T> {
     return this._pinnedRows;
   }
 

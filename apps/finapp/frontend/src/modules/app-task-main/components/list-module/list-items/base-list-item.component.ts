@@ -7,12 +7,12 @@ import { IListItem } from '../base-list.component';
   templateUrl: './base-list-item.component.html',
   styleUrls: ['base-list-item.component.scss']
 })
-export class BaseListItemComponent {
-  @Input() item: IListItem;
+export class BaseListItemComponent<T> {
+  @Input() item: IListItem<T>;
   @Input() selectable: boolean = false;
-  @Output() itemClicked: EventEmitter<IListItem> = new EventEmitter<IListItem>();
+  @Output() itemClicked: EventEmitter<IListItem<T>> = new EventEmitter<IListItem<T>>();
 
-  onItemClicked(item: IListItem): void {
+  onItemClicked(item: IListItem<T>): void {
     this.itemClicked.emit(item);
   }
 }
