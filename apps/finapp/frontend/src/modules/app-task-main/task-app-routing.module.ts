@@ -10,7 +10,8 @@ const routes: Routes = [
     component: TaskAppComponent,
     children: [
       {
-        path: 'dashboard'
+        path: 'dashboard',
+        loadChildren: () => import("./dashboard/dashboard.module").then(m => m.DashboardModule),
       },
       {
         path: 'tlp/archive',
@@ -31,7 +32,7 @@ const routes: Routes = [
       {
         path: 'statistics'
       },
-
+      { path: '**', redirectTo: 'dashboard' }
     ]
   }
 ];

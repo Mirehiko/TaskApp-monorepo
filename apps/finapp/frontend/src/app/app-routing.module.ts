@@ -23,7 +23,7 @@ const routes: Routes = [
     loadChildren: () => import("../modules/admin/admin.module").then(m => m.AdminModule),
   },
   // { path: 'error', component: ErrorPageComponent },
-  { path: '**', redirectTo: '/main/' } // TODO: Redirect to landing page
+  { path: '**', redirectTo: 'auth' }
 ];
 
 @NgModule({
