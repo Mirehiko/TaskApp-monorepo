@@ -60,7 +60,7 @@ export class TokenService {
   }
 
   async getUserIdByToken(token: string): Promise<number> {
-    const user = await this.repository.findOne({token}, {relations: ['User']});
+    const user = await this.repository.findOne({token}, {relations: ['userId']});
     if (!user) {
       throw new UnauthorizedException({message: "User unauthorized"});
     }

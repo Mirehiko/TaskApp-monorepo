@@ -65,7 +65,7 @@ export class AuthRestService {
   }
 
   public async getUserByToken(token: string | null): Promise<UserResponseDto> {
-    return await this.http.post<UserResponseDto>(`${this.baseUrl}/by-token`, { data: { token: token }}).toPromise().then(res => {
+    return await this.http.post<UserResponseDto>(`${this.baseUrl}/by-token`, { token: token }).toPromise().then(res => {
       return res as UserResponseDto;
     });
   }

@@ -236,8 +236,8 @@ export class AuthService {
   }
 
   async getUserByToken(token: string): Promise<User> {
-    const userId = await this.tokenService.getUserIdByToken(token);
-    return await this.userService.getByID(userId);
+    const user = await this.jwtService.verify(token);
+    return await this.userService.getByID(user.id);
   }
 
 }

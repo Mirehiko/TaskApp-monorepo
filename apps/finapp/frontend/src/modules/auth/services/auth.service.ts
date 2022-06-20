@@ -33,7 +33,7 @@ export class AuthService {
 
   async logout(): Promise<void> {
     this.user = null as unknown as UserResponseDto;
-    this.removeToken()
+    this.removeToken();
     await this.router.navigate([ "/login" ]);
   }
 
@@ -48,7 +48,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    this.token = localStorage.getItem('authToken');
+    this.token = localStorage.getItem('auth-token');
     return this.token;
   }
 

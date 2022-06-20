@@ -10,7 +10,7 @@ const routes: Routes = [
   },
   {
     path: 'taskapp',
-    // canActivate: [ AuthGuard ],
+    canActivate: [ AuthGuard ],
     loadChildren: () => import("../modules/app-task-main/task-app.module").then(m => m.TaskAppModule),
   },
   // {
@@ -20,6 +20,7 @@ const routes: Routes = [
   // },
   {
     path: 'administration',
+    canActivate: [ AuthGuard ],
     loadChildren: () => import("../modules/admin/admin.module").then(m => m.AdminModule),
   },
   // { path: 'error', component: ErrorPageComponent },
