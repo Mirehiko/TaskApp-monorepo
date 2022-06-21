@@ -1,6 +1,9 @@
 .mat-tree-node__item {
   &.mat-tree-node__item-selected {
-    background: #ccc;
+    background: #e5e9eb;
+    app-custom-checkbox.mat-tree-node__checkbox.custom-checkbox ::ng-deep {
+
+    }
   }
   app-custom-checkbox.mat-tree-node__checkbox.custom-checkbox ::ng-deep {
     .inp-cbx:checked + .cbx .span.ico {
@@ -16,7 +19,7 @@
 }
 .mat-tree-node__divider {
   display: flex;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e5e9eb;
   padding: 10px 0;
   align-items: center;
 }

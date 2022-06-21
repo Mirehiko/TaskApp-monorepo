@@ -100,7 +100,7 @@ export class DndTreeComponent<T> implements OnInit {
     }
   }
 
-  public select(event: MouseEvent, item: TreeItemFlatNode<T>): void {
+  public selectItem(event: MouseEvent, item: TreeItemFlatNode<T>): void {
     // event.stopPropagation();
     event.preventDefault();
 
@@ -200,8 +200,8 @@ export class DndTreeComponent<T> implements OnInit {
     this.checkAllParentsSelection(node);
   }
 
-  public startEdit(evt: MouseEvent): void {
-    evt.stopPropagation();
+  public updateTitle(data: string): void {
+    console.log(data)
   }
 
   /* Checks all the parents when a leaf node is selected/unselected */
