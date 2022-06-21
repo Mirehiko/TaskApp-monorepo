@@ -10,12 +10,14 @@ import {
   IListItemAction,
   IListItemFieldDescription
 } from '../list-module/base-list.component';
+import { Router } from '@angular/router';
 
 
 class TreeItemFlatNode<T> {
   item: IListItem<T>;
   level: number;
   expandable: boolean;
+  selected: boolean;
 }
 
 @Component({
@@ -39,7 +41,7 @@ export class DndTreeComponent<T> implements OnInit {
   nestedNodeMap = new Map<TreeItem, TreeItemFlatNode<T>>();
 
   selectedParent: TreeItemFlatNode<T> | null = null;
-
+  selectedItems: TreeItemFlatNode<T>[] = [];
   newItemName = '';
   treeControl: FlatTreeControl<TreeItemFlatNode<T>>
 
@@ -47,7 +49,10 @@ export class DndTreeComponent<T> implements OnInit {
   dataSource: MatTreeFlatDataSource<TreeItem, TreeItemFlatNode<T>>;
   selection = new SelectionModel<TreeItemFlatNode<T>>(true);
 
-  constructor(private _database: DndTreeDatabaseService) {
+  constructor(
+    private _database: DndTreeDatabaseService,
+    private router: Router,
+  ) {
     this.treeFlattener = new MatTreeFlattener(
       this.transformer,
       this.getLevel,
@@ -95,8 +100,37 @@ export class DndTreeComponent<T> implements OnInit {
     }
   }
 
-  public openDetailView(item: TreeItemFlatNode<T>): void {
+  public select(event: MouseEvent, item: TreeItemFlatNode<T>): void {
+    // event.stopPropagation();
+    event.preventDefault();
 
+    item.selected = !item.selected;
+
+    if (!event.ctrlKey && !event.shiftKey) {
+      this.selectedItems = [item];
+      this.openDetailView(item.item.id);
+      return;
+    }
+
+    this.selectedItems =
+      item.selected ? this.selectedItems.concat(item) : this.selectedItems.filter(i => i.item.id != item.item.id);
+    if (this.selectedItems.length > 1) {
+      this.openMultiSelectionView();
+    }
+    else {
+      this.openDetailView(item.item.id);
+    }
+  }
+
+  public openMultiSelectionView(): void {
+
+  }
+
+  public async openDetailView(entityId: number): Promise<void> {
+    if (!this.config.navigateTo) {
+      throw new Error('navigateTo is required');
+    }
+    await this.router.navigate([this.config.navigateTo, entityId]);
   }
 
   private getMappedItem(item: any): TreeItem {
@@ -164,6 +198,10 @@ export class DndTreeComponent<T> implements OnInit {
   todoLeafItemSelectionToggle(node: TreeItemFlatNode<T>): void {
     this.selection.toggle(node);
     this.checkAllParentsSelection(node);
+  }
+
+  public startEdit(evt: MouseEvent): void {
+    evt.stopPropagation();
   }
 
   /* Checks all the parents when a leaf node is selected/unselected */

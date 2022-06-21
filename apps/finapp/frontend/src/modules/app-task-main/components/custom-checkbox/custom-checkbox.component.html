@@ -1,5 +1,5 @@
-<label>
-  <input class="inp-cbx" type="checkbox" style="display: none;"/>
+<label (click)="checkboxClicked($event)">
+  <input [checked]="checked" [indeterminate]="indeterminate" (change)="onChange($event)" class="inp-cbx" type="checkbox" style="display: none;"/>
   <div class="cbx">
     <div class="span ico">
       <svg width="12px" height="9px" viewbox="0 0 12 9">

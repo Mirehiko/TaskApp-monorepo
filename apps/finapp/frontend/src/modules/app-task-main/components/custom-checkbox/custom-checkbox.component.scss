@@ -106,6 +106,36 @@ $green: #06842c;
     transition: all 0.3s ease;
   }
 
+
+  .inp-cbx:indeterminate + .cbx .span.ico {
+    animation: check 0.6s ease;
+  }
+  .inp-cbx:indeterminate + .cbx .span.ico:after {
+    display: block;
+    content: '';
+    border-radius: 50px;
+    background: #3c53c7;
+    position: absolute;
+    height: 4px;
+    width: 10px;
+    top: 7px;
+    left: 4px;
+    animation: check 0.6s ease;
+  }
+  .inp-cbx:indeterminate + .cbx .span.ico:before {
+    transform: scale(2.2);
+    opacity: 0;
+    transition: all 0.6s ease;
+  }
+  .inp-cbx:indeterminate + .cbx .span.span-text {
+    color: #B9B8C3;
+    transition: all 0.3s ease;
+  }
+  .inp-cbx:indeterminate + .cbx .span.span-text:after {
+    transform: scaleX(1);
+    transition: all 0.3s ease;
+  }
+
   @keyframes check {
     50% {
       transform: scale(1.2);

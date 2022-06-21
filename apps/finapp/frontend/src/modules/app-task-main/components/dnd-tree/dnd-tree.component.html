@@ -5,17 +5,19 @@
     matTreeNodeToggle
     matTreeNodePadding
     class="mat-tree-node__item w-100"
+    [class.mat-tree-node__item-selected]="node.selected"
     [matTreeNodePaddingIndent]="15"
-    (click)="openDetailView(node)"
+    (click)="select($event, node)"
   >
     <div class="mat-tree-node__content w-100">
       <button class="toggle-btn" disabled></button>
       <div class="mat-tree-node__divider w-100">
         <app-custom-checkbox
-          class="w-100"
-          (checkedChange)="todoLeafItemSelectionToggle(node)"
+          class="w-100 mat-tree-node__checkbox"
+          (checkedChanged)="todoLeafItemSelectionToggle(node)"
+          [checkboxOnly]="config.checkboxOnly"
           [checked]="selection.isSelected(node)">
-          <div class="mat-tree-node__name ">{{node.item.data.name}}</div>
+          <div class="mat-tree-node__name" (click)="startEdit($event)">{{node.item.data.name}}</div>
         </app-custom-checkbox>
         <div class="mat-tree-node__icons">some icons</div>
       </div>
@@ -35,8 +37,9 @@
     *matTreeNodeDef="let node; when: hasChild"
     matTreeNodePadding
     class="mat-tree-node__item w-100"
+    [class.mat-tree-node__item-selected]="node.selected"
     [matTreeNodePaddingIndent]="15"
-    (click)="openDetailView(node)"
+    (click)="select($event, node)"
   >
     <div class="mat-tree-node__content w-100">
       <button matTreeNodeToggle class="toggle-btn"
@@ -47,10 +50,11 @@
       </button>
       <div class="mat-tree-node__divider w-100">
         <app-custom-checkbox
-          class="w-100"
-          (checkedChange)="todoLeafItemSelectionToggle(node)"
-          [checked]="selection.isSelected(node)">
-          <div class="mat-tree-node__name ">{{node.item.data.name}}</div>
+          class="w-100 mat-tree-node__checkbox"
+          (checkedChanged)="todoItemSelectionToggle(node)"
+          [checkboxOnly]="config.checkboxOnly"
+          [checked]="descendantsAllSelected(node)">
+          <div class="mat-tree-node__name" (click)="startEdit($event)">{{node.item.data.name}}</div>
         </app-custom-checkbox>
         <div class="mat-tree-node__icons">some icons</div>
       </div>

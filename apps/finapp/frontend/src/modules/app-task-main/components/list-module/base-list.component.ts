@@ -47,6 +47,8 @@ export interface IListConfig {
   pinnable?: boolean;
   selectable?: boolean;
   editableItem?: boolean;
+  navigateTo?: string;
+  checkboxOnly?: boolean;
 }
 
 @Component({
