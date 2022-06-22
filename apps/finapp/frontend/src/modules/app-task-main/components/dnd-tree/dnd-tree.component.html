@@ -9,7 +9,7 @@
     [matTreeNodePaddingIndent]="15"
     (click)="selectItem($event, node)"
   >
-    <div class="mat-tree-node__content w-100">
+    <div class="mat-tree-node__content w-100" customContextMenu [menuComponent]="nodeTreeItemMenu2">
       <button class="toggle-btn" disabled></button>
       <div class="mat-tree-node__divider w-100">
         <app-custom-checkbox
@@ -19,8 +19,9 @@
           [checked]="selection.isSelected(node)">
           <div class="mat-tree-node__name" appTitleEditable (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
         </app-custom-checkbox>
-        <div class="mat-tree-node__icons">some icons</div>
+        <div class="mat-tree-node__icons">icons</div>
       </div>
+      <app-custom-menu #nodeTreeItemMenu2></app-custom-menu>
     </div>
   </mat-tree-node>
 
@@ -48,7 +49,7 @@
           {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
         </mat-icon>
       </button>
-      <div class="mat-tree-node__divider w-100">
+      <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu1">
         <app-custom-checkbox
           class="w-100 mat-tree-node__checkbox"
           (checkedChanged)="todoItemSelectionToggle(node)"
@@ -56,9 +57,11 @@
           [checked]="descendantsAllSelected(node)">
           <div class="mat-tree-node__name" appTitleEditable (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
         </app-custom-checkbox>
-        <div class="mat-tree-node__icons">some icons</div>
+        <div class="mat-tree-node__icons">icons</div>
+        <app-custom-menu #nodeTreeItemMenu1></app-custom-menu>
       </div>
 <!--      <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>-->
     </div>
   </mat-tree-node>
+
 </mat-tree>

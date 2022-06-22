@@ -1,4 +1,5 @@
 import { AfterViewInit, Directive, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { IElementStyle } from '../components/interfaces/element-style.interface';
 
 
 @Directive({
@@ -31,7 +32,7 @@ export class TitleEditableDirective implements AfterViewInit {
     this.focused = false;
   }
 
-  private setStyles(style: ITitleEditable): void {
+  private setStyles(style: IElementStyle): void {
     this.el.nativeElement.style.backgroundColor = style.bgColor;
     this.el.nativeElement.style.color = style.color;
     if (!this.focused) {
@@ -42,7 +43,7 @@ export class TitleEditableDirective implements AfterViewInit {
     this.el.nativeElement.parentElement.style.width = style.width;
   }
 
-  private defaultStyle: ITitleEditable = {
+  private defaultStyle: IElementStyle = {
     color: 'inherit',
     bgColor: 'transparent',
     contentEditable: false,
@@ -51,7 +52,7 @@ export class TitleEditableDirective implements AfterViewInit {
     width: '100%'
   }
 
-  private defaultHoverStyle: ITitleEditable = {
+  private defaultHoverStyle: IElementStyle = {
     color: 'inherit',
     bgColor: 'transparent',
     contentEditable: true,
@@ -60,7 +61,7 @@ export class TitleEditableDirective implements AfterViewInit {
     width: '100%'
   }
 
-  private defaultEditStyle: ITitleEditable = {
+  private defaultEditStyle: IElementStyle = {
     color: 'inherit',
     bgColor: 'transparent',
     contentEditable: true,
@@ -69,13 +70,3 @@ export class TitleEditableDirective implements AfterViewInit {
     width: '100%'
   }
 }
-
-interface ITitleEditable {
-  color?: string;
-  bgColor?: string;
-  cursor?: string;
-  outline?: string;
-  contentEditable?: boolean;
-  width?: string | number;
-}
-
