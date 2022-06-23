@@ -20,13 +20,19 @@ class TreeItemFlatNode<T> {
   selected: boolean;
 }
 
+interface ITreeGroup<T> {
+  name: string;
+  dataSource: MatTreeFlatDataSource<TreeItem, TreeItemFlatNode<T>>
+}
+
+
 @Component({
   selector: 'app-dnd-tree',
   templateUrl: 'dnd-tree.component.html',
   styleUrls: ['dnd-tree.component.scss'],
   providers: [DndTreeDatabaseService]
 })
-export class DndTreeComponent<T> implements OnInit {
+export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: string]: any}> implements OnInit {
   @Input() listName: string;
   @Input() menuItems: string[] = [];
   @Input() dataList: any[] = [];
@@ -35,8 +41,7 @@ export class DndTreeComponent<T> implements OnInit {
   @Output() itemAction: EventEmitter<IListItemAction> = new EventEmitter<IListItemAction>();
   @ContentChild('customTemplate') customTemplate: TemplateRef<any>;
   groupDivider: (data: any[], type: any) => any[];
-  _groupedList: BaseGroupList<T> = new BaseGroupList<T>('');
-
+  public groups: ITreeGroup<T>[] = [];
 
   flatNodeMap = new Map<TreeItemFlatNode<T>, TreeItem>();
   nestedNodeMap = new Map<TreeItem, TreeItemFlatNode<T>>();
@@ -68,7 +73,7 @@ export class DndTreeComponent<T> implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.groupDivider = this.config.groupDivider ? this.config.groupDivider : this.groupDivider;
     this._database.initialize(this.dataList);
   }
@@ -79,27 +84,6 @@ export class DndTreeComponent<T> implements OnInit {
   getChildren = (node: TreeItem): TreeItem[] => node.children;
   hasChild = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.expandable;
   hasNoContent = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.item === undefined;
-
-  private async divideOnGroups(): Promise<void> {
-    this._groupedList.clear();
-    if (this.config.groups && this.config.groups.length && this.config.groupDivider) {
-      this.config.groups.forEach(group => {
-        const groupInst = new BaseListOfGroup<T>(group.name);
-        const filteredGroupData = this.groupDivider(this.dataList, group.type);
-        filteredGroupData.map(item => {
-          groupInst.insertTo(this.getMappedItem(item));
-        });
-        this._groupedList.addGroup(groupInst);
-      });
-    }
-    else {
-      const groupInst = new BaseListOfGroup<T>('');
-      this.dataList.forEach(item => {
-        groupInst.insertTo(this.getMappedItem(item));
-      });
-      this._groupedList.addGroup(groupInst);
-    }
-  }
 
   public selectItem(event: MouseEvent, item: TreeItemFlatNode<T>): void {
     // event.stopPropagation();
@@ -134,7 +118,7 @@ export class DndTreeComponent<T> implements OnInit {
     await this.router.navigate([this.config.navigateTo, entityId]);
   }
 
-  private getMappedItem(item: any): TreeItem {
+  private getMappedItem(item: T): TreeItem {
     const dataItem: TreeItem = new TreeItem();
     dataItem.id = item.id;
     dataItem.data = item;

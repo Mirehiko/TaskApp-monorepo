@@ -1,72 +1,75 @@
-<mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100">
-
-  <mat-tree-node
-    *matTreeNodeDef="let node"
-    matTreeNodeToggle
-    matTreeNodePadding
-    class="mat-tree-node__item w-100"
-    [class.mat-tree-node__item-selected]="node.selected"
-    [matTreeNodePaddingIndent]="15"
-    (click)="selectItem($event, node)"
-  >
-    <div class="mat-tree-node__content w-100">
-      <button class="toggle-btn" disabled></button>
-      <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [id]="node.item.id">
-        <app-custom-checkbox
-          class="w-100 mat-tree-node__checkbox"
-          (checkedChanged)="todoLeafItemSelectionToggle(node)"
-          [checkboxOnly]="config.checkboxOnly"
-          [checked]="selection.isSelected(node)">
-          <div class="mat-tree-node__name" appTitleEditable (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
-        </app-custom-checkbox>
-        <div class="mat-tree-node__icons">icons</div>
+<ng-container *ngIf="dataSource.data.length; else emptyData">
+  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100">
+    <mat-tree-node
+      *matTreeNodeDef="let node"
+      matTreeNodeToggle
+      matTreeNodePadding
+      class="mat-tree-node__item w-100"
+      [class.mat-tree-node__item-selected]="node.selected"
+      [matTreeNodePaddingIndent]="15"
+      (click)="selectItem($event, node)"
+    >
+      <div class="mat-tree-node__content w-100">
+        <button class="toggle-btn" disabled></button>
+        <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [id]="node.item.id">
+          <app-custom-checkbox
+            class="w-100 mat-tree-node__checkbox"
+            (checkedChanged)="todoLeafItemSelectionToggle(node)"
+            [checkboxOnly]="config.checkboxOnly"
+            [checked]="selection.isSelected(node)">
+            <div class="mat-tree-node__name" appTitleEditable (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
+          </app-custom-checkbox>
+          <div class="mat-tree-node__icons">icons</div>
+        </div>
       </div>
-    </div>
-  </mat-tree-node>
+    </mat-tree-node>
 
-  <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
-    <button mat-icon-button disabled></button>
-    <mat-form-field appearance="fill">
-      <mat-label>New item...</mat-label>
-      <input matInput #itemValue placeholder="Ex. Lettuce">
-    </mat-form-field>
-    <button mat-button (click)="saveNode(node, itemValue.value)">Save</button>
-  </mat-tree-node>
+    <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
+      <button mat-icon-button disabled></button>
+      <mat-form-field appearance="fill">
+        <mat-label>New item...</mat-label>
+        <input matInput #itemValue placeholder="Ex. Lettuce">
+      </mat-form-field>
+      <button mat-button (click)="saveNode(node, itemValue.value)">Save</button>
+    </mat-tree-node>
 
-  <mat-tree-node
-    *matTreeNodeDef="let node; when: hasChild"
-    matTreeNodePadding
-    class="mat-tree-node__item w-100"
-    [class.mat-tree-node__item-selected]="node.selected"
-    [matTreeNodePaddingIndent]="15"
-    (click)="selectItem($event, node)"
-  >
-    <div class="mat-tree-node__content w-100">
-      <button matTreeNodeToggle class="toggle-btn"
-              [attr.aria-label]="'Toggle ' + node.item.data.name">
-        <mat-icon class="mat-icon-rtl-mirror">
-          {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-        </mat-icon>
-      </button>
+    <mat-tree-node
+      *matTreeNodeDef="let node; when: hasChild"
+      matTreeNodePadding
+      class="mat-tree-node__item w-100"
+      [class.mat-tree-node__item-selected]="node.selected"
+      [matTreeNodePaddingIndent]="15"
+      (click)="selectItem($event, node)"
+    >
+      <div class="mat-tree-node__content w-100">
+        <button matTreeNodeToggle class="toggle-btn"
+                [attr.aria-label]="'Toggle ' + node.item.data.name">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
 
-      <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [id]="node.item.id">
-        <app-custom-checkbox
-          class="w-100 mat-tree-node__checkbox"
-          (checkedChanged)="todoItemSelectionToggle(node)"
-          [checkboxOnly]="config.checkboxOnly"
-          [checked]="descendantsAllSelected(node)">
-          <div class="mat-tree-node__name" appTitleEditable (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
-        </app-custom-checkbox>
-        <div class="mat-tree-node__icons">icons</div>
+        <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [id]="node.item.id">
+          <app-custom-checkbox
+            class="w-100 mat-tree-node__checkbox"
+            (checkedChanged)="todoItemSelectionToggle(node)"
+            [checkboxOnly]="config.checkboxOnly"
+            [checked]="descendantsAllSelected(node)">
+            <div class="mat-tree-node__name" appTitleEditable (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
+          </app-custom-checkbox>
+          <div class="mat-tree-node__icons">icons</div>
+        </div>
+        <!--      <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>-->
       </div>
+    </mat-tree-node>
 
-<!--      <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>-->
-    </div>
-  </mat-tree-node>
+  </mat-tree>
 
-</mat-tree>
+  <app-custom-menu #nodeTreeItemMenu [available]="!!menuItems.length">
+    <button custom-menu-item *ngFor="let menuItem of menuItems">{{menuItem}}</button>
+  </app-custom-menu>
+</ng-container>
 
-<app-custom-menu #nodeTreeItemMenu [available]="!!menuItems.length">
-  <button custom-menu-item *ngFor="let menuItem of menuItems">{{menuItem}}</button>
-</app-custom-menu>
-
+<ng-template #emptyData>
+  <p>Data not found</p>
+</ng-template>

@@ -1,9 +1,16 @@
-app-base-list ::ng-deep {
-  h1 {
-    font-size: 24px;
-  }
-  h3 {
-    font-size: 18px;
-  }
+//app-base-list ::ng-deep {
+//  h1 {
+//    font-size: 24px;
+//  }
+//  h3 {
+//    font-size: 18px;
+//  }
+//}
+h1 {
+  font-size: 24px;
 }
-
+h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: bold;
+}

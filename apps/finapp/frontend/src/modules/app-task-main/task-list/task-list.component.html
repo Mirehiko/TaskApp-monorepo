@@ -1,9 +1,17 @@
-<!--<app-base-list class="task-list" [config]="taskListConfig" [dataList]="tasks" [listName]="'All tasks'">-->
-<!--  <ng-template #customTemplate let-item='item' let-context="context">-->
-<!--    <app-task-list-item [item]="item" [selectable]="context.selectable" (itemClicked)="context.onItemClicked(item)"></app-task-list-item>-->
-<!--  </ng-template>-->
-<!--</app-base-list>-->
-<div *ngIf="dataLoaded">
-  <app-dnd-tree [dataList]="tasks" [config]="taskListConfig"></app-dnd-tree>
-</div>
+<section>
+  <h1>{{taskGroups.name}}</h1>
+  <div class="list-group" *ngIf="taskGroups.pinnedGroup.list.length && taskListConfig.pinnable">
+    <h3>{{taskGroups.pinnedGroup.name}}</h3>
+    <div class="list">
+      <app-dnd-tree [dataList]="taskGroups.pinnedGroup.list" [config]="taskListConfig"></app-dnd-tree>
+    </div>
+  </div>
+  <div class="list-group" *ngFor="let groupItem of taskGroups.list">
+    <h3>{{groupItem.name}}</h3>
+    <div class="list">
+      <app-dnd-tree [dataList]="groupItem.list" [config]="taskListConfig"></app-dnd-tree>
+    </div>
+  </div>
+</section>
+
 <router-outlet></router-outlet>
