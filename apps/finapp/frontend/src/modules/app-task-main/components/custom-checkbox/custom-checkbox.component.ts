@@ -22,8 +22,8 @@ export class CustomCheckboxComponent {
       return;
     }
     if (evt.target.closest('.ico')) {
-      evt.stopPropagation();
-      evt.preventDefault();
+      // evt.stopPropagation();
+      // evt.preventDefault();
       this.checked = !this.checked;
       this.checkedChanged.emit(this.checked);
     }

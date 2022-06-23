@@ -28,6 +28,7 @@ class TreeItemFlatNode<T> {
 })
 export class DndTreeComponent<T> implements OnInit {
   @Input() listName: string;
+  @Input() menuItems: string[] = [];
   @Input() dataList: any[] = [];
   @Input() config: IListConfig;
   @Output() itemClicked: EventEmitter<number> = new EventEmitter<number>();

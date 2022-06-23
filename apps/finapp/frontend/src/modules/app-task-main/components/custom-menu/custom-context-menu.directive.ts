@@ -1,18 +1,26 @@
-import { Directive, ElementRef, Input, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
 import { CustomMenuComponent } from './custom-menu.component';
-import { fromEvent, merge, Subject, takeUntil, tap } from 'rxjs';
+import { fromEvent, map, merge, Subject, takeUntil, tap } from 'rxjs';
 
 
 @Directive({
   selector: '[customContextMenu]'
 })
-export class CustomContextMenuDirective implements OnDestroy {
+export class CustomContextMenuDirective implements OnInit, OnDestroy {
   @Input() menuComponent: CustomMenuComponent;
+  @Input() id: number;
   private _destroy$ = new Subject<void>();
   private _context$ = new Subject<void>();
 
-  constructor(private el: ElementRef) {
-    const mainContext$ = fromEvent(el.nativeElement, 'contextmenu');
+  @HostBinding('class') class = 'context-menu';
+
+  constructor(private el: ElementRef) {}
+
+  ngOnInit(): void {
+    if (!this.menuComponent.available) {
+      return;
+    }
+    const mainContext$ = fromEvent(this.el.nativeElement, 'contextmenu');
     const bindRightHandler = this.onRightClickHandler.bind(this);
     mainContext$.pipe(
       tap(bindRightHandler),
@@ -20,15 +28,19 @@ export class CustomContextMenuDirective implements OnDestroy {
     ).subscribe();
   }
 
-  ngOnDestroy(): void {
+  async ngOnDestroy(): Promise<void> {
     this.menuComponent.hide();
     this._context$.next();
-    this.destroy();
+    await this.destroy();
   }
 
-  private onRightClickHandler(e: any): void {
+  private async onRightClickHandler(e: any): Promise<void> {
+    if (!this.menuComponent?.available) {
+      await this.ngOnDestroy();
+    }
+
     e.preventDefault();
-    this.destroy();
+    await this.destroy();
 
     const scroll$ = fromEvent(document, 'wheel');
 
@@ -41,13 +53,14 @@ export class CustomContextMenuDirective implements OnDestroy {
       takeUntil(this._destroy$)
     ).subscribe();
 
-    const click$ = fromEvent(document, 'click');
+    const documentClick$ = fromEvent(document, 'click');
+    const itemClick$ = fromEvent(this.el.nativeElement, 'click');
     const context$ = fromEvent(document, 'contextmenu');
-    const outEvents$ = merge(click$, context$)
+    const outEvents$ = merge(documentClick$, itemClick$, context$);
     outEvents$.pipe(
-      tap((evt: any) => {
+      map((evt: any) => {
         evt.stopPropagation();
-        if (evt.type === 'click' || !this.el.nativeElement.contains(evt.target)) {
+        if (evt.type === 'click' || !evt.target.closest('.context-menu')) {
           this.hideMenuAndRemoveScrollListener();
         }
       }),
@@ -60,12 +73,12 @@ export class CustomContextMenuDirective implements OnDestroy {
     });
   }
 
-  private hideMenuAndRemoveScrollListener(): void {
+  private async hideMenuAndRemoveScrollListener(): Promise<void> {
     this.menuComponent.hide();
-    this.destroy();
+    await this.destroy();
   }
 
-  private destroy(): void {
+  private async destroy(): Promise<void> {
     this._destroy$.next();
   }
 
