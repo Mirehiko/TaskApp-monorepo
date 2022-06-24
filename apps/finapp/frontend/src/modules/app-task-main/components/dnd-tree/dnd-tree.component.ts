@@ -1,11 +1,9 @@
 import { Component, ContentChild, EventEmitter, Input, OnInit, Output, TemplateRef } from '@angular/core';
-import { DndTreeDatabaseService, TreeItem } from './dnd-tree-database.service';
+import { DndTreeDatabaseService } from './dnd-tree-database.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import {
-  BaseGroupList,
-  BaseListOfGroup,
   IListConfig, IListItem,
   IListItemAction,
   IListItemFieldDescription
@@ -22,7 +20,7 @@ class TreeItemFlatNode<T> {
 
 interface ITreeGroup<T> {
   name: string;
-  dataSource: MatTreeFlatDataSource<TreeItem, TreeItemFlatNode<T>>
+  dataSource: MatTreeFlatDataSource<IListItem<T>, TreeItemFlatNode<T>>
 }
 
 
@@ -43,20 +41,20 @@ export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: s
   groupDivider: (data: any[], type: any) => any[];
   public groups: ITreeGroup<T>[] = [];
 
-  flatNodeMap = new Map<TreeItemFlatNode<T>, TreeItem>();
-  nestedNodeMap = new Map<TreeItem, TreeItemFlatNode<T>>();
+  flatNodeMap = new Map<TreeItemFlatNode<T>, IListItem<T>>();
+  nestedNodeMap = new Map<IListItem<T>, TreeItemFlatNode<T>>();
 
   selectedParent: TreeItemFlatNode<T> | null = null;
   selectedItems: TreeItemFlatNode<T>[] = [];
   newItemName = '';
   treeControl: FlatTreeControl<TreeItemFlatNode<T>>
 
-  treeFlattener: MatTreeFlattener<TreeItem, TreeItemFlatNode<T>>;
-  dataSource: MatTreeFlatDataSource<TreeItem, TreeItemFlatNode<T>>;
+  treeFlattener: MatTreeFlattener<IListItem<T>, TreeItemFlatNode<T>>;
+  dataSource: MatTreeFlatDataSource<IListItem<T>, TreeItemFlatNode<T>>;
   selection = new SelectionModel<TreeItemFlatNode<T>>(true);
 
   constructor(
-    private _database: DndTreeDatabaseService,
+    private _database: DndTreeDatabaseService<T>,
     private router: Router,
   ) {
     this.treeFlattener = new MatTreeFlattener(
@@ -81,7 +79,7 @@ export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: s
 
   getLevel = (node: TreeItemFlatNode<T>) => node.level;
   isExpandable = (node: TreeItemFlatNode<T>) => node.expandable;
-  getChildren = (node: TreeItem): TreeItem[] => node.children;
+  getChildren = (node: IListItem<T>): IListItem<T>[] => node.children;
   hasChild = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.expandable;
   hasNoContent = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.item === undefined;
 
@@ -118,8 +116,8 @@ export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: s
     await this.router.navigate([this.config.navigateTo, entityId]);
   }
 
-  private getMappedItem(item: T): TreeItem {
-    const dataItem: TreeItem = new TreeItem();
+  private getMappedItem(item: T): IListItem<T> {
+    const dataItem: IListItem<T> = new IListItem<T>();
     dataItem.id = item.id;
     dataItem.data = item;
     dataItem.fields = [];
@@ -235,11 +233,16 @@ export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: s
   }
 
   /** Select the category so we can insert the new item. */
-  addNewItem(node: TreeItemFlatNode<T>) {
-    const parentNode = this.flatNodeMap.get(node);
-    const newItem = new TreeItem();
-    this._database.insertItem(parentNode ? parentNode : null, [newItem]);
-    this.treeControl.expand(node);
+  addNewItem(node: TreeItemFlatNode<T> | null = null) {
+    const newItem = new IListItem<T>();
+    if (node) {
+      const parentNode = this.flatNodeMap.get(node);
+      this._database.insertItem(parentNode ? parentNode : null, [newItem]);
+      this.treeControl.expand(node);
+    }
+    else {
+
+    }
   }
 
   /** Save the node to database */

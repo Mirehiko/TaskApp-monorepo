@@ -1,9 +1,6 @@
 <ng-container *ngIf="dataSource.data.length; else emptyData">
   <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100">
-    <mat-tree-node
-      *matTreeNodeDef="let node"
-      matTreeNodeToggle
-      matTreeNodePadding
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding
       class="mat-tree-node__item w-100"
       [class.mat-tree-node__item-selected]="node.selected"
       [matTreeNodePaddingIndent]="15"
@@ -33,9 +30,7 @@
       <button mat-button (click)="saveNode(node, itemValue.value)">Save</button>
     </mat-tree-node>
 
-    <mat-tree-node
-      *matTreeNodeDef="let node; when: hasChild"
-      matTreeNodePadding
+    <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding
       class="mat-tree-node__item w-100"
       [class.mat-tree-node__item-selected]="node.selected"
       [matTreeNodePaddingIndent]="15"
@@ -62,7 +57,6 @@
         <!--      <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>-->
       </div>
     </mat-tree-node>
-
   </mat-tree>
 
   <app-custom-menu #nodeTreeItemMenu [available]="!!menuItems.length">
@@ -71,5 +65,5 @@
 </ng-container>
 
 <ng-template #emptyData>
-  <p>Data not found</p>
+  <div app-empty-message>No data to display</div>
 </ng-template>

@@ -10,7 +10,7 @@
       </ng-container>
     </div>
   </div>
-  <div class="list-group" *ngFor="let groupItem of groupedList.list">
+  <div class="list-group" *ngFor="let groupItem of groupedList.list; else emptyData">
     <h3>{{groupItem.name}}</h3>
     <div class="list">
       <ng-container *ngFor="let item of groupItem.list">
@@ -27,4 +27,8 @@
     [item]="item"
     [selectable]="context.selectable"
     (itemClicked)="context.onItemClicked(item)"></app-base-list-item>
+</ng-template>
+
+<ng-template #emptyData>
+  <div app-empty-message>No data to display</div>
 </ng-template>

@@ -31,13 +31,16 @@ export interface IListItemField extends IListItemFieldDescription {
   value: any;
 }
 
-export interface IListItem<T> {
+export class IListItem<T> {
   id: number;
   fields: IListItemField[];
-  data: T;
+  data: any;
   pinned?: boolean;
   position?: number;
-  children: IListItem<T>[]
+  selected?: boolean;
+  children: IListItem<T>[];
+  parentId?: number;
+  childCount?: number;
 }
 
 export interface IListConfig {
@@ -156,15 +159,19 @@ export class BaseListComponent<T> implements OnInit, OnChanges {
 
 
 
-export class BaseListOfGroup<T extends {id: number}> {
+export class BaseListOfGroup<T extends {id: number, children?: T[]}> {
   private _list: T[] = [];
   private _name: string;
   readonly _id: string;
+  private _expanded: boolean = false;
+  private _childCount: number = 0;
 
-  constructor(name: string, items: any = []) {
+  constructor(name: string, items: any = [], expanded: boolean = true) {
     this._name = name;
     this._list = items;
     this._id = nanoid();
+    this.expanded = expanded;
+    this.countChildren();
   };
 
   public set name(name: string) {
@@ -183,10 +190,16 @@ export class BaseListOfGroup<T extends {id: number}> {
       this._list.push(item);
     }
     this.recalculatePositions();
+    this.countChildren();
+  }
+
+  public get childCount(): number {
+    return this._childCount;
   }
 
   public remove(item: T): void {
     this._list = this.list.filter(i => item.id !== i.id);
+    this.countChildren();
   }
 
   public get list(): T[] {
@@ -195,6 +208,26 @@ export class BaseListOfGroup<T extends {id: number}> {
 
   public get id(): string {
     return this._id;
+  }
+
+  public get expanded(): boolean {
+    return this._expanded;
+  }
+
+  public toggleExpand(): void {
+    this._expanded = !this._expanded;
+  }
+
+  public set expanded(value: boolean) {
+    this._expanded = value;
+  }
+
+  private countChildren(): void {
+    this._childCount = this.counter(this._list);
+  }
+
+  private counter(list: T[]): number {
+    return list.reduce((sum, item) => sum += !!item.children?.length ? this.counter(item.children) + 1 : 1, 0);
   }
 
   public setItemPosition(id: number, position: number): void {
@@ -216,14 +249,15 @@ export class BaseListOfGroup<T extends {id: number}> {
 
   public clear(): void {
     this._list = [];
+    this._childCount = 0;
   }
 
 }
 
-export class BaseGroupList<T extends {id: number, pinned?: boolean}> {
+export class BaseGroupList<T extends {id: number, pinned?: boolean, selected?: boolean}> {
   private _list: BaseListOfGroup<T>[] = [];
   private _name: string;
-  private _pinnedRows: BaseListOfGroup<T>;
+  readonly _pinnedRows: BaseListOfGroup<T>;
 
   constructor(name: string, items: BaseListOfGroup<T>[] = []) {
     this._name = name;

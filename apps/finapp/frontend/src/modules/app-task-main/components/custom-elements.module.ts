@@ -3,12 +3,16 @@ import { CustomCheckboxComponent } from './custom-checkbox/custom-checkbox.compo
 import { CommonModule } from '@angular/common';
 import { TitleEditableDirective } from '../directives/title-editable.directive';
 import { CustomMenuModule } from './custom-menu/custom-menu.module';
+import { ToggleDirective } from '../directives/toggle.directive';
+import { EmptyMessageComponent } from './empty-message/empty-message.component';
 
 
 @NgModule({
   declarations: [
     CustomCheckboxComponent,
     TitleEditableDirective,
+    ToggleDirective,
+    EmptyMessageComponent,
   ],
   imports: [
     CommonModule,
@@ -17,7 +21,9 @@ import { CustomMenuModule } from './custom-menu/custom-menu.module';
   exports: [
     CustomCheckboxComponent,
     TitleEditableDirective,
-    CustomMenuModule
+    CustomMenuModule,
+    ToggleDirective,
+    EmptyMessageComponent,
   ]
 })
 export class CustomElementsModule {}

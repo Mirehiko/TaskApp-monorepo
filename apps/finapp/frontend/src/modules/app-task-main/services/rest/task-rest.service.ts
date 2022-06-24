@@ -12,7 +12,7 @@ import { HttpClient} from '@angular/common/http';
 import { BaseRestService } from './basic-rest.service';
 
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class TaskRestService extends BaseRestService {
 
   constructor(

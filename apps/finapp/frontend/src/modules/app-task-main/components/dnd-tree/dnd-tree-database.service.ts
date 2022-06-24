@@ -1,23 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { IListItemField } from '../list-module/base-list.component';
+import { IListItem } from '../list-module/base-list.component';
 
-
-export class TreeItem {
-  id: number;
-  fields: IListItemField[];
-  data: any;
-  pinned?: boolean;
-  position?: number;
-  children: TreeItem[];
-  parentId: number;
-}
 
 @Injectable()
-export class DndTreeDatabaseService {
-  public _dataChange = new BehaviorSubject<TreeItem[]>([]);
+export class DndTreeDatabaseService<T> {
+  public _dataChange = new BehaviorSubject<IListItem<T>[]>([]);
 
-  public get data(): TreeItem[] {
+  public get data(): IListItem<T>[] {
     return this._dataChange.value;
   }
 
@@ -26,7 +16,7 @@ export class DndTreeDatabaseService {
   }
 
 
-  public initialize(data: TreeItem[] = []) {
+  public initialize(data: IListItem<T>[] = []) {
     this._dataChange.next(data);
   }
 
@@ -35,7 +25,7 @@ export class DndTreeDatabaseService {
    * @param parent
    * @param item
    */
-  public insertItem(parent: TreeItem | null, items: TreeItem[]): void {
+  public insertItem(parent: IListItem<T> | null, items: IListItem<T>[]): void {
     if (!parent) {
       items.forEach(item => {
         this._dataChange.value.push(item);
@@ -58,12 +48,12 @@ export class DndTreeDatabaseService {
    * Save new item
    * @param item
    */
-  public updateItem(node: TreeItem, name: string): void {
+  public updateItem(node: IListItem<T>, name: string): void {
     node.data.name = name;
     this._dataChange.next(this.data);
   }
 
-  public removeItem(node: TreeItem): void {
+  public removeItem(node: IListItem<T>): void {
 
   }
 }
