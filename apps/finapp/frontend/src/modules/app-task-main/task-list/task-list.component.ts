@@ -5,9 +5,22 @@ import { SocketNotificationService } from '../services/socket-notification.servi
 import { TaskResponseDto } from '@finapp/app-common';
 import {
   BaseGroupList,
-  BaseListOfGroup,
+  BaseListOfGroup, IActionListItem, ListMenuAction
 } from '../components/list-module/base-list.component';
 import { taskListConfig } from './task-tree-config';
+
+
+export class ContextMenu {
+  // private _sections
+}
+
+enum TaskAction {
+  FOCUS = 'focus'
+}
+
+const TaskListMenuAction = { ...TaskAction, ...ListMenuAction }
+type TaskListMenuAction = TaskAction | ListMenuAction;
+
 
 
 @Component({
@@ -21,6 +34,8 @@ export class TaskListComponent implements OnInit {
   public dataLoaded = false;
   readonly groupDivider: (data: any[], type: any) => any[];
 
+  public actionList: IActionListItem<TaskListMenuAction>[] = [];
+
   constructor(
     private authService: AuthService,
     private taskRestService: TaskRestService,
@@ -31,6 +46,32 @@ export class TaskListComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.getTasks();
+    this.actionList = [
+      {
+        name: 'Create',
+        action: TaskListMenuAction.CREATE,
+      },
+      {
+        name: 'Delete',
+        action: TaskListMenuAction.DELETE,
+      },
+      {
+        name: 'Pin',
+        action: TaskListMenuAction.PIN,
+      },
+      {
+        name: 'Move',
+        action: TaskListMenuAction.MOVE,
+      },
+      {
+        name: 'Duplicate',
+        action: TaskListMenuAction.DUPLICATE,
+      },
+      {
+        name: 'Copy link',
+        action: TaskListMenuAction.COPY_LINK,
+      },
+    ];
   }
 
   async getTasks(): Promise<void> {

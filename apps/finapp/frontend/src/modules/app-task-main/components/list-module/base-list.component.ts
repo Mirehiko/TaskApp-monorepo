@@ -349,3 +349,16 @@ export enum ListItemOption {
   CONVERT_TO_TASK = 'convertToTask',
 }
 
+export enum ListMenuAction {
+  MOVE = 'move',
+  DUPLICATE ='duplicate',
+  PIN ='pin',
+  CREATE ='create',
+  DELETE ='delete',
+  COPY_LINK ='copyLink'
+}
+
+export interface IActionListItem<T> {
+  name: string;
+  action: T;
+}

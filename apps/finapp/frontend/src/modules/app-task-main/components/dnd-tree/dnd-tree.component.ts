@@ -1,5 +1,4 @@
 import { Component, ContentChild, EventEmitter, Input, OnInit, Output, TemplateRef } from '@angular/core';
-import { DndTreeDatabaseService } from './dnd-tree-database.service';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
@@ -9,6 +8,7 @@ import {
   IListItemFieldDescription
 } from '../list-module/base-list.component';
 import { Router } from '@angular/router';
+import { BaseDataChildrenService } from '../../services/base-data.service';
 
 
 class TreeItemFlatNode<T> {
@@ -28,7 +28,7 @@ interface ITreeGroup<T> {
   selector: 'app-dnd-tree',
   templateUrl: 'dnd-tree.component.html',
   styleUrls: ['dnd-tree.component.scss'],
-  providers: [DndTreeDatabaseService]
+  providers: [BaseDataChildrenService]
 })
 export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: string]: any}> implements OnInit {
   @Input() listName: string;
@@ -54,7 +54,7 @@ export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: s
   selection = new SelectionModel<TreeItemFlatNode<T>>(true);
 
   constructor(
-    private _database: DndTreeDatabaseService<T>,
+    private _database: BaseDataChildrenService<T>,
     private router: Router,
   ) {
     this.treeFlattener = new MatTreeFlattener(
