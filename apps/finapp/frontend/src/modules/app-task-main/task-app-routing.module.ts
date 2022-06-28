@@ -15,7 +15,7 @@ const routes: Routes = [
       },
       {
         path: 'tlp/archive',
-        component: TaskListComponent,
+        loadChildren: () => import("./task-list/task-list.module").then(m => m.TaskListModule),
       },
       {
         path: 'ttp',
@@ -23,11 +23,7 @@ const routes: Routes = [
       },
       {
         path: 'tags/trash',
-        component: TaskListComponent,
-      },
-      {
-        path: 'tasks#trash',
-        component: TaskListComponent,
+        loadChildren: () => import("./task-list/task-list.module").then(m => m.TaskListModule),
       },
       {
         path: 'statistics'

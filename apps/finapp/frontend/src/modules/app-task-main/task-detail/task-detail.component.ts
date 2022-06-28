@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'finapp-task-detail',
+  selector: 'app-task-detail',
   templateUrl: 'task-detail.component.html',
   styleUrls: ['task-detail.component.scss']
 })

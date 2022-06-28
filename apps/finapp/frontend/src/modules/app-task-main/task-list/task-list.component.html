@@ -29,7 +29,7 @@
       <span class="task-count" *ngIf="!group.expanded">{{group.childCount}}</span>
     </h3>
     <div class="list" *ngIf="group.expanded">
-      <app-dnd-tree [dataList]="group.list" [config]="taskListConfig"></app-dnd-tree>
+      <app-task-tree [dataList]="group.list" [config]="taskListConfig" [menuItems]="menuItems" (itemAction)="onMenuAction($event)"></app-task-tree>
     </div>
   </div>
 </ng-template>

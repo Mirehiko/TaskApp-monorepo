@@ -42,6 +42,6 @@ export const taskListConfig: IListConfig = {
     {
       field: 'createdAt',
     }],
-  navigateTo: 'taskapp/ttp',
+  navigateTo: '/taskapp/ttp',
   checkboxOnly: true,
 }

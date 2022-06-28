@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostBinding, Input } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { IElementStyle } from '../interfaces/element-style.interface';
 
 
@@ -9,7 +9,9 @@ import { IElementStyle } from '../interfaces/element-style.interface';
 })
 export class CustomMenuComponent {
   private _visible: boolean = false;
+  public itemId: number;
   @Input() public available: boolean = true;
+  @Output() onClickEvent: EventEmitter<number> = new EventEmitter<number>();
 
   @HostBinding('class') get classes(): string {
     return this._visible ? 'list-item-menu--opened' : '';

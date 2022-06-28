@@ -20,6 +20,7 @@ export class CustomContextMenuDirective implements OnInit, OnDestroy {
     if (!this.menuComponent.available) {
       return;
     }
+    this.menuComponent.itemId = this.id;
     const mainContext$ = fromEvent(this.el.nativeElement, 'contextmenu');
     const bindRightHandler = this.onRightClickHandler.bind(this);
     mainContext$.pipe(

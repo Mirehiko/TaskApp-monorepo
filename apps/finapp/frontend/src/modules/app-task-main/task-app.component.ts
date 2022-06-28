@@ -4,4 +4,6 @@ import { Component } from '@angular/core';
   templateUrl: 'task-app.component.html',
   styleUrls: ['task-app.component.scss']
 })
-export class TaskAppComponent {}
+export class TaskAppComponent {
+
+}

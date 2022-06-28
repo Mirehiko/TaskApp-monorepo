@@ -8,7 +8,10 @@ const routes: Routes = [
     path: '',
     component: TaskListComponent,
     children: [
-
+      {
+        path: ':taskId',
+        loadChildren: () => import("../task-detail/task-detail.module").then(m => m.TaskDetailModule),
+      },
     ]
   },
   {

@@ -1,15 +1,16 @@
-import { Component, ContentChild, EventEmitter, Input, OnInit, Output, TemplateRef } from '@angular/core';
+import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import {
-  IListConfig, IListItem,
-  IListItemAction,
-  IListItemFieldDescription
-} from '../list-module/base-list.component';
 import { Router } from '@angular/router';
+import {
+  IActionListItem,
+  IListConfig,
+  IListItem,
+  IListItemAction,
+  IListItemFieldDescription, ListItemOption
+} from '../list-module/base-list.component';
 import { BaseDataChildrenService } from '../../services/base-data.service';
-
 
 class TreeItemFlatNode<T> {
   item: IListItem<T>;
@@ -23,21 +24,19 @@ interface ITreeGroup<T> {
   dataSource: MatTreeFlatDataSource<IListItem<T>, TreeItemFlatNode<T>>
 }
 
-
 @Component({
-  selector: 'app-dnd-tree',
-  templateUrl: 'dnd-tree.component.html',
-  styleUrls: ['dnd-tree.component.scss'],
-  providers: [BaseDataChildrenService]
+  selector: 'app-base-tree',
+  template: '',
+  styles: [],
+  providers: []
 })
-export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: string]: any}> implements OnInit {
+export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: string]: any}> implements OnInit {
   @Input() listName: string;
-  @Input() menuItems: string[] = [];
   @Input() dataList: any[] = [];
   @Input() config: IListConfig;
+  @Input() menuItems: IActionListItem<any>[] = [];
   @Output() itemClicked: EventEmitter<number> = new EventEmitter<number>();
   @Output() itemAction: EventEmitter<IListItemAction> = new EventEmitter<IListItemAction>();
-  @ContentChild('customTemplate') customTemplate: TemplateRef<any>;
   groupDivider: (data: any[], type: any) => any[];
   public groups: ITreeGroup<T>[] = [];
 
@@ -84,17 +83,16 @@ export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: s
   hasNoContent = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.item === undefined;
 
   public selectItem(event: MouseEvent, item: TreeItemFlatNode<T>): void {
-    // event.stopPropagation();
+    event.stopPropagation();
     event.preventDefault();
-
-    item.selected = !item.selected;
 
     if (!event.ctrlKey && !event.shiftKey) {
       this.selectedItems = [item];
       this.openDetailView(item.item.id);
+      this.changeSelection(item);
       return;
     }
-
+    item.selected = !item.selected;
     this.selectedItems =
       item.selected ? this.selectedItems.concat(item) : this.selectedItems.filter(i => i.item.id != item.item.id);
     if (this.selectedItems.length > 1) {
@@ -105,6 +103,17 @@ export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: s
     }
   }
 
+  private changeSelection(item: TreeItemFlatNode<T>): void {
+    this.treeControl.dataNodes.forEach(node => {
+      if (node.item.id === item.item.id) {
+        node.selected = true;
+      }
+      else {
+        node.selected = false;
+      }
+    });
+  }
+
   public openMultiSelectionView(): void {
 
   }
@@ -113,7 +122,7 @@ export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: s
     if (!this.config.navigateTo) {
       throw new Error('navigateTo is required');
     }
-    await this.router.navigate([this.config.navigateTo, entityId]);
+    await this.router.navigate([`${this.config.navigateTo}/${entityId}`]);
   }
 
   private getMappedItem(item: T): IListItem<T> {
@@ -250,6 +259,8 @@ export class DndTreeComponent<T extends {id: number; pinned?: boolean, [index: s
     const nestedNode = this.flatNodeMap.get(node);
     this._database.updateItem(nestedNode!, itemValue);
   }
+
+  onMenuAction(node: number, action: ListItemOption): void {
+    this.itemAction.emit({id: node, action});
+  }
 }
-
-

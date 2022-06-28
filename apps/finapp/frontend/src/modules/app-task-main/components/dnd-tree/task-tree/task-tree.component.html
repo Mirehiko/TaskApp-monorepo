@@ -1,10 +1,10 @@
 <ng-container *ngIf="dataSource.data.length; else emptyData">
   <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100">
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding
-      class="mat-tree-node__item w-100"
-      [class.mat-tree-node__item-selected]="node.selected"
-      [matTreeNodePaddingIndent]="15"
-      (click)="selectItem($event, node)"
+                   class="mat-tree-node__item w-100"
+                   [class.mat-tree-node__item-selected]="node.selected"
+                   [matTreeNodePaddingIndent]="15"
+                   (click)="selectItem($event, node)"
     >
       <div class="mat-tree-node__content w-100">
         <button class="toggle-btn" disabled></button>
@@ -31,10 +31,10 @@
     </mat-tree-node>
 
     <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding
-      class="mat-tree-node__item w-100"
-      [class.mat-tree-node__item-selected]="node.selected"
-      [matTreeNodePaddingIndent]="15"
-      (click)="selectItem($event, node)"
+                   class="mat-tree-node__item w-100"
+                   [class.mat-tree-node__item-selected]="node.selected"
+                   [matTreeNodePaddingIndent]="15"
+                   (click)="selectItem($event, node)"
     >
       <div class="mat-tree-node__content w-100">
         <button matTreeNodeToggle class="toggle-btn"
@@ -60,7 +60,10 @@
   </mat-tree>
 
   <app-custom-menu #nodeTreeItemMenu [available]="!!menuItems.length">
-    <button custom-menu-item *ngFor="let menuItem of menuItems">{{menuItem}}</button>
+    <button custom-menu-item
+            *ngFor="let menuItem of menuItems"
+            (click)="onMenuAction(nodeTreeItemMenu.itemId, menuItem.action)"
+    >{{menuItem.name}}</button>
   </app-custom-menu>
 </ng-container>
 

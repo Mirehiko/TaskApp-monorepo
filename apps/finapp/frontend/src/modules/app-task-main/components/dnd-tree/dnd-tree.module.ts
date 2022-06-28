@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
-import { DndTreeComponent } from './dnd-tree.component';
 import { CommonModule } from '@angular/common';
 import { MatModule } from '../../../../app/shared/app-common.module';
 import { CustomElementsModule } from '../custom-elements.module';
+import { TaskTreeComponent } from './task-tree/task-tree.component';
+import { BaseTreeComponent } from './base-tree.component';
 
 
 @NgModule({
   declarations: [
-    DndTreeComponent
+    BaseTreeComponent,
+    TaskTreeComponent,
   ],
   imports: [
     CommonModule,
@@ -15,7 +17,7 @@ import { CustomElementsModule } from '../custom-elements.module';
     MatModule,
   ],
   exports: [
-    DndTreeComponent
+    TaskTreeComponent
   ]
 })
 export class DndTreeModule{}

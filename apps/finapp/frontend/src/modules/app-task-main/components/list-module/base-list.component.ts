@@ -336,7 +336,7 @@ export interface IListItemAction {
 }
 
 export enum ListItemOption {
-  SELECT_TASK = 'selectTask',
+  SELECT = 'selectTask',
   CHANGE_POSITION = 'changePosition',
   ADD_CHILD = 'addChild',
   PIN = 'pin',
@@ -345,17 +345,6 @@ export enum ListItemOption {
   DELETE = 'delete',
   MOVE_TO_TRASH = 'moveToTrash',
   COPY_LINK = 'copyLink',
-  CONVERT_TO_TEXT = 'convertToText',
-  CONVERT_TO_TASK = 'convertToTask',
-}
-
-export enum ListMenuAction {
-  MOVE = 'move',
-  DUPLICATE ='duplicate',
-  PIN ='pin',
-  CREATE ='create',
-  DELETE ='delete',
-  COPY_LINK ='copyLink'
 }
 
 export interface IActionListItem<T> {

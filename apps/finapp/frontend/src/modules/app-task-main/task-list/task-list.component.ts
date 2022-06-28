@@ -5,7 +5,7 @@ import { SocketNotificationService } from '../services/socket-notification.servi
 import { TaskResponseDto } from '@finapp/app-common';
 import {
   BaseGroupList,
-  BaseListOfGroup, IActionListItem, ListMenuAction
+  BaseListOfGroup, IActionListItem, IListItemAction, ListItemOption
 } from '../components/list-module/base-list.component';
 import { taskListConfig } from './task-tree-config';
 
@@ -15,11 +15,13 @@ export class ContextMenu {
 }
 
 enum TaskAction {
-  FOCUS = 'focus'
+  FOCUS = 'focus',
+  CONVERT_TO_TEXT = 'convertToText',
+  CONVERT_TO_TASK = 'convertToTask',
 }
 
-const TaskListMenuAction = { ...TaskAction, ...ListMenuAction }
-type TaskListMenuAction = TaskAction | ListMenuAction;
+const TaskListMenuAction = { ...TaskAction, ...ListItemOption }
+type TaskListMenuAction = TaskAction | ListItemOption;
 
 
 
@@ -34,7 +36,7 @@ export class TaskListComponent implements OnInit {
   public dataLoaded = false;
   readonly groupDivider: (data: any[], type: any) => any[];
 
-  public actionList: IActionListItem<TaskListMenuAction>[] = [];
+  public menuItems: IActionListItem<TaskListMenuAction>[] = [];
 
   constructor(
     private authService: AuthService,
@@ -46,10 +48,10 @@ export class TaskListComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.getTasks();
-    this.actionList = [
+    this.menuItems = [
       {
-        name: 'Create',
-        action: TaskListMenuAction.CREATE,
+        name: 'Create child',
+        action: TaskListMenuAction.ADD_CHILD,
       },
       {
         name: 'Delete',
@@ -65,7 +67,11 @@ export class TaskListComponent implements OnInit {
       },
       {
         name: 'Duplicate',
-        action: TaskListMenuAction.DUPLICATE,
+        action: TaskListMenuAction.COPY,
+      },
+      {
+        name: 'Focus',
+        action: TaskListMenuAction.FOCUS,
       },
       {
         name: 'Copy link',
@@ -99,5 +105,9 @@ export class TaskListComponent implements OnInit {
       });
       this.taskGroups.addGroup(groupInst);
     }
+  }
+
+  public onMenuAction(action: IListItemAction): void {
+    console.log(action)
   }
 }
