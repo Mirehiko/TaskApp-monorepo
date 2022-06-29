@@ -4,7 +4,8 @@
                    class="mat-tree-node__item w-100"
                    [class.mat-tree-node__item-selected]="node.selected"
                    [matTreeNodePaddingIndent]="15"
-                   (click)="selectItem($event, node)"
+                   (keydown)="selectItemOnKey($event, node)"
+                   (click)="selectItemOnClick($event, node)"
     >
       <div class="mat-tree-node__content w-100">
         <button class="toggle-btn" disabled></button>
@@ -14,7 +15,10 @@
             (checkedChanged)="todoLeafItemSelectionToggle(node)"
             [checkboxOnly]="config.checkboxOnly"
             [checked]="selection.isSelected(node)">
-            <div class="mat-tree-node__name" appTitleEditable (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
+            <div class="mat-tree-node__name"
+                 tabindex="-1"
+                 [appTitleEditable]="node.selected"
+                 (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
           </app-custom-checkbox>
           <div class="mat-tree-node__icons">icons</div>
         </div>
@@ -34,7 +38,8 @@
                    class="mat-tree-node__item w-100"
                    [class.mat-tree-node__item-selected]="node.selected"
                    [matTreeNodePaddingIndent]="15"
-                   (click)="selectItem($event, node)"
+                   (keydown)="selectItemOnKey($event, node)"
+                   (click)="selectItemOnClick($event, node)"
     >
       <div class="mat-tree-node__content w-100">
         <button matTreeNodeToggle class="toggle-btn"
@@ -50,7 +55,10 @@
             (checkedChanged)="todoItemSelectionToggle(node)"
             [checkboxOnly]="config.checkboxOnly"
             [checked]="descendantsAllSelected(node)">
-            <div class="mat-tree-node__name" appTitleEditable (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
+            <div class="mat-tree-node__name"
+                 tabindex="-1"
+                 [appTitleEditable]="node.selected"
+                 (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
           </app-custom-checkbox>
           <div class="mat-tree-node__icons">icons</div>
         </div>

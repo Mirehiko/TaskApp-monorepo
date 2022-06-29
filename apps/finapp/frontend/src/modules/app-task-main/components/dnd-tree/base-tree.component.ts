@@ -1,5 +1,5 @@
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Router } from '@angular/router';
@@ -82,7 +82,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   hasChild = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.expandable;
   hasNoContent = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.item === undefined;
 
-  public selectItem(event: MouseEvent, item: TreeItemFlatNode<T>): void {
+  public selectItemOnClick(event: MouseEvent, item: TreeItemFlatNode<T>): void {
     event.stopPropagation();
     event.preventDefault();
 
@@ -103,15 +103,61 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     }
   }
 
-  private changeSelection(item: TreeItemFlatNode<T>): void {
-    this.treeControl.dataNodes.forEach(node => {
-      if (node.item.id === item.item.id) {
-        node.selected = true;
-      }
-      else {
-        node.selected = false;
-      }
-    });
+  selectItemOnKey(event: KeyboardEvent, item: TreeItemFlatNode<T>): void {
+    // console.log(event)
+    const currentIndex = this.treeControl.dataNodes.indexOf(item);
+    let nextIndex: number = currentIndex;
+    if (event.keyCode === 38) {
+      nextIndex = this.isFirstElement(currentIndex) ? this.treeControl.dataNodes.length - 1 : currentIndex - 1;
+    }
+    else if (event.keyCode === 40) {
+      nextIndex = this.isLastElement(currentIndex) ? 0 : currentIndex + 1;
+    }
+    const nextItem = this.treeControl.dataNodes[nextIndex];
+    this.expandNodes(nextItem);
+    this.changeSelection(nextIndex);
+  }
+
+  private expandNodes(node: TreeItemFlatNode<T>): void {
+    if (node.expandable) {
+      this.treeControl.expand(node);
+    }
+    const parent = this.getParentNode(node);
+    if (parent) {
+      this.expandNodes(parent);
+    }
+  }
+
+  private isFirstElement(index: number): boolean {
+    return index === 0;
+  }
+
+  private isLastElement(index: number): boolean {
+    return index === this.treeControl.dataNodes.length - 1;
+  }
+
+
+  private changeSelection(item: TreeItemFlatNode<T> | number): void {
+    if (typeof item === 'number') {
+      this.treeControl.dataNodes.forEach((node, index) => {
+        if (index === item) {
+          node.selected = true;
+        }
+        else {
+          node.selected = false;
+        }
+      });
+    }
+    else {
+      this.treeControl.dataNodes.forEach(node => {
+        if (node.item.id === item.item.id) {
+          node.selected = true;
+        }
+        else {
+          node.selected = false;
+        }
+      });
+    }
   }
 
   public openMultiSelectionView(): void {
@@ -263,4 +309,6 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   onMenuAction(node: number, action: ListItemOption): void {
     this.itemAction.emit({id: node, action});
   }
+
+
 }

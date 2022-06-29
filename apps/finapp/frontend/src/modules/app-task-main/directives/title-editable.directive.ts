@@ -1,22 +1,48 @@
-import { AfterViewInit, Directive, ElementRef, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import {
+  AfterViewInit,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  HostListener, Inject,
+  Input, OnChanges,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import { IElementStyle } from '../components/interfaces/element-style.interface';
+import { DOCUMENT } from '@angular/common';
 
 
 @Directive({
   selector: '[appTitleEditable]'
 })
-export class TitleEditableDirective implements AfterViewInit {
+export class TitleEditableDirective implements OnChanges, AfterViewInit {
   @Output() contentChanged: EventEmitter<string> = new EventEmitter<string>();
+  @Input() appTitleEditable: boolean = false;
   private focused: boolean = false;
 
-  constructor(private el: ElementRef) {
+  constructor(
+    @Inject(ElementRef) private el: ElementRef,
+  ) {}
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['appTitleEditable'].currentValue) {
+      this.setStyles(this.defaultEditStyle);
+      this.focused = true;
+
+      setTimeout(() => {
+        this.el.nativeElement.focus();
+        const sel = document.getSelection();
+        sel.selectAllChildren(this.el.nativeElement)
+        sel.collapseToEnd()
+      }, 0);
+    }
   }
 
   ngAfterViewInit(): void {
     this.setStyles(this.defaultStyle);
   }
 
+  @HostListener('focus')
   @HostListener('click') onMouseClick(e: MouseEvent) {
     this.setStyles(this.defaultEditStyle);
     this.focused = true;
