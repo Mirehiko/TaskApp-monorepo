@@ -33,7 +33,7 @@ export interface IListItemField extends IListItemFieldDescription {
 
 export class IListItem<T> {
   id: number;
-  fields: IListItemField[];
+  fields?: IListItemField[];
   data: any;
   pinned?: boolean;
   position?: number;

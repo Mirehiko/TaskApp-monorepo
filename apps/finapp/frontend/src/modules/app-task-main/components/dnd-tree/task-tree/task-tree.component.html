@@ -1,14 +1,19 @@
 <ng-container *ngIf="dataSource.data.length; else emptyData">
-  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100">
+  <mat-tree #tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100">
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding
                    class="mat-tree-node__item w-100"
-                   [class.mat-tree-node__item-selected]="node.selected"
+
                    [matTreeNodePaddingIndent]="15"
                    (keydown)="selectItemOnKey($event, node)"
                    (click)="selectItemOnClick($event, node)"
     >
-      <div class="mat-tree-node__content w-100">
-        <button class="toggle-btn" disabled></button>
+      <div class="mat-tree-node__content w-100" [class.mat-tree-node__content-selected]="node.selected">
+        <button matTreeNodeToggle class="toggle-btn" *ngIf="node.expandable; else simpleBtn"
+                [attr.aria-label]="'Toggle ' + node.item.data.name">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
         <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [id]="node.item.id">
           <app-custom-checkbox
             class="w-100 mat-tree-node__checkbox"
@@ -18,7 +23,7 @@
             <div class="mat-tree-node__name"
                  tabindex="-1"
                  [appTitleEditable]="node.selected"
-                 (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
+                 (contentChanged)="updateTitle($event, node)">{{node.item.data.name}}</div>
           </app-custom-checkbox>
           <div class="mat-tree-node__icons">icons</div>
         </div>
@@ -36,13 +41,13 @@
 
     <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding
                    class="mat-tree-node__item w-100"
-                   [class.mat-tree-node__item-selected]="node.selected"
                    [matTreeNodePaddingIndent]="15"
                    (keydown)="selectItemOnKey($event, node)"
                    (click)="selectItemOnClick($event, node)"
     >
-      <div class="mat-tree-node__content w-100">
-        <button matTreeNodeToggle class="toggle-btn"
+      <div class="mat-tree-node__content w-100" [class.mat-tree-node__content-selected]="node.selected">
+
+        <button matTreeNodeToggle class="toggle-btn" *ngIf="node.expandable; else simpleBtn"
                 [attr.aria-label]="'Toggle ' + node.item.data.name">
           <mat-icon class="mat-icon-rtl-mirror">
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
@@ -58,7 +63,7 @@
             <div class="mat-tree-node__name"
                  tabindex="-1"
                  [appTitleEditable]="node.selected"
-                 (contentChanged)="updateTitle($event)">{{node.item.data.name}}</div>
+                 (contentChanged)="updateTitle($event, node)">{{node.item.data.name}}</div>
           </app-custom-checkbox>
           <div class="mat-tree-node__icons">icons</div>
         </div>
@@ -74,6 +79,10 @@
     >{{menuItem.name}}</button>
   </app-custom-menu>
 </ng-container>
+
+<ng-template #simpleBtn>
+  <button class="toggle-btn" disabled></button>
+</ng-template>
 
 <ng-template #emptyData>
   <div app-empty-message>No data to display</div>

@@ -1,4 +1,4 @@
-import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
+import { MatTree, MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -37,6 +37,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   @Input() menuItems: IActionListItem<any>[] = [];
   @Output() itemClicked: EventEmitter<number> = new EventEmitter<number>();
   @Output() itemAction: EventEmitter<IListItemAction> = new EventEmitter<IListItemAction>();
+  @ViewChild('tree') private tree: MatTree<T>;
   groupDivider: (data: any[], type: any) => any[];
   public groups: ITreeGroup<T>[] = [];
 
@@ -103,16 +104,56 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     }
   }
 
-  selectItemOnKey(event: KeyboardEvent, item: TreeItemFlatNode<T>): void {
-    // console.log(event)
+  public selectItemOnKey(event: KeyboardEvent, item: TreeItemFlatNode<T>): void {
     const currentIndex = this.treeControl.dataNodes.indexOf(item);
     let nextIndex: number = currentIndex;
-    if (event.keyCode === 38) {
-      nextIndex = this.isFirstElement(currentIndex) ? this.treeControl.dataNodes.length - 1 : currentIndex - 1;
+    switch (event.keyCode) {
+      case KeyCodeName.ARROW_UP: {
+        nextIndex = this.isFirstElement(currentIndex) ? this.treeControl.dataNodes.length - 1 : currentIndex - 1;
+        break;
+      }
+      case KeyCodeName.ARROW_DOWN: {
+        nextIndex = this.isLastElement(currentIndex) ? 0 : currentIndex + 1;
+        break;
+      }
+      case KeyCodeName.ENTER: {
+        if (item.item.id === -1) {
+          return;
+        }
+        if (event.shiftKey) {
+          this.addNewChildrenItem(item);
+        }
+        else {
+          this.addNewItem(item);
+        }
+        nextIndex = this.treeControl.dataNodes.findIndex(i => i.item.id === -1);
+        this.changeSelection(nextIndex);
+        return;
+      }
+      case KeyCodeName.HOME: {
+        nextIndex = 0;
+        break;
+      }
+      case KeyCodeName.END: {
+        nextIndex = this.treeControl.dataNodes.length - 1;
+        break;
+      }
+      case KeyCodeName.DELETE: {
+        this.deleteNode(item);
+        return;
+      }
+      case KeyCodeName.ESCAPE: {
+        if (item.item.id === -1) {
+          this.deleteNode(item);
+          return;
+        }
+        return;
+      }
+      default: {
+        // return;
+      }
     }
-    else if (event.keyCode === 40) {
-      nextIndex = this.isLastElement(currentIndex) ? 0 : currentIndex + 1;
-    }
+
     const nextItem = this.treeControl.dataNodes[nextIndex];
     this.expandNodes(nextItem);
     this.changeSelection(nextIndex);
@@ -135,7 +176,6 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   private isLastElement(index: number): boolean {
     return index === this.treeControl.dataNodes.length - 1;
   }
-
 
   private changeSelection(item: TreeItemFlatNode<T> | number): void {
     if (typeof item === 'number') {
@@ -175,13 +215,13 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     const dataItem: IListItem<T> = new IListItem<T>();
     dataItem.id = item.id;
     dataItem.data = item;
-    dataItem.fields = [];
+    // dataItem.fields = [];
 
     this.config.listDescription.map((listDesc: IListItemFieldDescription) => {
-      dataItem.fields.push({
-        value: listDesc.valueGetter ? listDesc.valueGetter(item) : item[listDesc.field],
-        ...listDesc
-      });
+      // dataItem.fields.push({
+      //   value: listDesc.valueGetter ? listDesc.valueGetter(item) : item[listDesc.field],
+      //   ...listDesc
+      // });
       if (item?.pinned) {
         dataItem.pinned = item.pinned;
       }
@@ -238,7 +278,21 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     this.checkAllParentsSelection(node);
   }
 
-  public updateTitle(data: string): void {
+  public updateTitle(data: string, node: TreeItemFlatNode<T>): void {
+    if (node.item.id === -1) {
+      if (data.trim().length === 0) {
+        return;
+      }
+      this.saveNode(node, data);
+      console.log('save new item')
+    }
+    else {
+      if (data !== node.item.data.name) {
+        this.saveNode(node, data);
+        console.log('update item')
+      }
+    }
+
     console.log(data)
   }
 
@@ -288,16 +342,26 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   }
 
   /** Select the category so we can insert the new item. */
-  addNewItem(node: TreeItemFlatNode<T> | null = null) {
+  addNewChildrenItem(node: TreeItemFlatNode<T>) {
     const newItem = new IListItem<T>();
-    if (node) {
-      const parentNode = this.flatNodeMap.get(node);
-      this._database.insertItem(parentNode ? parentNode : null, [newItem]);
+    newItem.id = -1;
+    const parentNode = this.flatNodeMap.get(node);
+    if (parentNode) {
+      this._database.addChildren(parentNode, [newItem]);
       this.treeControl.expand(node);
     }
-    else {
+    // else {
+    //   this._database.insertItemTo(null, [newItem]);
+    // }
+  }
 
-    }
+  addNewItem(node: TreeItemFlatNode<T> | null = null) {
+    const newItem = new IListItem<T>();
+    newItem.id = -1;
+    const originNode = this.flatNodeMap.get(node!);
+    const parentNode = this.getParentNode(node!);
+    const originParentNode = this.flatNodeMap.get(parentNode!);
+    this._database.insertItemTo(originParentNode!, originNode!, [newItem]);
   }
 
   /** Save the node to database */
@@ -306,9 +370,30 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     this._database.updateItem(nestedNode!, itemValue);
   }
 
+  deleteNode(node: TreeItemFlatNode<T>) {
+    const originNode = this.flatNodeMap.get(node!);
+    this.flatNodeMap.delete(node);
+    this.nestedNodeMap.delete(originNode!);
+    this._database.removeItem(originNode!);
+
+    if (node.item.id !== -1) {
+      // TODO: Query to database
+    }
+  }
+
   onMenuAction(node: number, action: ListItemOption): void {
     this.itemAction.emit({id: node, action});
   }
+}
 
-
+export enum KeyCodeName {
+  ARROW_UP = 38,
+  ARROW_DOWN = 40,
+  ARROW_LEFT = 38,
+  ARROW_RIGHT = 38,
+  ENTER = 13,
+  DELETE = 46,
+  HOME = 36,
+  END = 35,
+  ESCAPE = 27
 }

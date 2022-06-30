@@ -48,6 +48,13 @@ export class TitleEditableDirective implements OnChanges, AfterViewInit {
     this.focused = true;
   }
 
+  @HostListener('keydown', ['$event']) onEnter(e: KeyboardEvent) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      this.contentChanged.emit(this.el.nativeElement.innerHTML);
+    }
+  }
+
   @HostListener('mouseenter') onMouseEnter(e: MouseEvent) {
     this.setStyles(this.defaultHoverStyle);
   }

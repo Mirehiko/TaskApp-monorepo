@@ -1,10 +1,4 @@
 .mat-tree-node__item {
-  &.mat-tree-node__item-selected {
-    background: #e5e9eb;
-    app-custom-checkbox.mat-tree-node__checkbox.custom-checkbox ::ng-deep {
-
-    }
-  }
   app-custom-checkbox.mat-tree-node__checkbox.custom-checkbox ::ng-deep {
     .inp-cbx:checked + .cbx .span.ico {
       border-color: #9196af;
@@ -13,9 +7,14 @@
   }
 }
 
+
 .mat-tree-node__content {
   display: flex;
   align-items: center;
+
+  &.mat-tree-node__content-selected {
+    background: #e5e9eb;
+  }
 }
 .mat-tree-node__divider {
   display: flex;

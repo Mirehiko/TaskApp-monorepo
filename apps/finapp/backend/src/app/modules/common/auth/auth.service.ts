@@ -93,8 +93,8 @@ export class AuthService {
     }
     const token = await this.generateToken(user);
     const expireAt = moment()
-      .add(1, 'day')
-    .toISOString();
+      .add(7, 'day')
+      .toISOString();
 
     await this.saveToken({
       token,
