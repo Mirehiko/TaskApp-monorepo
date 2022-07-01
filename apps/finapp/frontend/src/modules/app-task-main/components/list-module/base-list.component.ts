@@ -39,7 +39,7 @@ export class IListItem<T> {
   position?: number;
   selected?: boolean;
   children: IListItem<T>[];
-  parentId?: number;
+  parent_id?: number;
   childCount?: number;
 }
 

@@ -90,7 +90,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     if (!event.ctrlKey && !event.shiftKey) {
       this.selectedItems = [item];
       this.openDetailView(item.item.id);
-      this.changeSelection(item);
+      this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.item.id === item.item.id));
       return;
     }
     item.selected = !item.selected;
@@ -105,15 +105,47 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   }
 
   public selectItemOnKey(event: KeyboardEvent, item: TreeItemFlatNode<T>): void {
-    const currentIndex = this.treeControl.dataNodes.indexOf(item);
-    let nextIndex: number = currentIndex;
+    let nextItem: TreeItemFlatNode<T>;
+    let searchData: TreeItemFlatNode<T>[] = [];
+    let checkLevel = false;
+
     switch (event.keyCode) {
+      case KeyCodeName.ARROW_LEFT:
+      case KeyCodeName.ARROW_RIGHT: {return;}
       case KeyCodeName.ARROW_UP: {
-        nextIndex = this.isFirstElement(currentIndex) ? this.treeControl.dataNodes.length - 1 : currentIndex - 1;
+        searchData = this.getLevelData(item);
+        const currentIndex = searchData.indexOf(item);
+        nextItem = this.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
+
+        if (nextItem.expandable && this.treeControl.isExpanded(nextItem) && item.level === 0) {
+          nextItem = this.getLastNodeOfExpanded(nextItem);
+        }
+        else if (item.level > 0 && this.isFirstElement(currentIndex)) {
+          nextItem = this.getNextAvailableNode(item, KeyCodeName.ARROW_UP);
+        }
+        else {
+          nextItem = this.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
+        }
         break;
       }
       case KeyCodeName.ARROW_DOWN: {
-        nextIndex = this.isLastElement(currentIndex) ? 0 : currentIndex + 1;
+        if (event.shiftKey) {
+          checkLevel = true;
+        }
+
+        searchData = this.getLevelData(item);
+        const currentIndex = searchData.indexOf(item);
+
+        if (item.expandable && (checkLevel || this.treeControl.isExpanded(item))) {
+          searchData = this.getChildrenByLevel(item, item.level + 1);
+          nextItem = searchData[0];
+        }
+        else if (item.level > 0 && this.isLastElement(searchData, currentIndex)) {
+          nextItem = this.getNextAvailableNode(item, KeyCodeName.ARROW_DOWN);
+        }
+        else {
+          nextItem = this.isLastElement(searchData, currentIndex) ? searchData[0] : searchData[currentIndex + 1];
+        }
         break;
       }
       case KeyCodeName.ENTER: {
@@ -126,16 +158,16 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
         else {
           this.addNewItem(item);
         }
-        nextIndex = this.treeControl.dataNodes.findIndex(i => i.item.id === -1);
-        this.changeSelection(nextIndex);
+
+        this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.item.id === -1));
         return;
       }
       case KeyCodeName.HOME: {
-        nextIndex = 0;
+        nextItem = this.treeControl.dataNodes[0];
         break;
       }
       case KeyCodeName.END: {
-        nextIndex = this.treeControl.dataNodes.length - 1;
+        nextItem = this.treeControl.dataNodes[this.treeControl.dataNodes.length - 1];
         break;
       }
       case KeyCodeName.DELETE: {
@@ -154,9 +186,50 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
       }
     }
 
-    const nextItem = this.treeControl.dataNodes[nextIndex];
-    this.expandNodes(nextItem);
-    this.changeSelection(nextIndex);
+    if (item.expandable && checkLevel) {
+      this.expandNodes(item);
+    }
+    if (nextItem) {
+      this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.item.id === nextItem.item.id));
+    }
+  }
+
+  private getLastNodeOfExpanded(item: TreeItemFlatNode<T>): TreeItemFlatNode<T> {
+    if (item.expandable && this.treeControl.isExpanded(item)) {
+      const children = this.getChildrenByLevel(item, item.level + 1);
+      return this.getLastNodeOfExpanded(children[children.length - 1]);
+    }
+    else {
+      return item;
+    }
+  }
+
+  private getNextAvailableNode(parent: TreeItemFlatNode<T>, arrow: KeyCodeName.ARROW_UP | KeyCodeName.ARROW_DOWN): TreeItemFlatNode<T> {
+    let upperLevelNodes;
+    if (parent.item.data.parent_id) {
+      upperLevelNodes = this.treeControl.dataNodes
+        .filter(i => i.level === parent.level && i.item.data.parent_id === parent.item.data.parent_id);
+    }
+    else {
+      upperLevelNodes = this.treeControl.dataNodes;
+    }
+
+    const currentIndex = upperLevelNodes.indexOf(parent);
+    if (parent.item.data.parent_id === -1 && this.isLastElement(upperLevelNodes, currentIndex)) {
+      return upperLevelNodes[0];
+    }
+
+    if (arrow === KeyCodeName.ARROW_DOWN) {
+      if (this.isLastElement(upperLevelNodes, currentIndex)) {
+        return this.getNextAvailableNode(this.getParentNode(parent)!, arrow);
+      }
+      else {
+        return upperLevelNodes[currentIndex + 1];
+      }
+    }
+    else {
+      return this.getParentNode(parent!)!;
+    }
   }
 
   private expandNodes(node: TreeItemFlatNode<T>): void {
@@ -169,35 +242,36 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     }
   }
 
+  private getLevelData(item: TreeItemFlatNode<T>): TreeItemFlatNode<T>[] {
+    return this.treeControl.dataNodes.filter(i => {
+      if (i.level === item.level) {
+        return i.item.data.parent_id === item.item.data.parent_id;
+      }
+      return false;
+    });
+  }
+
+  private getChildrenByLevel(node: TreeItemFlatNode<T>, level: number): TreeItemFlatNode<T>[] {
+    return this.treeControl.getDescendants(node).filter(i => i.level === level);
+  }
+
   private isFirstElement(index: number): boolean {
     return index === 0;
   }
 
-  private isLastElement(index: number): boolean {
-    return index === this.treeControl.dataNodes.length - 1;
+  private isLastElement(list: any[], index: number): boolean {
+    return index === list.length - 1;
   }
 
-  private changeSelection(item: TreeItemFlatNode<T> | number): void {
-    if (typeof item === 'number') {
-      this.treeControl.dataNodes.forEach((node, index) => {
-        if (index === item) {
-          node.selected = true;
-        }
-        else {
-          node.selected = false;
-        }
-      });
-    }
-    else {
-      this.treeControl.dataNodes.forEach(node => {
-        if (node.item.id === item.item.id) {
-          node.selected = true;
-        }
-        else {
-          node.selected = false;
-        }
-      });
-    }
+  private changeSelection(index: number): void {
+    this.treeControl.dataNodes.forEach((node, idx) => {
+      if (idx === index) {
+        node.selected = true;
+      }
+      else {
+        node.selected = false;
+      }
+    });
   }
 
   public openMultiSelectionView(): void {
@@ -343,11 +417,9 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
 
   /** Select the category so we can insert the new item. */
   addNewChildrenItem(node: TreeItemFlatNode<T>) {
-    const newItem = new IListItem<T>();
-    newItem.id = -1;
     const parentNode = this.flatNodeMap.get(node);
     if (parentNode) {
-      this._database.addChildren(parentNode, [newItem]);
+      this._database.addChildren(parentNode, [this.addItemTemplate(node)]);
       this.treeControl.expand(node);
     }
     // else {
@@ -355,13 +427,18 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     // }
   }
 
+  private addItemTemplate(node: TreeItemFlatNode<T>): IListItem<T> {
+    const item = new IListItem<T>();
+    item.id = -1;
+    item.parent_id = node?.item.data.parent_id;
+    return item;
+  }
+
   addNewItem(node: TreeItemFlatNode<T> | null = null) {
-    const newItem = new IListItem<T>();
-    newItem.id = -1;
-    const originNode = this.flatNodeMap.get(node!);
+       const originNode = this.flatNodeMap.get(node!);
     const parentNode = this.getParentNode(node!);
     const originParentNode = this.flatNodeMap.get(parentNode!);
-    this._database.insertItemTo(originParentNode!, originNode!, [newItem]);
+    this._database.insertItemTo(originParentNode!, originNode!, [this.addItemTemplate(node!)]);
   }
 
   /** Save the node to database */
@@ -389,8 +466,8 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
 export enum KeyCodeName {
   ARROW_UP = 38,
   ARROW_DOWN = 40,
-  ARROW_LEFT = 38,
-  ARROW_RIGHT = 38,
+  ARROW_LEFT = 37,
+  ARROW_RIGHT = 39,
   ENTER = 13,
   DELETE = 46,
   HOME = 36,
