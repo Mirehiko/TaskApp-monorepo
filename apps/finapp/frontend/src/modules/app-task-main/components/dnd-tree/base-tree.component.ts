@@ -82,6 +82,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   getChildren = (node: IListItem<T>): IListItem<T>[] => node.children;
   hasChild = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.expandable;
   hasNoContent = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.item === undefined;
+  readonly trackBy = (_: number, node: TreeItemFlatNode<T>) => node.item.id;
 
   public selectItemOnClick(event: MouseEvent, item: TreeItemFlatNode<T>): void {
     event.stopPropagation();
@@ -419,7 +420,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   addNewChildrenItem(node: TreeItemFlatNode<T>) {
     const parentNode = this.flatNodeMap.get(node);
     if (parentNode) {
-      this._database.addChildren(parentNode, [this.addItemTemplate(node)]);
+      this._database.addChildren(parentNode, [this.addItemTemplate(node, node.item.id)]);
       this.treeControl.expand(node);
     }
     // else {
@@ -427,18 +428,21 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     // }
   }
 
-  private addItemTemplate(node: TreeItemFlatNode<T>): IListItem<T> {
+  private addItemTemplate(node: TreeItemFlatNode<T>, parent: number): IListItem<T> {
     const item = new IListItem<T>();
     item.id = -1;
-    item.parent_id = node?.item.data.parent_id;
+    item.parent_id = parent;
     return item;
   }
 
   addNewItem(node: TreeItemFlatNode<T> | null = null) {
-       const originNode = this.flatNodeMap.get(node!);
+    const originNode = this.flatNodeMap.get(node!);
     const parentNode = this.getParentNode(node!);
     const originParentNode = this.flatNodeMap.get(parentNode!);
-    this._database.insertItemTo(originParentNode!, originNode!, [this.addItemTemplate(node!)]);
+    this._database.insertItemTo(
+      originParentNode!,
+      originNode!,
+      [this.addItemTemplate(node!, node.item.data.parent_id)]);
   }
 
   /** Save the node to database */
@@ -449,8 +453,8 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
 
   deleteNode(node: TreeItemFlatNode<T>) {
     const originNode = this.flatNodeMap.get(node!);
-    this.flatNodeMap.delete(node);
-    this.nestedNodeMap.delete(originNode!);
+    // this.flatNodeMap.delete(node);
+    // this.nestedNodeMap.delete(originNode!);
     this._database.removeItem(originNode!);
 
     if (node.item.id !== -1) {

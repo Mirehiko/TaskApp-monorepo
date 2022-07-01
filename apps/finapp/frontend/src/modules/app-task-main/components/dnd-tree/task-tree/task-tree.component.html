@@ -1,6 +1,6 @@
 <ng-container *ngIf="dataSource.data.length; else emptyData">
-  <mat-tree #tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100">
-    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding
+  <mat-tree #tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100" [trackBy]="trackBy">
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding
                    class="mat-tree-node__item w-100"
 
                    [matTreeNodePaddingIndent]="15"
@@ -28,15 +28,6 @@
           <div class="mat-tree-node__icons">icons</div>
         </div>
       </div>
-    </mat-tree-node>
-
-    <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
-      <button mat-icon-button disabled></button>
-      <mat-form-field appearance="fill">
-        <mat-label>New item...</mat-label>
-        <input matInput #itemValue placeholder="Ex. Lettuce">
-      </mat-form-field>
-      <button mat-button (click)="saveNode(node, itemValue.value)">Save</button>
     </mat-tree-node>
 
     <mat-tree-node *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding
@@ -69,6 +60,15 @@
         </div>
         <!--      <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>-->
       </div>
+    </mat-tree-node>
+
+    <mat-tree-node *matTreeNodeDef="let node; when: hasNoContent" matTreeNodePadding>
+      <button mat-icon-button disabled></button>
+      <mat-form-field appearance="fill">
+        <mat-label>New item...</mat-label>
+        <input matInput #itemValue placeholder="Ex. Lettuce">
+      </mat-form-field>
+      <button mat-button (click)="saveNode(node, itemValue.value)">Save</button>
     </mat-tree-node>
   </mat-tree>
 

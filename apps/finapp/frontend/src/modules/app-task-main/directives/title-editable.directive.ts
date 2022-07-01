@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { IElementStyle } from '../components/interfaces/element-style.interface';
 import { DOCUMENT } from '@angular/common';
+import { KeyCodeName } from '../components/dnd-tree/base-tree.component';
 
 
 @Directive({
@@ -19,6 +20,7 @@ export class TitleEditableDirective implements OnChanges, AfterViewInit {
   @Output() contentChanged: EventEmitter<string> = new EventEmitter<string>();
   @Input() appTitleEditable: boolean = false;
   private focused: boolean = false;
+  private deleted: boolean = false;
 
   constructor(
     @Inject(ElementRef) private el: ElementRef,
@@ -49,9 +51,13 @@ export class TitleEditableDirective implements OnChanges, AfterViewInit {
   }
 
   @HostListener('keydown', ['$event']) onEnter(e: KeyboardEvent) {
-    if (e.keyCode === 13) {
+    if (e.keyCode === KeyCodeName.ENTER) {
       e.preventDefault();
       this.contentChanged.emit(this.el.nativeElement.innerHTML);
+    }
+    if (e.keyCode === KeyCodeName.ESCAPE || e.keyCode === KeyCodeName.DELETE) {
+      e.preventDefault();
+      this.deleted = true;
     }
   }
 
@@ -60,6 +66,9 @@ export class TitleEditableDirective implements OnChanges, AfterViewInit {
   }
 
   @HostListener('blur') onMouseLeave() {
+    if (this.deleted) {
+      return;
+    }
     this.setStyles(this.defaultStyle);
     this.contentChanged.emit(this.el.nativeElement.innerHTML);
     this.focused = false;
