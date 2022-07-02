@@ -1,2 +1,4 @@
-<p>task-detail.component</p>
-asdasd
+<ng-container *ngIf="dataLoaded">
+    <h3>{{taskIn.name}}</h3>
+    <p>{{taskIn.description}}</p>
+</ng-container>

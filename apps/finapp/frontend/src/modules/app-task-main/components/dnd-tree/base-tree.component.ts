@@ -118,7 +118,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
         const currentIndex = searchData.indexOf(item);
         nextItem = this.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
 
-        if (nextItem.expandable && this.treeControl.isExpanded(nextItem) && item.level === 0) {
+        if (nextItem.expandable && this.treeControl.isExpanded(nextItem)) {
           nextItem = this.getLastNodeOfExpanded(nextItem);
         }
         else if (item.level > 0 && this.isFirstElement(currentIndex)) {
