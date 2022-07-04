@@ -2,7 +2,7 @@ import { MatTree, MatTreeFlatDataSource, MatTreeFlattener } from '@angular/mater
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { SelectionModel } from '@angular/cdk/collections';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   IActionListItem,
   IListConfig,
@@ -56,6 +56,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   constructor(
     private _database: BaseDataChildrenService<T>,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
   ) {
     this.treeFlattener = new MatTreeFlattener(
       this.transformer,
@@ -118,11 +119,12 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
         const currentIndex = searchData.indexOf(item);
         nextItem = this.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
 
-        if (nextItem.expandable && this.treeControl.isExpanded(nextItem)) {
-          nextItem = this.getLastNodeOfExpanded(nextItem);
-        }
-        else if (item.level > 0 && this.isFirstElement(currentIndex)) {
+
+        if (item.level > 0 && this.isFirstElement(currentIndex)) {
           nextItem = this.getNextAvailableNode(item, KeyCodeName.ARROW_UP);
+        }
+        else if (nextItem.expandable && this.treeControl.isExpanded(nextItem) ) {
+          nextItem = this.getLastNodeOfExpanded(nextItem);
         }
         else {
           nextItem = this.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
@@ -283,7 +285,9 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     if (!this.config.navigateTo) {
       throw new Error('navigateTo is required');
     }
-    await this.router.navigate([`${this.config.navigateTo}/${entityId}`]);
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
+      this.router.navigate([`${this.config.navigateTo}/${entityId}`]));
+    await this.router.navigate([`${this.config.navigateTo}/${entityId}`], {relativeTo: this.activatedRoute});
   }
 
   private getMappedItem(item: T): IListItem<T> {
@@ -442,7 +446,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     this._database.insertItemTo(
       originParentNode!,
       originNode!,
-      [this.addItemTemplate(node!, node.item.data.parent_id)]);
+      [this.addItemTemplate(node!, node?.item.data.parent_id)]);
   }
 
   /** Save the node to database */

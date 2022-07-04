@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { BaseDataChildrenService } from '../../../services/base-data.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TaskResponseDto } from '@finapp/app-common';
 import { IListItem } from '../../list-module/base-list.component';
 import { BaseTreeComponent } from '../base-tree.component';
@@ -16,7 +16,8 @@ export class TaskTreeComponent extends BaseTreeComponent<IListItem<TaskResponseD
   constructor(
     _database: BaseDataChildrenService<TaskResponseDto>,
     router: Router,
+    activatedRoute: ActivatedRoute,
   ) {
-    super(_database, router);
+    super(_database, router, activatedRoute);
   }
 }
