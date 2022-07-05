@@ -1,8 +1,7 @@
 <ng-container *ngIf="componentReady">
   <form *ngIf="form" [formGroup]="form">
-    <h3 [appTitleEditable]="true" (contentChanged)="form.get('name').setValue($event)" formControlName="name" ngDefaultControl>{{taskIn.name}}</h3>
-    {{form.get('name').value}}
-    <pre [appTitleEditable]="true" formControlName="description" ngDefaultControl>{{taskIn.description}}</pre>
+    <h2 inputDirective formControlName="name" >{{taskIn.name}}</h2>
+    <pre inputDirective formControlName="description">{{taskIn.description}}</pre>
     <button (click)="save()">save</button>
   </form>
 </ng-container>

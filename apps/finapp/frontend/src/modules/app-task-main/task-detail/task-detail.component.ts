@@ -58,6 +58,11 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
   }
 
   private async getData(): Promise<void> {
-    this.taskIn = await this.taskRestService.getById(this.params.routeParams['taskId']);
+    if (this.isNew) {
+      this.taskIn = new TaskResponseDto();
+    }
+    else {
+      this.taskIn = await this.taskRestService.getById(this.params.routeParams['taskId']);
+    }
   }
 }

@@ -119,7 +119,6 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
         const currentIndex = searchData.indexOf(item);
         nextItem = this.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
 
-
         if (item.level > 0 && this.isFirstElement(currentIndex)) {
           nextItem = this.getNextAvailableNode(item, KeyCodeName.ARROW_UP);
         }
@@ -174,13 +173,15 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
         break;
       }
       case KeyCodeName.DELETE: {
-        this.deleteNode(item);
+        const element = event.target as HTMLElement;
+        if (event.ctrlKey || element.innerHTML.trim().length === 0) {
+          this.deleteNode(item);
+        }
         return;
       }
       case KeyCodeName.ESCAPE: {
         if (item.item.id === -1) {
           this.deleteNode(item);
-          return;
         }
         return;
       }
@@ -192,8 +193,10 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     if (item.expandable && checkLevel) {
       this.expandNodes(item);
     }
+
     if (nextItem) {
       this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.item.id === nextItem.item.id));
+      this.openDetailView(nextItem.item.id === -1 ? 'new' : nextItem.item.id);
     }
   }
 
@@ -281,7 +284,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
 
   }
 
-  public async openDetailView(entityId: number): Promise<void> {
+  public async openDetailView(entityId: number | string): Promise<void> {
     if (!this.config.navigateTo) {
       throw new Error('navigateTo is required');
     }

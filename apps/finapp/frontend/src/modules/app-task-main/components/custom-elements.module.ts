@@ -1,28 +1,25 @@
 import { NgModule } from '@angular/core';
 import { CustomCheckboxComponent } from './custom-checkbox/custom-checkbox.component';
 import { CommonModule } from '@angular/common';
-import { TitleEditableDirective } from '../directives/title-editable.directive';
 import { CustomMenuModule } from './custom-menu/custom-menu.module';
-import { ToggleDirective } from '../directives/toggle.directive';
 import { EmptyMessageComponent } from './empty-message/empty-message.component';
+import { CustomDirectivesModule } from '../directives/custom-directives.module';
 
 
 @NgModule({
   declarations: [
     CustomCheckboxComponent,
-    TitleEditableDirective,
-    ToggleDirective,
     EmptyMessageComponent,
   ],
   imports: [
     CommonModule,
     CustomMenuModule,
+    CustomDirectivesModule,
   ],
   exports: [
     CustomCheckboxComponent,
-    TitleEditableDirective,
+    CustomDirectivesModule,
     CustomMenuModule,
-    ToggleDirective,
     EmptyMessageComponent,
   ]
 })

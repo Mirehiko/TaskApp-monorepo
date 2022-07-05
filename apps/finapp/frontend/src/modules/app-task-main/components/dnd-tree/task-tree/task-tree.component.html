@@ -22,7 +22,8 @@
             [checked]="selection.isSelected(node)">
             <div class="mat-tree-node__name"
                  tabindex="-1"
-                 [appTitleEditable]="node.selected"
+                 listInputDirective
+                 [editable]="node.selected"
                  (contentChanged)="updateTitle($event, node)">{{node.item.data.name}}</div>
           </app-custom-checkbox>
           <div class="mat-tree-node__icons">icons</div>
@@ -53,7 +54,8 @@
             [checked]="descendantsAllSelected(node)">
             <div class="mat-tree-node__name"
                  tabindex="-1"
-                 [appTitleEditable]="node.selected"
+                 listInputDirective
+                 [editable]="node.selected"
                  (contentChanged)="updateTitle($event, node)">{{node.item.data.name}}</div>
           </app-custom-checkbox>
           <div class="mat-tree-node__icons">icons</div>
