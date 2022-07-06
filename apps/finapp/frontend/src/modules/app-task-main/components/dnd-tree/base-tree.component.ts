@@ -8,9 +8,10 @@ import {
   IListConfig,
   IListItem,
   IListItemAction,
-  IListItemFieldDescription, ListItemOption
+  IListItemFieldDescription, ITreeItem, ListItemOption
 } from '../list-module/base-list.component';
-import { BaseDataChildrenService } from '../../services/base-data.service';
+import { BaseDataChildrenService, BaseGroupedTreeService, BaseTreeGroupList } from '../../services/base-data.service';
+import { TaskResponseDto } from '@finapp/app-common';
 
 class TreeItemFlatNode<T> {
   item: IListItem<T>;
@@ -51,10 +52,13 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
 
   treeFlattener: MatTreeFlattener<IListItem<T>, TreeItemFlatNode<T>>;
   dataSource: MatTreeFlatDataSource<IListItem<T>, TreeItemFlatNode<T>>;
+  treeDataSource: MatTreeFlatDataSource<ITreeItem<T>, any>;
+
   selection = new SelectionModel<TreeItemFlatNode<T>>(true);
 
   constructor(
     private _database: BaseDataChildrenService<T>,
+    public db: BaseGroupedTreeService<T>,
     private router: Router,
     private activatedRoute: ActivatedRoute,
   ) {
@@ -67,6 +71,12 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     this.treeControl = new FlatTreeControl<TreeItemFlatNode<T>>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
+
+    db.initialize();
+    db.dataChange.subscribe(data => {
+      // console.log(data);
+    });
+
     _database._dataChange.subscribe(data => {
       this.dataSource.data = data;
     });
@@ -74,9 +84,50 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
 
   async ngOnInit(): Promise<void> {
     this.groupDivider = this.config.groupDivider ? this.config.groupDivider : this.groupDivider;
-    this._database.initialize(this.dataList);
+    this._database.initialize(this.dataList); // TODO: remove
+
+    await this.divideOnGroups(this.dataList);
+    this.db.refresh();
   }
 
+
+  private async divideOnGroups(list: T[]): Promise<void> {
+    this.db.clear();
+    if (this.config.groups && this.config.groups.length && this.config.groupDivider) {
+      this.config.groups.forEach(group => {
+        const groupInst = new BaseTreeGroupList<TaskResponseDto>(group.name);
+        const filteredGroupData = this.groupDivider(list, group.type);
+        filteredGroupData.map(item => {
+          groupInst.insertTo(this.mapDtoToTree(item));
+        });
+        this.db.addGroup(groupInst);
+      });
+    }
+    else {
+      const groupInst = new BaseTreeGroupList<TaskResponseDto>('');
+      list.forEach(item => {
+        groupInst.insertTo(this.mapDtoToTree(item));
+      });
+      this.db.addGroup(groupInst);
+    }
+  }
+
+  private mapDtoToTree(item: any): ITreeItem<T> {
+    const dataItem: ITreeItem<T> = {
+      id: item.id,
+      data: item,
+      children: [],
+    };
+    if (item?.pinned) {
+      dataItem.pinned = item.pinned;
+    }
+    if (item.children?.length) {
+      item.children.forEach((child: T) => {
+        dataItem.children.push(this.mapDtoToTree(child));
+      });
+    }
+    return dataItem;
+  }
 
   getLevel = (node: TreeItemFlatNode<T>) => node.level;
   isExpandable = (node: TreeItemFlatNode<T>) => node.expandable;

@@ -27,20 +27,29 @@ export interface IListItemFieldDescription {
   hidden?: boolean;
 }
 
-export interface IListItemField extends IListItemFieldDescription {
-  value: any;
-}
-
-export class IListItem<T> {
+export class IBaseListItem<T> {
   id: number;
-  fields?: IListItemField[];
   data: any;
   pinned?: boolean;
   position?: number;
   selected?: boolean;
-  children: IListItem<T>[];
-  parent_id?: number;
+  groupId?: string;
+}
+
+export class ITreeItem<T> extends IBaseListItem<T>{
+  children: ITreeItem<T>[];
+  parent_id?: number | string;
   childCount?: number;
+}
+
+export interface IListItemField extends IListItemFieldDescription {
+  value: any;
+}
+
+export class IListItem<T> extends IBaseListItem<T>{
+  fields?: IListItemField[];
+  children: IListItem<T>[]; // TODO: remove
+  parent_id?: number; // TODO: remove
 }
 
 export interface IListConfig {
@@ -123,7 +132,7 @@ export class BaseListComponent<T> implements OnInit, OnChanges {
       children: [],
     };
     this.config.listDescription.map((listDesc: IListItemFieldDescription) => {
-      dataItem.fields.push({
+      dataItem?.fields?.push({
         value: listDesc.valueGetter ? listDesc.valueGetter(item) : item[listDesc.field],
         ...listDesc
       });
@@ -251,7 +260,6 @@ export class BaseListOfGroup<T extends {id: number, children?: T[]}> {
     this._list = [];
     this._childCount = 0;
   }
-
 }
 
 export class BaseGroupList<T extends {id: number, pinned?: boolean, selected?: boolean}> {
