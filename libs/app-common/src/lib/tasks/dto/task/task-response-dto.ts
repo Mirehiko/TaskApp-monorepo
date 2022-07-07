@@ -63,4 +63,8 @@ export class TaskResponseDto {
   @IsOptional()
   @Expose()
   comments?: TaskCommentResponseDto[];
+
+  @IsOptional()
+  @Expose()
+  children?: TaskResponseDto[];
 }

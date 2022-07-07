@@ -1,5 +1,5 @@
 import { TaskPriority, TaskResponseDto, TaskStatus } from '@finapp/app-common';
-import { IListConfig } from '../components/list-module/base-list.component';
+import { IListConfig, ITreeItem } from '../components/list-module/base-list.component';
 
 enum AdditionTaskGroups {
   FINISHED = 'finished',
@@ -13,35 +13,37 @@ export const taskListConfig: IListConfig = {
     name: 'High',
     type: TaskPriority.HIGH
   },
-    {
-      name: 'Medium',
-      type: TaskPriority.MEDIUM
-    },
-    {
-      name: 'Low',
-      type: TaskPriority.LOW
-    },
-    {
-      name: 'None',
-      type: TaskPriority.NONE
-    }],
-  groupDivider(list: TaskResponseDto[], priority: TaskGroupsByPriority): TaskResponseDto[] {
+  {
+    name: 'Medium',
+    type: TaskPriority.MEDIUM
+  },
+  {
+    name: 'Low',
+    type: TaskPriority.LOW
+  },
+  {
+    name: 'None',
+    type: TaskPriority.NONE
+  }],
+  groupDivider(list: ITreeItem<TaskResponseDto>[], priority: TaskGroupsByPriority): ITreeItem<TaskResponseDto>[] {
     return list.filter(task => {
       switch (priority) {
         case TaskGroupsByPriority.FINISHED:
-          return [TaskStatus.DONE, TaskStatus.WONT_DO].includes(task.status);
+          return [TaskStatus.DONE, TaskStatus.WONT_DO].includes(task.data.status);
         default:
-          return task.priority === priority;
+          return task.data.priority === priority;
       }
     });
   },
   pinnable: true,
-  listDescription: [{
-    field: 'name',
-  },
+  listDescription: [
+    {
+      field: 'name',
+    },
     {
       field: 'createdAt',
-    }],
+    }
+  ],
   navigateTo: '/taskapp/ttp',
   checkboxOnly: true,
 }

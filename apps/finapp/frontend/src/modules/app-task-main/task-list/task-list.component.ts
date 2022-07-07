@@ -4,8 +4,10 @@ import { AuthService } from '../../auth/services/auth.service';
 import { SocketNotificationService } from '../services/socket-notification.service';
 import { TaskResponseDto } from '@finapp/app-common';
 import {
-  BaseGroupList,
-  BaseListOfGroup, IActionListItem, IListItemAction, ListItemOption
+  IActionListItem,
+  IListItemAction,
+  ITreeItem,
+  ListItemOption,
 } from '../components/list-module/base-list.component';
 import { taskListConfig } from './task-tree-config';
 
@@ -20,7 +22,7 @@ enum TaskAction {
   CONVERT_TO_TASK = 'convertToTask',
 }
 
-const TaskListMenuAction = { ...TaskAction, ...ListItemOption }
+const TaskListMenuAction = { ...TaskAction, ...ListItemOption };
 type TaskListMenuAction = TaskAction | ListItemOption;
 
 
@@ -31,10 +33,9 @@ type TaskListMenuAction = TaskAction | ListItemOption;
   styleUrls: ['task-list.component.scss']
 })
 export class TaskListComponent implements OnInit {
-  public taskGroups: BaseGroupList<TaskResponseDto> = new BaseGroupList<TaskResponseDto>(' Tasks');
   public taskListConfig = taskListConfig;
   public dataLoaded = false;
-  readonly groupDivider: (data: any[], type: any) => any[];
+  public tasks: ITreeItem<TaskResponseDto>[] = [];
 
   public menuItems: IActionListItem<TaskListMenuAction>[] = [];
 
@@ -43,7 +44,6 @@ export class TaskListComponent implements OnInit {
     private taskRestService: TaskRestService,
     private socketService: SocketNotificationService,
   ) {
-    this.groupDivider = this.taskListConfig.groupDivider ? this.taskListConfig.groupDivider : this.groupDivider;
   }
 
   async ngOnInit(): Promise<void> {
@@ -81,31 +81,32 @@ export class TaskListComponent implements OnInit {
   }
 
   async getTasks(): Promise<void> {
-    const taskList = await this.taskRestService.getList();
-    await this.divideOnGroups(taskList);
+    const tasks = await this.taskRestService.getList();
+    this.tasks = await this.mapItems(tasks);
     this.dataLoaded = true;
   }
-
-  async divideOnGroups(taskList: TaskResponseDto[]): Promise<void> {
-    this.taskGroups.clear();
-    if (this.taskListConfig.groups && this.taskListConfig.groups.length && this.taskListConfig.groupDivider) {
-      this.taskListConfig.groups.forEach(group => {
-        const groupInst = new BaseListOfGroup<TaskResponseDto>(group.name);
-        const filteredGroupData = this.groupDivider(taskList, group.type);
-        filteredGroupData.map(item => {
-          groupInst.insertTo(item);
-        });
-        this.taskGroups.addGroup(groupInst);
-      });
-    }
-    else {
-      const groupInst = new BaseListOfGroup<TaskResponseDto>('');
-      taskList.forEach(item => {
-        groupInst.insertTo(item);
-      });
-      this.taskGroups.addGroup(groupInst);
-    }
+  private async mapItems(items: TaskResponseDto[]): Promise<ITreeItem<TaskResponseDto>[]> {
+    return items.map(i => this.mapDtoToTree(i));
   }
+
+  private mapDtoToTree(item: TaskResponseDto): ITreeItem<TaskResponseDto> {
+    const dataItem: ITreeItem<TaskResponseDto> = {
+      id: item.id,
+      data: item,
+      children: [],
+      isGroup: false,
+    };
+    if (item?.pinned) {
+      dataItem.pinned = item.pinned;
+    }
+    if (item.children?.length) {
+      item.children.forEach((child: TaskResponseDto) => {
+        dataItem.children.push(this.mapDtoToTree(child));
+      });
+    }
+    return dataItem;
+  }
+
 
   public onMenuAction(action: IListItemAction): void {
     console.log(action)

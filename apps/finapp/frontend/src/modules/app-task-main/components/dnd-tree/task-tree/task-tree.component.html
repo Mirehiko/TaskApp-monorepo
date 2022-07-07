@@ -1,20 +1,38 @@
 <ng-container *ngIf="dataSource.data.length; else emptyData">
   <mat-tree #tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100" [trackBy]="trackBy">
-    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding
-                   class="mat-tree-node__item w-100"
+    <mat-tree-node *matTreeNodeDef="let node; when: hasChildGroup" matTreeNodePadding
+                   class="mat-tree-node__group w-100"
+                   [matTreeNodePaddingIndent]="15"
+                   (keydown)="selectItemOnKey($event, node)"
+                   (click)="selectItemOnClick($event, node)"
+    >
+      <div class="mat-tree-node__content w-100 clickable-node" [class.mat-tree-node__content-selected]="node.selected" matTreeNodeToggle>
+        <button class="toggle-btn"
+                *ngIf="node.expandable; else simpleBtn"
+                [attr.aria-label]="'Toggle ' + node.data.name">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
 
+        <div class="mat-tree-node__name w-100">{{node.data.name}}</div>
+      </div>
+    </mat-tree-node>
+
+    <mat-tree-node *matTreeNodeDef="let node;" matTreeNodePadding
+                   class="mat-tree-node__item w-100"
                    [matTreeNodePaddingIndent]="15"
                    (keydown)="selectItemOnKey($event, node)"
                    (click)="selectItemOnClick($event, node)"
     >
       <div class="mat-tree-node__content w-100" [class.mat-tree-node__content-selected]="node.selected">
         <button matTreeNodeToggle class="toggle-btn" *ngIf="node.expandable; else simpleBtn"
-                [attr.aria-label]="'Toggle ' + node.item.data.name">
+                [attr.aria-label]="'Toggle ' + node.data.name">
           <mat-icon class="mat-icon-rtl-mirror">
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
         </button>
-        <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [id]="node.item.id">
+        <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [id]="node.data.id">
           <app-custom-checkbox
             class="w-100 mat-tree-node__checkbox"
             (checkedChanged)="todoLeafItemSelectionToggle(node)"
@@ -24,7 +42,7 @@
                  tabindex="-1"
                  listInputDirective
                  [editable]="node.selected"
-                 (contentChanged)="updateTitle($event, node)">{{node.item.data.name}}</div>
+                 (contentChanged)="updateTitle($event, node)">{{node.data.name}}</div>
           </app-custom-checkbox>
           <div class="mat-tree-node__icons">icons</div>
         </div>
@@ -40,13 +58,13 @@
       <div class="mat-tree-node__content w-100" [class.mat-tree-node__content-selected]="node.selected">
 
         <button matTreeNodeToggle class="toggle-btn" *ngIf="node.expandable; else simpleBtn"
-                [attr.aria-label]="'Toggle ' + node.item.data.name">
+                [attr.aria-label]="'Toggle ' + node.data.name">
           <mat-icon class="mat-icon-rtl-mirror">
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
         </button>
 
-        <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [id]="node.item.id">
+        <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [id]="node.data.id">
           <app-custom-checkbox
             class="w-100 mat-tree-node__checkbox"
             (checkedChanged)="todoItemSelectionToggle(node)"
@@ -56,11 +74,11 @@
                  tabindex="-1"
                  listInputDirective
                  [editable]="node.selected"
-                 (contentChanged)="updateTitle($event, node)">{{node.item.data.name}}</div>
+                 (contentChanged)="updateTitle($event, node)">{{node.data.name}}</div>
           </app-custom-checkbox>
           <div class="mat-tree-node__icons">icons</div>
         </div>
-        <!--      <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>-->
+          <!--      <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>-->
       </div>
     </mat-tree-node>
 

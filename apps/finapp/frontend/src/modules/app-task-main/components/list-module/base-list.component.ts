@@ -40,6 +40,7 @@ export class ITreeItem<T> extends IBaseListItem<T>{
   children: ITreeItem<T>[];
   parent_id?: number | string;
   childCount?: number;
+  isGroup: boolean;
 }
 
 export interface IListItemField extends IListItemFieldDescription {
@@ -48,8 +49,6 @@ export interface IListItemField extends IListItemFieldDescription {
 
 export class IListItem<T> extends IBaseListItem<T>{
   fields?: IListItemField[];
-  children: IListItem<T>[]; // TODO: remove
-  parent_id?: number; // TODO: remove
 }
 
 export interface IListConfig {
@@ -129,7 +128,6 @@ export class BaseListComponent<T> implements OnInit, OnChanges {
       id: item.id,
       data: item,
       fields: [],
-      children: [],
     };
     this.config.listDescription.map((listDesc: IListItemFieldDescription) => {
       dataItem?.fields?.push({
@@ -138,11 +136,6 @@ export class BaseListComponent<T> implements OnInit, OnChanges {
       });
       if (item?.pinned) {
         dataItem.pinned = item.pinned;
-      }
-      if (item.children?.length) {
-        item.children.forEach((child: T) => {
-          dataItem.children.push(this.getMappedItem(child));
-        });
       }
     });
     return dataItem;
@@ -168,19 +161,19 @@ export class BaseListComponent<T> implements OnInit, OnChanges {
 
 
 
-export class BaseListOfGroup<T extends {id: number, children?: T[]}> {
-  private _list: T[] = [];
+export class BaseListOfGroup<T> {
+  private _list: IListItem<T>[] = [];
   private _name: string;
   readonly _id: string;
   private _expanded: boolean = false;
   private _childCount: number = 0;
+
 
   constructor(name: string, items: any = [], expanded: boolean = true) {
     this._name = name;
     this._list = items;
     this._id = nanoid();
     this.expanded = expanded;
-    this.countChildren();
   };
 
   public set name(name: string) {
@@ -191,7 +184,7 @@ export class BaseListOfGroup<T extends {id: number, children?: T[]}> {
     return this._name;
   }
 
-  public insertTo(item: any, position?: number): void {
+  public insertTo(item: IListItem<T>, position?: number): void {
     if (position) {
       this._list.splice(position, 0, item);
     }
@@ -199,19 +192,17 @@ export class BaseListOfGroup<T extends {id: number, children?: T[]}> {
       this._list.push(item);
     }
     this.recalculatePositions();
-    this.countChildren();
   }
 
   public get childCount(): number {
     return this._childCount;
   }
 
-  public remove(item: T): void {
+  public remove(item: IListItem<T>): void {
     this._list = this.list.filter(i => item.id !== i.id);
-    this.countChildren();
   }
 
-  public get list(): T[] {
+  public get list(): IListItem<T>[] {
     return this._list;
   }
 
@@ -229,14 +220,6 @@ export class BaseListOfGroup<T extends {id: number, children?: T[]}> {
 
   public set expanded(value: boolean) {
     this._expanded = value;
-  }
-
-  private countChildren(): void {
-    this._childCount = this.counter(this._list);
-  }
-
-  private counter(list: T[]): number {
-    return list.reduce((sum, item) => sum += !!item.children?.length ? this.counter(item.children) + 1 : 1, 0);
   }
 
   public setItemPosition(id: number, position: number): void {
@@ -262,7 +245,7 @@ export class BaseListOfGroup<T extends {id: number, children?: T[]}> {
   }
 }
 
-export class BaseGroupList<T extends {id: number, pinned?: boolean, selected?: boolean}> {
+export class BaseGroupList<T> {
   private _list: BaseListOfGroup<T>[] = [];
   private _name: string;
   readonly _pinnedRows: BaseListOfGroup<T>;
@@ -289,7 +272,7 @@ export class BaseGroupList<T extends {id: number, pinned?: boolean, selected?: b
     return this._list;
   }
 
-  public pin(groupId: string, item: T): void {
+  public pin(groupId: string, item: IListItem<T>): void {
     this._pinnedRows.insertTo(item);
     this._list.map(group => {
       if (group._id === groupId) {
@@ -298,7 +281,7 @@ export class BaseGroupList<T extends {id: number, pinned?: boolean, selected?: b
     });
   }
 
-  public unpin(groupId: string, item: T): void {
+  public unpin(groupId: string, item: IListItem<T>): void {
     this._pinnedRows.remove(item);
     this._list.map(group => {
       if (group._id === groupId) {

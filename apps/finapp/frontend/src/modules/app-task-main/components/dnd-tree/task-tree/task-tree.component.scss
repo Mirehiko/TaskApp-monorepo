@@ -6,6 +6,16 @@
     }
   }
 }
+.mat-tree-node__group {
+  .mat-tree-node__name {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 10px;
+  }
+}
+.clickable-node {
+  cursor: pointer;
+}
 
 
 .mat-tree-node__content {

@@ -1,39 +1,8 @@
-<app-navigable-page [pageName]="taskGroups.name">
+<app-navigable-page [pageName]="'Tasks'">
   <section class="page-body">
-    <ng-container *ngIf="taskGroups.list.length || taskGroups.pinnedGroup.list.length; else emptyData">
-      <ng-container
-        [ngTemplateOutlet]="group"
-        [ngTemplateOutletContext]="{ group: taskGroups.pinnedGroup }"></ng-container>
-      <ng-container *ngFor="let groupItem of taskGroups.list">
-        <ng-container
-          [ngTemplateOutlet]="group"
-          [ngTemplateOutletContext]="{ group: groupItem }"></ng-container>
-      </ng-container>
-    </ng-container>
+    <app-task-tree *ngIf="dataLoaded" [dataList]="tasks" [config]="taskListConfig" [menuItems]="menuItems" (itemAction)="onMenuAction($event)"></app-task-tree>
   </section>
   <section class="page-detail">
     <router-outlet></router-outlet>
   </section>
 </app-navigable-page>
-
-<ng-template #group let-group="group">
-  <div class="list-group" *ngIf="group.list.length && taskListConfig.pinnable">
-    <h3 class="toggleable-title" (click)="group.toggleExpand()">
-      <button class="toggle-btn"
-              [attr.aria-label]="'Toggle ' + group.name">
-        <mat-icon class="mat-icon-rtl-mirror">
-          {{group.expanded ? 'expand_more' : 'chevron_right'}}
-        </mat-icon>
-      </button>
-      <span>{{group.name}}</span>
-      <span class="task-count" *ngIf="!group.expanded">{{group.childCount}}</span>
-    </h3>
-    <div class="list" *ngIf="group.expanded">
-      <app-task-tree [dataList]="group.list" [config]="taskListConfig" [menuItems]="menuItems" (itemAction)="onMenuAction($event)"></app-task-tree>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #emptyData>
-  <div app-empty-message>No data to display</div>
-</ng-template>

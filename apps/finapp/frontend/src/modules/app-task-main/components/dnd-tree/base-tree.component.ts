@@ -1,29 +1,23 @@
 import { MatTree, MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   IActionListItem,
   IListConfig,
-  IListItem,
   IListItemAction,
-  IListItemFieldDescription, ITreeItem, ListItemOption
+  ITreeItem, ListItemOption
 } from '../list-module/base-list.component';
-import { BaseDataChildrenService, BaseGroupedTreeService, BaseTreeGroupList } from '../../services/base-data.service';
-import { TaskResponseDto } from '@finapp/app-common';
+import { BaseTreeDatabaseService } from '../../services/base-data.service';
 
-class TreeItemFlatNode<T> {
-  item: IListItem<T>;
+
+class TreeItemFlatNode<T> extends ITreeItem<T> {
   level: number;
   expandable: boolean;
   selected: boolean;
 }
 
-interface ITreeGroup<T> {
-  name: string;
-  dataSource: MatTreeFlatDataSource<IListItem<T>, TreeItemFlatNode<T>>
-}
 
 @Component({
   selector: 'app-base-tree',
@@ -31,34 +25,34 @@ interface ITreeGroup<T> {
   styles: [],
   providers: []
 })
-export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: string]: any}> implements OnInit {
+export class BaseTreeComponent<T> implements OnInit {
   @Input() listName: string;
-  @Input() dataList: any[] = [];
+  @Input() dataList: ITreeItem<T>[] = [];
   @Input() config: IListConfig;
   @Input() menuItems: IActionListItem<any>[] = [];
   @Output() itemClicked: EventEmitter<number> = new EventEmitter<number>();
   @Output() itemAction: EventEmitter<IListItemAction> = new EventEmitter<IListItemAction>();
   @ViewChild('tree') private tree: MatTree<T>;
   groupDivider: (data: any[], type: any) => any[];
-  public groups: ITreeGroup<T>[] = [];
+  groupedData: ITreeItem<T>[] = [];
 
-  flatNodeMap = new Map<TreeItemFlatNode<T>, IListItem<T>>();
-  nestedNodeMap = new Map<IListItem<T>, TreeItemFlatNode<T>>();
+  flatNodeMap = new Map<TreeItemFlatNode<T>, ITreeItem<T>>();
+  nestedNodeMap = new Map<ITreeItem<T>, TreeItemFlatNode<T>>();
 
   selectedParent: TreeItemFlatNode<T> | null = null;
   selectedItems: TreeItemFlatNode<T>[] = [];
   newItemName = '';
   treeControl: FlatTreeControl<TreeItemFlatNode<T>>
 
-  treeFlattener: MatTreeFlattener<IListItem<T>, TreeItemFlatNode<T>>;
-  dataSource: MatTreeFlatDataSource<IListItem<T>, TreeItemFlatNode<T>>;
-  treeDataSource: MatTreeFlatDataSource<ITreeItem<T>, any>;
-
+  treeFlattener: MatTreeFlattener<ITreeItem<T>, TreeItemFlatNode<T>>;
+  dataSource: MatTreeFlatDataSource<ITreeItem<T>, TreeItemFlatNode<T>>;
   selection = new SelectionModel<TreeItemFlatNode<T>>(true);
 
+  _groupInitiated: boolean = false;
+  hasGroups: boolean = false;
+
   constructor(
-    private _database: BaseDataChildrenService<T>,
-    public db: BaseGroupedTreeService<T>,
+    private _database: BaseTreeDatabaseService<T>,
     private router: Router,
     private activatedRoute: ActivatedRoute,
   ) {
@@ -71,93 +65,83 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     this.treeControl = new FlatTreeControl<TreeItemFlatNode<T>>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
-
-    db.initialize();
-    db.dataChange.subscribe(data => {
-      // console.log(data);
-    });
-
     _database._dataChange.subscribe(data => {
       this.dataSource.data = data;
+      if (this._groupInitiated || !this.hasGroups) {
+        return;
+      }
+      this.dataSource.data.forEach(g => {
+        this.treeControl.expand(this.nestedNodeMap.get(g)!);
+      });
+      this._groupInitiated = true;
     });
   }
 
   async ngOnInit(): Promise<void> {
     this.groupDivider = this.config.groupDivider ? this.config.groupDivider : this.groupDivider;
-    this._database.initialize(this.dataList); // TODO: remove
-
     await this.divideOnGroups(this.dataList);
-    this.db.refresh();
+    this._database.initialize(this.groupedData);
   }
 
-
-  private async divideOnGroups(list: T[]): Promise<void> {
-    this.db.clear();
+  private async divideOnGroups(list: ITreeItem<T>[]): Promise<void> {
+    this.groupedData = [];
     if (this.config.groups && this.config.groups.length && this.config.groupDivider) {
-      this.config.groups.forEach(group => {
-        const groupInst = new BaseTreeGroupList<TaskResponseDto>(group.name);
+      this.config.groups.forEach((group, index) => {
+        const groupItem = this.addItemTemplate(-2, index, group.name, true);
         const filteredGroupData = this.groupDivider(list, group.type);
         filteredGroupData.map(item => {
-          groupInst.insertTo(this.mapDtoToTree(item));
+          groupItem.children.push(item);
         });
-        this.db.addGroup(groupInst);
+        if (groupItem.children.length > 0) {
+          this.groupedData.push(groupItem);
+        }
       });
+      this.hasGroups = true;
     }
     else {
-      const groupInst = new BaseTreeGroupList<TaskResponseDto>('');
+      this.hasGroups = false;
       list.forEach(item => {
-        groupInst.insertTo(this.mapDtoToTree(item));
-      });
-      this.db.addGroup(groupInst);
-    }
-  }
-
-  private mapDtoToTree(item: any): ITreeItem<T> {
-    const dataItem: ITreeItem<T> = {
-      id: item.id,
-      data: item,
-      children: [],
-    };
-    if (item?.pinned) {
-      dataItem.pinned = item.pinned;
-    }
-    if (item.children?.length) {
-      item.children.forEach((child: T) => {
-        dataItem.children.push(this.mapDtoToTree(child));
+        this.groupedData.push(item);
       });
     }
-    return dataItem;
   }
 
   getLevel = (node: TreeItemFlatNode<T>) => node.level;
   isExpandable = (node: TreeItemFlatNode<T>) => node.expandable;
-  getChildren = (node: IListItem<T>): IListItem<T>[] => node.children;
-  hasChild = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.expandable;
-  hasNoContent = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.item === undefined;
-  readonly trackBy = (_: number, node: TreeItemFlatNode<T>) => node.item.id;
+  getChildren = (node: ITreeItem<T>): ITreeItem<T>[] => node.children;
+  hasChild = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.expandable && !_nodeData.isGroup;
+  hasChildGroup = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.expandable && _nodeData.isGroup;
+  hasNoContent = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData === undefined;
+  readonly trackBy = (_: number, node: TreeItemFlatNode<T>) => node.id;
 
   public selectItemOnClick(event: MouseEvent, item: TreeItemFlatNode<T>): void {
+    if (item.isGroup) {
+      return;
+    }
     event.stopPropagation();
     event.preventDefault();
 
     if (!event.ctrlKey && !event.shiftKey) {
       this.selectedItems = [item];
-      this.openDetailView(item.item.id);
-      this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.item.id === item.item.id));
+      this.openDetailView(item.data.id);
+      this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === item.data.id));
       return;
     }
     item.selected = !item.selected;
     this.selectedItems =
-      item.selected ? this.selectedItems.concat(item) : this.selectedItems.filter(i => i.item.id != item.item.id);
+      item.selected ? this.selectedItems.concat(item) : this.selectedItems.filter(i => i.data.id != item.data.id);
     if (this.selectedItems.length > 1) {
       this.openMultiSelectionView();
     }
     else {
-      this.openDetailView(item.item.id);
+      this.openDetailView(item.data.id);
     }
   }
 
   public selectItemOnKey(event: KeyboardEvent, item: TreeItemFlatNode<T>): void {
+    if (item.isGroup) {
+      return;
+    }
     let nextItem: TreeItemFlatNode<T>;
     let searchData: TreeItemFlatNode<T>[] = [];
     let checkLevel = false;
@@ -168,16 +152,16 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
       case KeyCodeName.ARROW_UP: {
         searchData = this.getLevelData(item);
         const currentIndex = searchData.indexOf(item);
-        nextItem = this.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
+        nextItem = BaseTreeComponent.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
 
-        if (item.level > 0 && this.isFirstElement(currentIndex)) {
+        if (item.level > 0 && BaseTreeComponent.isFirstElement(currentIndex)) {
           nextItem = this.getNextAvailableNode(item, KeyCodeName.ARROW_UP);
         }
         else if (nextItem.expandable && this.treeControl.isExpanded(nextItem) ) {
           nextItem = this.getLastNodeOfExpanded(nextItem);
         }
         else {
-          nextItem = this.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
+          nextItem = BaseTreeComponent.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
         }
         break;
       }
@@ -193,16 +177,16 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
           searchData = this.getChildrenByLevel(item, item.level + 1);
           nextItem = searchData[0];
         }
-        else if (item.level > 0 && this.isLastElement(searchData, currentIndex)) {
+        else if (item.level > 0 && BaseTreeComponent.isLastElement(searchData, currentIndex)) {
           nextItem = this.getNextAvailableNode(item, KeyCodeName.ARROW_DOWN);
         }
         else {
-          nextItem = this.isLastElement(searchData, currentIndex) ? searchData[0] : searchData[currentIndex + 1];
+          nextItem = BaseTreeComponent.isLastElement(searchData, currentIndex) ? searchData[0] : searchData[currentIndex + 1];
         }
         break;
       }
       case KeyCodeName.ENTER: {
-        if (item.item.id === -1) {
+        if (item.data.id === -1) {
           return;
         }
         if (event.shiftKey) {
@@ -212,7 +196,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
           this.addNewItem(item);
         }
 
-        this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.item.id === -1));
+        this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === -1));
         return;
       }
       case KeyCodeName.HOME: {
@@ -231,7 +215,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
         return;
       }
       case KeyCodeName.ESCAPE: {
-        if (item.item.id === -1) {
+        if (item.data.id === -1) {
           this.deleteNode(item);
         }
         return;
@@ -245,9 +229,12 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
       this.expandNodes(item);
     }
 
-    if (nextItem) {
-      this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.item.id === nextItem.item.id));
-      this.openDetailView(nextItem.item.id === -1 ? 'new' : nextItem.item.id);
+    if (nextItem!) {
+      if (nextItem.isGroup) {
+        return;
+      }
+      this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === nextItem.data.id));
+      this.openDetailView(nextItem.data.id === -1 ? 'new' : nextItem.data.id);
     }
   }
 
@@ -263,28 +250,29 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
 
   private getNextAvailableNode(parent: TreeItemFlatNode<T>, arrow: KeyCodeName.ARROW_UP | KeyCodeName.ARROW_DOWN): TreeItemFlatNode<T> {
     let upperLevelNodes;
-    if (parent.item.data.parent_id) {
+    if (parent.data.parent_id) {
       upperLevelNodes = this.treeControl.dataNodes
-        .filter(i => i.level === parent.level && i.item.data.parent_id === parent.item.data.parent_id);
+        .filter(i => i.level === parent.level && i.data.parent_id === parent.data.parent_id);
     }
     else {
       upperLevelNodes = this.treeControl.dataNodes;
     }
 
     const currentIndex = upperLevelNodes.indexOf(parent);
-    if (parent.item.data.parent_id === -1 && this.isLastElement(upperLevelNodes, currentIndex)) {
+    if (parent.data.parent_id === -1 && BaseTreeComponent.isLastElement(upperLevelNodes, currentIndex)) {
       return upperLevelNodes[0];
     }
 
     if (arrow === KeyCodeName.ARROW_DOWN) {
-      if (this.isLastElement(upperLevelNodes, currentIndex)) {
+      if (BaseTreeComponent.isLastElement(upperLevelNodes, currentIndex)) {
         return this.getNextAvailableNode(this.getParentNode(parent)!, arrow);
       }
-      else {
-        return upperLevelNodes[currentIndex + 1];
-      }
+      return upperLevelNodes[currentIndex + 1];
     }
     else {
+      if (parent.data.parent_id === -1 && BaseTreeComponent.isFirstElement(currentIndex)) {
+        return upperLevelNodes[upperLevelNodes.length - 1];
+      }
       return this.getParentNode(parent!)!;
     }
   }
@@ -302,7 +290,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   private getLevelData(item: TreeItemFlatNode<T>): TreeItemFlatNode<T>[] {
     return this.treeControl.dataNodes.filter(i => {
       if (i.level === item.level) {
-        return i.item.data.parent_id === item.item.data.parent_id;
+        return i.data.parent_id === item.data.parent_id;
       }
       return false;
     });
@@ -312,22 +300,17 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     return this.treeControl.getDescendants(node).filter(i => i.level === level);
   }
 
-  private isFirstElement(index: number): boolean {
+  private static isFirstElement(index: number): boolean {
     return index === 0;
   }
 
-  private isLastElement(list: any[], index: number): boolean {
+  private static isLastElement(list: any[], index: number): boolean {
     return index === list.length - 1;
   }
 
   private changeSelection(index: number): void {
     this.treeControl.dataNodes.forEach((node, idx) => {
-      if (idx === index) {
-        node.selected = true;
-      }
-      else {
-        node.selected = false;
-      }
+      node.selected = idx === index;
     });
   }
 
@@ -339,36 +322,18 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     if (!this.config.navigateTo) {
       throw new Error('navigateTo is required');
     }
-    this.router.navigateByUrl('/', {skipLocationChange: true}).then(()=>
-      this.router.navigate([`${this.config.navigateTo}/${entityId}`]));
-    await this.router.navigate([`${this.config.navigateTo}/${entityId}`], {relativeTo: this.activatedRoute});
+    await this.router.navigate(
+      [`${this.config.navigateTo}/${entityId === -1 ? 'new' : entityId}`],
+      {relativeTo: this.activatedRoute});
   }
 
-  private getMappedItem(item: T): IListItem<T> {
-    const dataItem: IListItem<T> = new IListItem<T>();
-    dataItem.id = item.id;
-    dataItem.data = item;
-    // dataItem.fields = [];
-
-    this.config.listDescription.map((listDesc: IListItemFieldDescription) => {
-      // dataItem.fields.push({
-      //   value: listDesc.valueGetter ? listDesc.valueGetter(item) : item[listDesc.field],
-      //   ...listDesc
-      // });
-      if (item?.pinned) {
-        dataItem.pinned = item.pinned;
-      }
-    });
-    return dataItem;
-  }
-
-  transformer = (node: any, level: number) => {
+  transformer = (node: ITreeItem<T>, level: number) => {
     const existingNode = this.nestedNodeMap.get(node);
-    const flatNode =
-      existingNode && existingNode.item.id === node.id ? existingNode : new TreeItemFlatNode<T>();
-    flatNode.item = this.getMappedItem(node);
+    const flatNode = existingNode && existingNode.data.id === node.id
+      ? existingNode : node as TreeItemFlatNode<T>;
     flatNode.level = level;
     flatNode.expandable = !!node.children?.length;
+    flatNode.isGroup = node.isGroup;
     this.flatNodeMap.set(flatNode, node);
     this.nestedNodeMap.set(node, flatNode);
     return flatNode;
@@ -377,12 +342,10 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   /** Whether all the descendants of the node are selected. */
   descendantsAllSelected(node: TreeItemFlatNode<T>): boolean {
     const descendants = this.treeControl.getDescendants(node);
-    const descAllSelected =
-      descendants.length > 0 &&
+    return descendants.length > 0 &&
       descendants.every(child => {
         return this.selection.isSelected(child);
-      });
-    return descAllSelected;
+      });;
   }
 
   /** Whether part of the descendants are selected */
@@ -412,7 +375,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   }
 
   public updateTitle(data: string, node: TreeItemFlatNode<T>): void {
-    if (node.item.id === -1) {
+    if (node.data.id === -1) {
       if (data.trim().length === 0) {
         return;
       }
@@ -420,13 +383,11 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
       console.log('save new item')
     }
     else {
-      if (data !== node.item.data.name) {
+      if (data !== node.data.name) {
         this.saveNode(node, data);
         console.log('update item')
       }
     }
-
-    console.log(data)
   }
 
   /* Checks all the parents when a leaf node is selected/unselected */
@@ -478,7 +439,7 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
   addNewChildrenItem(node: TreeItemFlatNode<T>) {
     const parentNode = this.flatNodeMap.get(node);
     if (parentNode) {
-      this._database.addChildren(parentNode, [this.addItemTemplate(node, node.item.id)]);
+      this._database.addChildren(parentNode, [this.addItemTemplate(-1, node.data.id, '', false)]);
       this.treeControl.expand(node);
     }
     // else {
@@ -486,21 +447,23 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
     // }
   }
 
-  private addItemTemplate(node: TreeItemFlatNode<T>, parent: number): IListItem<T> {
-    const item = new IListItem<T>();
-    item.id = -1;
-    item.parent_id = parent;
+  private addItemTemplate(id: number, parent: number, name: string, isGroup: boolean): ITreeItem<T> {
+    const item: ITreeItem<T> = new ITreeItem<T>();
+    item.data = {};
+    item.data.name = name;
+    item.data.id = id;
+    item.id = id;
+    item.isGroup = isGroup;
+    item.data.parent_id = parent;
+    item.children = [];
     return item;
   }
 
   addNewItem(node: TreeItemFlatNode<T> | null = null) {
     const originNode = this.flatNodeMap.get(node!);
-    const parentNode = this.getParentNode(node!);
-    const originParentNode = this.flatNodeMap.get(parentNode!);
-    this._database.insertItemTo(
-      originParentNode!,
+    this._database.insertTo(
       originNode!,
-      [this.addItemTemplate(node!, node?.item.data.parent_id)]);
+      [this.addItemTemplate(-1, node?.data.parent_id, '', false)]);
   }
 
   /** Save the node to database */
@@ -511,11 +474,11 @@ export class BaseTreeComponent<T extends {id: number; pinned?: boolean, [index: 
 
   deleteNode(node: TreeItemFlatNode<T>) {
     const originNode = this.flatNodeMap.get(node!);
-    // this.flatNodeMap.delete(node);
-    // this.nestedNodeMap.delete(originNode!);
+    this.flatNodeMap.delete(node);
+    this.nestedNodeMap.delete(originNode!);
     this._database.removeItem(originNode!);
 
-    if (node.item.id !== -1) {
+    if (node.data.id !== -1) {
       // TODO: Query to database
     }
   }
