@@ -33,7 +33,7 @@
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
         </button>
-        <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [id]="node.data.id">
+        <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [data]="node">
           <app-custom-checkbox
             class="w-100 mat-tree-node__checkbox"
             (checkedChanged)="todoLeafItemSelectionToggle(node)"
@@ -65,7 +65,7 @@
           </mat-icon>
         </button>
 
-        <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [id]="node.data.id">
+        <div class="mat-tree-node__divider w-100" customContextMenu [menuComponent]="nodeTreeItemMenu" [data]="node">
           <app-custom-checkbox
             class="w-100 mat-tree-node__checkbox"
             (checkedChanged)="todoItemSelectionToggle(node)"
@@ -96,7 +96,7 @@
   <app-custom-menu #nodeTreeItemMenu [available]="!!menuItems.length">
     <button custom-menu-item
             *ngFor="let menuItem of menuItems"
-            (click)="onMenuAction(nodeTreeItemMenu.itemId, menuItem.action)"
+            (click)="onMenuAction(nodeTreeItemMenu.data, menuItem.action)"
     >{{menuItem.name}}</button>
   </app-custom-menu>
 </ng-container>

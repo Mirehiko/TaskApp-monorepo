@@ -8,7 +8,7 @@ import { fromEvent, map, merge, Subject, takeUntil, tap } from 'rxjs';
 })
 export class CustomContextMenuDirective implements OnInit, OnDestroy {
   @Input() menuComponent: CustomMenuComponent;
-  @Input() id: number;
+  @Input() data: any;
   private _destroy$ = new Subject<void>();
   private _context$ = new Subject<void>();
 
@@ -20,7 +20,7 @@ export class CustomContextMenuDirective implements OnInit, OnDestroy {
     if (!this.menuComponent.available) {
       return;
     }
-    this.menuComponent.itemId = this.id;
+    this.menuComponent.data = this.data;
     const mainContext$ = fromEvent(this.el.nativeElement, 'contextmenu');
     const bindRightHandler = this.onRightClickHandler.bind(this);
     mainContext$.pipe(

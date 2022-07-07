@@ -7,7 +7,8 @@ import {
   IActionListItem,
   IListConfig,
   IListItemAction,
-  ITreeItem, ListItemOption
+  ITreeItem,
+  ListItemOption
 } from '../list-module/base-list.component';
 import { BaseTreeDatabaseService } from '../../services/base-data.service';
 
@@ -483,8 +484,21 @@ export class BaseTreeComponent<T> implements OnInit {
     }
   }
 
-  onMenuAction(node: number, action: ListItemOption): void {
-    this.itemAction.emit({id: node, action});
+  onMenuAction(node: TreeItemFlatNode<T>, action: ListItemOption): void {
+    switch (action) {
+      case ListItemOption.COPY_LINK: {
+        this.copyLink(node.id);
+        break;
+      }
+      default: {
+        this.itemAction.emit({id: node.id, action});
+      }
+    }
+  }
+
+  copyLink(id: number): void {
+    // TODO: Add variable to put domain into url
+    navigator.clipboard.writeText(`${this.config.navigateTo}/${id === -1 ? 'new' : id}`);
   }
 }
 

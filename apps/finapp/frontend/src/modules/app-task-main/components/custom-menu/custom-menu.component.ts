@@ -9,7 +9,7 @@ import { IElementStyle } from '../interfaces/element-style.interface';
 })
 export class CustomMenuComponent {
   private _visible: boolean = false;
-  public itemId: number;
+  public data: any;
   @Input() public available: boolean = true;
   @Output() onClickEvent: EventEmitter<number> = new EventEmitter<number>();
 
