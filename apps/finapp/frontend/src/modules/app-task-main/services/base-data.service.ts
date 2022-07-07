@@ -16,9 +16,9 @@ export class BaseTreeDatabaseService<T> {
 
   public initialize(items: ITreeItem<T>[] = [], expanded: boolean = true) {
     // this.expanded = expanded;
-    // this._countChildren();
     this.list = items;
     this._map(this.list, -1);
+    this._countChildren();
     this._dataChange.next(this.list);
   }
 
@@ -60,7 +60,7 @@ export class BaseTreeDatabaseService<T> {
     this._dataChange.next(this.data);
 
     // this._recalculatePositions();
-    // this._countChildren();
+    this._countChildren();
   }
 
   public updateItem(item: ITreeItem<T>, name: string): void {
@@ -75,7 +75,7 @@ export class BaseTreeDatabaseService<T> {
 
   public removeItem(item: ITreeItem<T>): void {
     const parent = this.childParent.get(item);
-    // console.log(item, parent)
+
     if (!parent) {
       return;
     }
@@ -89,7 +89,7 @@ export class BaseTreeDatabaseService<T> {
       ?.splice(index!, 1);
     this.childParent.delete(item);
     this._dataChange.next(this.data);
-    // this._countChildren();
+    this._countChildren();
   }
 
   private _map(data: ITreeItem<T>[], parent: ITreeItem<T> | -1): void {
@@ -103,7 +103,11 @@ export class BaseTreeDatabaseService<T> {
   }
 
   private _countChildren(): void {
-    this._childCount = this._counter(this.data);
+    this.list.map(i => {
+      if (i.isGroup) {
+        i.childCount = this._counter(i.children);
+      }
+    })
   }
 
   private _counter(list: ITreeItem<T>[]): number {
