@@ -490,6 +490,11 @@ export class BaseTreeComponent<T> implements OnInit {
         this.copyLink(node.id);
         break;
       }
+      case ListItemOption.ADD_CHILD: {
+        this.addNewChildrenItem(node);
+        this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === -1));
+        break;
+      }
       default: {
         this.itemAction.emit({id: node.id, action});
       }

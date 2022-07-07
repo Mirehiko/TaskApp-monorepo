@@ -39,6 +39,7 @@ export class CustomContextMenuDirective implements OnInit, OnDestroy {
     if (!this.menuComponent?.available) {
       await this.ngOnDestroy();
     }
+    this.menuComponent.data = this.data;
 
     e.preventDefault();
     await this.destroy();
