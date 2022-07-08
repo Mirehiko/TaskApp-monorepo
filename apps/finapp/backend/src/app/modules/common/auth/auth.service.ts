@@ -93,8 +93,8 @@ export class AuthService {
     }
     const token = await this.generateToken(user);
     const expireAt = moment()
-      .add(1, 'day')
-    .toISOString();
+      .add(7, 'day')
+      .toISOString();
 
     await this.saveToken({
       token,
@@ -130,7 +130,7 @@ export class AuthService {
 
     if (user && user.status === UserStatusEnum.PENDING) {
       user.status = UserStatusEnum.ACTIVE;
-      return await this.userService.repository.save(user);
+      return await this.userService.updateUser(user.id, user);
     }
     throw new BadRequestException('Confirmation error');
   }
@@ -236,8 +236,8 @@ export class AuthService {
   }
 
   async getUserByToken(token: string): Promise<User> {
-    const userId = await this.tokenService.getUserIdByToken(token);
-    return await this.userService.getByID(userId);
+    const user = await this.jwtService.verify(token);
+    return await this.userService.getByID(user.id);
   }
 
 }

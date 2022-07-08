@@ -1,0 +1,7 @@
+<ng-container *ngIf="componentReady">
+  <form *ngIf="form" [formGroup]="form">
+    <h2 inputDirective formControlName="name" >{{taskIn.name}}</h2>
+    <pre inputDirective formControlName="description">{{taskIn.description}}</pre>
+    <button (click)="save()">save</button>
+  </form>
+</ng-container>

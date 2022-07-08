@@ -1,13 +1,12 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { Bill } from './schemas/bill.entity';
 import { HttpException, HttpStatus, Param } from '@nestjs/common';
-import { BillRequestDto, OperationType } from '@finapp/app-common';
-import { ChangeBalance } from './interfaces/change-balance';
+import { BillRequestDto, IChangeBalance, OperationType } from '@finapp/app-common';
 
 
 @EntityRepository(Bill)
 export class BillRepository extends Repository<Bill> {
-  async changeBalance(id: number, changeBalance: ChangeBalance): Promise<Bill> {
+  async changeBalance(id: number, changeBalance: IChangeBalance): Promise<Bill> {
     let bill = await this.findOne(id);
 
     if (!bill) {

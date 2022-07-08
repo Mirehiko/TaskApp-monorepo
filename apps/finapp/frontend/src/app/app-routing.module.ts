@@ -9,20 +9,28 @@ const routes: Routes = [
     loadChildren: () => import("../modules/auth/auth.module").then(m => m.AuthModule),
   },
   {
-    path: 'main',
-    // canActivate: [ AuthGuard ],
-    loadChildren: () => import("../modules/app-task-main/main.module").then(m => m.MainModule),
+    path: 'taskapp',
+    canActivate: [ AuthGuard ],
+    loadChildren: () => import("../modules/app-task-main/task-app.module").then(m => m.TaskAppModule),
   },
+  // {
+  //   path: 'finapp',
+  //   // canActivate: [ AuthGuard ],
+  //   loadChildren: () => import("../modules/app-fin-main/fin-app.module").then(m => m.FinAppModule),
+  // },
   {
     path: 'administration',
+    canActivate: [ AuthGuard ],
     loadChildren: () => import("../modules/admin/admin.module").then(m => m.AdminModule),
   },
   // { path: 'error', component: ErrorPageComponent },
-  { path: '**', redirectTo: '/main/' }
+  { path: '**', redirectTo: 'auth' }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    onSameUrlNavigation: 'reload'
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

@@ -1,5 +1,5 @@
 export enum ListBehaviorType {
-    COMMON = 'common',
-    PERSONAL = 'personal',
-    SHARED = 'shared'
+  COMMON = 'common',
+  PERSONAL = 'personal',
+  SHARED = 'shared'
 }

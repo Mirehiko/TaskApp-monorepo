@@ -1,103 +1,106 @@
 # TestApp
 
-use node v16.14.0, npm: 8.10.0
+> use node v16.14.0, npm: 8.10.0
 
-## Redis
-Run command `docker-compose -f <docker-compose-file>.yml up -d` to up redis server
-For tests 
-- run `docker exec -it <redis-container-name> sh` to enter to container with redis
-- run `redis-cli`
-- run `auth <your_password>` to authenticate in redis;
-- run `ping` to get `PONG`
+1. Move to project directory;
+2. Run `npm i`;
 
+[comment]: <> (This project was generated using [Nx]&#40;https://nx.dev&#41;.)
 
+[comment]: <> (<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>)
 
+[comment]: <> (🔎 **Smart, Fast and Extensible Build System**)
 
-This project was generated using [Nx](https://nx.dev).
+[comment]: <> (## Adding capabilities to your workspace)
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+[comment]: <> (Nx supports many plugins which add capabilities for developing different types of applications and different tools.)
 
-🔎 **Smart, Fast and Extensible Build System**
+[comment]: <> (These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.)
 
-## Adding capabilities to your workspace
+[comment]: <> (Below are our core plugins:)
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+[comment]: <> (- [React]&#40;https://reactjs.org&#41;)
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
+[comment]: <> (  - `npm install --save-dev @nrwl/react`)
 
-Below are our core plugins:
+[comment]: <> (- Web &#40;no framework frontends&#41;)
 
-- [React](https://reactjs.org)
-  - `npm install --save-dev @nrwl/react`
-- Web (no framework frontends)
-  - `npm install --save-dev @nrwl/web`
-- [Angular](https://angular.io)
-  - `npm install --save-dev @nrwl/angular`
-- [Nest](https://nestjs.com)
-  - `npm install --save-dev @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `npm install --save-dev @nrwl/express`
-- [Node](https://nodejs.org)
-  - `npm install --save-dev @nrwl/node`
+[comment]: <> (  - `npm install --save-dev @nrwl/web`)
 
-There are also many [community plugins](https://nx.dev/community) you could add.
+[comment]: <> (- [Angular]&#40;https://angular.io&#41;)
 
-## Generate an application
+[comment]: <> (  - `npm install --save-dev @nrwl/angular`)
 
-Run `nx g @nrwl/react:app my-app` to generate an application.
+[comment]: <> (- [Nest]&#40;https://nestjs.com&#41;)
 
-> You can use any of the plugins above to generate applications as well.
+[comment]: <> (  - `npm install --save-dev @nrwl/nest`)
 
-When using Nx, you can create multiple applications and libraries in the same workspace.
+[comment]: <> (- [Express]&#40;https://expressjs.com&#41;)
 
-## Generate a library
+[comment]: <> (  - `npm install --save-dev @nrwl/express`)
 
-Run `nx g @nrwl/react:lib my-lib` to generate a library.
+[comment]: <> (- [Node]&#40;https://nodejs.org&#41;)
 
-> You can also use any of the plugins above to generate libraries as well.
+[comment]: <> (  - `npm install --save-dev @nrwl/node`)
 
-Libraries are shareable across libraries and applications. They can be imported from `@finapp/mylib`.
+[comment]: <> (There are also many [community plugins]&#40;https://nx.dev/community&#41; you could add.)
 
-## Development server
+[comment]: <> (## Generate an application)
 
-Run `nx serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
+[comment]: <> (Run `nx g @nrwl/react:app my-app` to generate an application.)
 
-## Code scaffolding
+[comment]: <> (> You can use any of the plugins above to generate applications as well.)
 
-Run `nx g @nrwl/react:component my-component --project=my-app` to generate a new component.
+[comment]: <> (When using Nx, you can create multiple applications and libraries in the same workspace.)
 
-## Build
+[comment]: <> (## Generate a library)
 
-Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+[comment]: <> (Run `nx g @nrwl/react:lib my-lib` to generate a library.)
 
-## Running unit tests
+[comment]: <> (> You can also use any of the plugins above to generate libraries as well.)
 
-Run `nx test my-app` to execute the unit tests via [Jest](https://jestjs.io).
+[comment]: <> (Libraries are shareable across libraries and applications. They can be imported from `@finapp/mylib`.)
 
-Run `nx affected:test` to execute the unit tests affected by a change.
+[comment]: <> (## Development server)
 
-## Running end-to-end tests
+[comment]: <> (Run `nx serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.)
 
-Run `nx e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
+[comment]: <> (## Code scaffolding)
 
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
+[comment]: <> (Run `nx g @nrwl/react:component my-component --project=my-app` to generate a new component.)
 
-## Understand your workspace
+[comment]: <> (## Build)
 
-Run `nx graph` to see a diagram of the dependencies of your projects.
+[comment]: <> (Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.)
 
-## Further help
+[comment]: <> (## Running unit tests)
 
-Visit the [Nx Documentation](https://nx.dev) to learn more.
+[comment]: <> (Run `nx test my-app` to execute the unit tests via [Jest]&#40;https://jestjs.io&#41;.)
 
-## ☁ Nx Cloud
+[comment]: <> (Run `nx affected:test` to execute the unit tests affected by a change.)
 
-### Distributed Computation Caching & Distributed Task Execution
+[comment]: <> (## Running end-to-end tests)
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
+[comment]: <> (Run `nx e2e my-app` to execute the end-to-end tests via [Cypress]&#40;https://www.cypress.io&#41;.)
 
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
+[comment]: <> (Run `nx affected:e2e` to execute the end-to-end tests affected by a change.)
 
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
+[comment]: <> (## Understand your workspace)
 
-Visit [Nx Cloud](https://nx.app/) to learn more.
+[comment]: <> (Run `nx graph` to see a diagram of the dependencies of your projects.)
+
+[comment]: <> (## Further help)
+
+[comment]: <> (Visit the [Nx Documentation]&#40;https://nx.dev&#41; to learn more.)
+
+[comment]: <> (## ☁ Nx Cloud)
+
+[comment]: <> (### Distributed Computation Caching & Distributed Task Execution)
+
+[comment]: <> (<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>)
+
+[comment]: <> (Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.)
+
+[comment]: <> (Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.)
+
+[comment]: <> (Visit [Nx Cloud]&#40;https://nx.app/&#41; to learn more.)

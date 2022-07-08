@@ -1,0 +1,41 @@
+@mixin custom-list-item {
+  text-decoration: none;
+  border: none;
+  display: block;
+  background: transparent;
+  padding: 4px 9px;
+  margin: 0;
+  width: 100%;
+  height: initial;
+  font-size: initial;
+  text-align: left;
+  outline: 0;
+  cursor: pointer;
+}
+@mixin custom-menu-item-actions($bg-hover, $bg-focus, $color) {
+  &:hover {
+    background: $bg-hover;
+  }
+  &:active, &:active:hover,
+  &:focus, &:focus:hover {
+    background: $bg-focus;
+    color: $color;
+  }
+}
+@mixin custom-menu-item-text {
+  color: #222;
+  font-size: 13px;
+  text-decoration: none;
+  list-style-type: none;
+}
+
+:host-context(.custom-menu-item) {
+  @include custom-list-item;
+  @include custom-menu-item-text;
+  @include custom-menu-item-actions(#dfebef, #2e6a7c, #fff);
+  * {
+    @include custom-menu-item-text;
+  }
+}
+
+

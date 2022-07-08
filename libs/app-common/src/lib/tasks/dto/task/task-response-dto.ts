@@ -1,8 +1,9 @@
 import { Expose } from 'class-transformer';
+import { IsOptional } from 'class-validator';
+import { TaskCommentResponseDto } from '../..';
 import { UserResponseDto } from '../../../common';
 import { TaskPriority, TaskStatus } from '../../enums';
 import { TagResponseDto } from '../tag';
-import { TaskCommentResponseDto } from './task-comment-response-dto';
 
 
 export class TaskResponseDto {
@@ -13,30 +14,39 @@ export class TaskResponseDto {
 	name: string;
 
   @Expose()
+  @IsOptional()
 	description?: string;
 
   @Expose()
+  @IsOptional()
 	icon?: string;
 
 	@Expose()
+  @IsOptional()
 	assignee?: UserResponseDto;
 
 	@Expose()
+  @IsOptional()
 	reviewer?: UserResponseDto;
 
 	@Expose()
+  @IsOptional()
 	createdBy: UserResponseDto;
 
 	@Expose()
+  @IsOptional()
 	tags: TagResponseDto[];
 
 	@Expose()
+  @IsOptional()
 	updatedBy: UserResponseDto;
 
   @Expose()
+  @IsOptional()
 	startDate?: Date;
 
 	@Expose()
+  @IsOptional()
   endDate?: Date;
 
 	@Expose()
@@ -46,9 +56,15 @@ export class TaskResponseDto {
 	priority: TaskPriority;
 
 	@Expose()
-	pinned?: boolean;
+  @IsOptional()
+	pinned: boolean;
 	// config
 
+  @IsOptional()
   @Expose()
   comments?: TaskCommentResponseDto[];
+
+  @IsOptional()
+  @Expose()
+  children?: TaskResponseDto[];
 }

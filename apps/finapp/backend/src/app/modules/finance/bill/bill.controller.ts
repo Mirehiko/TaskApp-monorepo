@@ -12,8 +12,7 @@ import { JwtAuthGuard } from '../../common/auth/jwt-auth.guard';
 import { Roles } from '../../common/auth/roles-auth.decorator';
 import { RolesGuard } from '../../common/auth/roles.guard';
 import { BillService } from './bill.service';
-import { BillRequestDto, BillResponseDto, CategoryResponseDto } from '@finapp/app-common';
-import { BillGetParamsData } from './interfaces/bill-params';
+import { BillRequestDto, BillResponseDto, CategoryResponseDto, IBillGetParamsData } from '@finapp/app-common';
 import { plainToClass } from 'class-transformer';
 
 
@@ -49,7 +48,7 @@ export class BillController {
   @UseInterceptors(ClassSerializerInterceptor)
 	@UseGuards(JwtAuthGuard)
 	@Get('bill/')
-  async getBy(@Body() requestParams: BillGetParamsData): Promise<BillResponseDto> {
+  async getBy(@Body() requestParams: IBillGetParamsData): Promise<BillResponseDto> {
     const bill = await this.service.getBy(requestParams, ['createdBy', 'createdBy.users']);
     return plainToClass(BillResponseDto, bill, { excludeExtraneousValues: true });
 	}

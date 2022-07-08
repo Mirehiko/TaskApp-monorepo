@@ -1,11 +1,18 @@
 import { Injectable } from "@angular/core";
-import { IDateRange, MoveDto, TaskPriority, TaskRequestDto, TaskResponseDto, TaskStatus } from '@finapp/app-common';
+import {
+  IDateRange,
+  ITaskGetParams,
+  MoveDto,
+  TaskPriority,
+  TaskRequestDto,
+  TaskResponseDto,
+  TaskStatus
+} from '@finapp/app-common';
 import { HttpClient} from '@angular/common/http';
 import { BaseRestService } from './basic-rest.service';
-import { TaskGetParams } from '../../../../../../backend/src/app/modules/tasks/task/interfaces/task-params';
 
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class TaskRestService extends BaseRestService {
 
   constructor(
@@ -30,7 +37,7 @@ export class TaskRestService extends BaseRestService {
     return await this.GET<TaskResponseDto[]>(`${this.baseUrl}/tasks`);
   }
 
-  public async search(params: TaskGetParams): Promise<TaskResponseDto[]> {
+  public async search(params: ITaskGetParams): Promise<TaskResponseDto[]> {
     return await this.GET<TaskResponseDto[]>(`${this.baseUrl}/tasks/search`, params);
   }
 

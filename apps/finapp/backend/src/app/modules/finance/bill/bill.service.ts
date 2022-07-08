@@ -2,14 +2,12 @@ import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { BaseService } from '../../base-service';
 import { BillRepository } from './bill-repository';
 import { Bill } from './schemas/bill.entity';
-import { BillRequestDto, OperationType } from '@finapp/app-common';
+import { BillRequestDto, IBillGetParamsData, IChangeBalance } from '@finapp/app-common';
 import { UserRepository } from '../../common/user/user-repository';
-import { ChangeBalance } from './interfaces/change-balance';
-import { BillGetParamsData } from './interfaces/bill-params';
 
 
 @Injectable()
-export class BillService extends BaseService<Bill, BillGetParamsData> {
+export class BillService extends BaseService<Bill, IBillGetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такого счета';
 	protected entityOrRelationNotFoundMessage: string = '';
 
@@ -60,7 +58,7 @@ export class BillService extends BaseService<Bill, BillGetParamsData> {
    * @param id
    * @param changeBalance
    */
-  async changeBalance(@Param() id: number, changeBalance: ChangeBalance): Promise<Bill> {
+  async changeBalance(@Param() id: number, changeBalance: IChangeBalance): Promise<Bill> {
     return await this.repository.changeBalance(id, changeBalance);
   }
 }

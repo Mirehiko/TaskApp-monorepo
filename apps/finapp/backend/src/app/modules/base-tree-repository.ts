@@ -74,7 +74,7 @@ export class BaseTreeRepository<T extends TreeEntity<T>> extends TreeRepository<
 
   copyEntity(entity: T, cls: any): T {
     const copiedEntity = new cls();
-    for(const k in copiedEntity) copiedEntity[k] = entity[k];
+    for (const k in copiedEntity) copiedEntity[k] = entity[k as keyof T];
     return copiedEntity;
   }
 }

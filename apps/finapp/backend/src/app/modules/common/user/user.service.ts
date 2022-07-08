@@ -1,22 +1,21 @@
 import {HttpException, HttpStatus, Injectable, Param} from '@nestjs/common';
 import { BaseService } from '../../base-service';
-import { UserGetParamsData } from './interfaces/user-params';
 import {User} from "./schemas/user.entity";
 import {RoleService} from "../role/role.service";
 import {FilesService} from "../../../files/files.service";
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from './user-repository';
-import { BanUserDto, UserRequestDto, UserRolesDto } from '@finapp/app-common';
+import { BanUserDto, IUserGetParamsData, UserRequestDto, UserRolesDto } from '@finapp/app-common';
 
 
 @Injectable()
-export class UserService extends BaseService<User, UserGetParamsData> {
+export class UserService extends BaseService<User, IUserGetParamsData> {
   private readonly saltRounds = 10;
   protected entityNotFoundMessage: string = 'Нет такого пользователя';
   protected entityOrRelationNotFoundMessage: string = 'Пользователь или роль не найдены';
 
   constructor(
-    public repository: UserRepository,
+    protected repository: UserRepository,
     private roleService: RoleService,
     private fileService: FilesService,
   ) {
@@ -32,7 +31,7 @@ export class UserService extends BaseService<User, UserGetParamsData> {
     if (candidate) {
       throw new HttpException('Такой email уже существует. Введите другой email', HttpStatus.CONFLICT);
     }
-    
+
     const newUser = await this.repository.create({...requestDto});
 
     try {

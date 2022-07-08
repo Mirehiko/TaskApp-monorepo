@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, Param, UnauthorizedException } from '@nestjs/common';
-import {CreateUserTokenDto} from "./dto/user-token-dto";
-import {InjectRepository} from "@nestjs/typeorm";
-import {Repository} from "typeorm";
-import {UserToken} from "./schemas/user-token.entity";
+import { CreateUserTokenDto } from "./dto/user-token-dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { UserToken } from "./schemas/user-token.entity";
 
 
 @Injectable()
@@ -60,7 +60,7 @@ export class TokenService {
   }
 
   async getUserIdByToken(token: string): Promise<number> {
-    const user = await this.repository.findOne({token}, {relations: ['User']});
+    const user = await this.repository.findOne({token}, {relations: ['userId']});
     if (!user) {
       throw new UnauthorizedException({message: "User unauthorized"});
     }

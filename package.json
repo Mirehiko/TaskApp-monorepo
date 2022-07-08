@@ -20,6 +20,7 @@
   "dependencies": {
     "@angular-eslint/schematics": "^13.1.0",
     "@angular/animations": "~13.2.0",
+    "@angular/material": "~13.3.9",
     "@angular/common": "~13.2.0",
     "@angular/compiler": "~13.2.0",
     "@angular/core": "~13.2.0",
@@ -52,6 +53,7 @@
     "mongodb": "^3.6.10",
     "mongoose": "^5.13.5",
     "mysql": "^2.18.1",
+    "nanoid": "^4.0.0",
     "ngx-socket-io": "^4.2.0",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",

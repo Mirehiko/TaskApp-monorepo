@@ -1,7 +1,13 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { TaskGetParams, TaskGetParamsData } from './interfaces/task-params';
 import { Task } from './schemas/task.entity';
-import { IDateRange, TaskPriority, TaskRequestDto, TaskStatus } from '@finapp/app-common';
+import {
+  IDateRange,
+  ITaskGetParams,
+  ITaskGetParamsData,
+  TaskPriority,
+  TaskRequestDto,
+  TaskStatus
+} from '@finapp/app-common';
 import { TaskTreeRepository } from './task-repository';
 import { ListRepository } from '../lists/list-repository';
 import { UserRepository } from '../../common/user/user-repository';
@@ -13,7 +19,7 @@ import { BaseTreeService } from '../../base-tree-service';
 
 
 @Injectable()
-export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
+export class TaskService extends BaseTreeService<Task, ITaskGetParamsData> {
 	protected entityNotFoundMessage: string = 'Нет такой задачи';
 	protected entityOrRelationNotFoundMessage: string = '';
   protected relations: string[] = [];
@@ -301,7 +307,7 @@ export class TaskService extends BaseTreeService<Task, TaskGetParamsData> {
    * @param paramsData
    * @param relations
    */
-  async searchTasksBy(paramsData: TaskGetParams, relations: string[] = []): Promise<Task[]> {
+  async searchTasksBy(paramsData: ITaskGetParams, relations: string[] = []): Promise<Task[]> {
     const qb = this.repository.createQueryBuilder('tasks')
       .where("CONCAT(tasks.name, ' ', tasks.description) LIKE :text", { text: `%${paramsData.name || ''}%` });
 

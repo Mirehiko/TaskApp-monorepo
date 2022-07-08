@@ -32,6 +32,10 @@ p {
   }
 }
 
+.w-100 {
+  width: 100%;
+}
+
 button, input[type="button"], input[type="submit"], input[type="file"] {
   height: 40px;
   padding: 0 10px;
@@ -84,11 +88,6 @@ button, input[type="button"], input[type="submit"], input[type="file"] {
     padding: 0 10px;
   }
 }
-
-main {
-  padding: 60px;
-}
-
 
 .breadcrubs {
   height: 30px;

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
-import { BaseService, GetParamsData } from '../../base-service';
-import { ITaskFilterParams, TaskFilterRequestDto, TaskFilterType } from '@finapp/app-common';
+import { BaseService } from '../../base-service';
+import { IGetParamsData, ITaskFilterParams, TaskFilterRequestDto, TaskFilterType } from '@finapp/app-common';
 import { User } from '../../common/user/schemas/user.entity';
 import { TaskFilterEntity } from './schemas/task-filter.entity';
 import { TaskFilterRepository } from './task-filter-repository';
@@ -13,7 +13,7 @@ import { In } from 'typeorm';
 
 
 @Injectable()
-export class TaskFilterService extends BaseService<TaskFilterEntity, GetParamsData> {
+export class TaskFilterService extends BaseService<TaskFilterEntity, IGetParamsData> {
   protected entityNotFoundMessage: string = 'Нет такой роли';
 
   constructor(

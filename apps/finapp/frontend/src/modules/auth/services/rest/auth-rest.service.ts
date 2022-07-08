@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { AuthResponseDto, AuthUserDto, UserResponseDto } from '@finapp/app-common';
-import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 
 
@@ -65,7 +65,7 @@ export class AuthRestService {
   }
 
   public async getUserByToken(token: string | null): Promise<UserResponseDto> {
-    return await this.http.post<UserResponseDto>(`${this.baseUrl}/by-token`, { data: { token: token }}).toPromise().then(res => {
+    return await this.http.post<UserResponseDto>(`${this.baseUrl}/by-token`, { token: token }).toPromise().then(res => {
       return res as UserResponseDto;
     });
   }

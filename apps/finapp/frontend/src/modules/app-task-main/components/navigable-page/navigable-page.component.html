@@ -1,0 +1,27 @@
+<div class="navigable-page">
+  <section class="navigable-page-menu" *ngIf="isMenuVisible">
+    <ng-content select=".page-menu"></ng-content>
+  </section>
+  <section class="page-section navigable-page-content">
+    <div class="navigable-page-content-header">
+      <h1 class="navigable-page-title">
+        <span class="navigable-page-title__item">
+          <button class="navigable-page__toggle-button" (click)="toggleMenu()"></button>
+          <span>{{pageName}}</span>
+        </span>
+
+        <div class="navigable-page-title__item content-actions">
+          actions
+        </div>
+      </h1>
+      <ng-content select=".page-title"></ng-content>
+    </div>
+    <div class="navigable-page-content-body">
+      <ng-content select=".page-body"></ng-content>
+    </div>
+  </section>
+  <section class="page-section navigable-page-detail">
+    <ng-content select=".page-detail"></ng-content>
+  </section>
+</div>
+

@@ -1,5 +1,6 @@
-import { TaskResponseDto, TextType } from '@finapp/app-common';
-import { Exclude, Expose } from 'class-transformer';
+import { Expose } from 'class-transformer';
+import { TextType } from '../..';
+import { IsOptional } from 'class-validator';
 
 
 export class TaskCommentResponseDto {
@@ -9,12 +10,10 @@ export class TaskCommentResponseDto {
   @Expose()
   body: string;
 
+  @IsOptional()
   @Expose()
   notifyUsers?: number[];
 
   @Expose()
-  textType?: TextType;
-
-  @Exclude()
-  task: TaskResponseDto;
+  textType: TextType;
 }

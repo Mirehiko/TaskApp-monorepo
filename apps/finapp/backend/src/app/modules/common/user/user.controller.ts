@@ -8,7 +8,6 @@ import {
   Patch,
   Post, Query, UploadedFile, UseGuards, UseInterceptors, UsePipes,
 } from '@nestjs/common';
-import { UserGetParams, UserGetParamsData } from './interfaces/user-params';
 import { UserService } from './user.service';
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { User } from "./schemas/user.entity";
@@ -17,7 +16,14 @@ import { RolesGuard } from "../auth/roles.guard";
 import { Roles } from '../auth/roles-auth.decorator';
 import { ValidationPipe } from "../../../pipes/validation.pipe";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { BanUserDto, RoleResponseDto, UserRequestDto, UserResponseDto, UserRolesDto } from '@finapp/app-common';
+import {
+  BanUserDto,
+  IUserGetParamsData,
+  RoleResponseDto,
+  UserRequestDto,
+  UserResponseDto,
+  UserRolesDto
+} from '@finapp/app-common';
 import { TransformInterceptor } from '../../../interceptors/transform.interceptor';
 import { plainToClass } from 'class-transformer';
 
@@ -56,7 +62,7 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @UseGuards(JwtAuthGuard)
   @Get('user/')
-  async getUserBy(@Body() userRequestParams: UserGetParamsData): Promise<UserResponseDto> {
+  async getUserBy(@Body() userRequestParams: IUserGetParamsData): Promise<UserResponseDto> {
     const user = await this.service.getBy(userRequestParams, ['roles', 'roles.permissions']);
     return plainToClass(UserResponseDto, user, { enableCircularCheck: true });
   }

@@ -1,6 +1,6 @@
-import { TaskFilterType } from '@finapp/app-common';
 import { Expose } from 'class-transformer';
 import { TaskFilterMetadataResponseDto } from './task-filter-metadata.response-dto';
+import { TaskFilterType } from '../../enums';
 
 
 export class TaskFilterResponseDto {

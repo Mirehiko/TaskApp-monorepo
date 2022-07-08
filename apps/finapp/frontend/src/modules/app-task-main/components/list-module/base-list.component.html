@@ -1,0 +1,34 @@
+<section>
+  <h1>{{listName}}</h1>
+  <div class="list-group" *ngIf="groupedList.pinnedGroup.list.length && config.pinnable">
+    <h3>{{groupedList.pinnedGroup.name}}</h3>
+    <div class="list">
+      <ng-container *ngFor="let item of groupedList.pinnedGroup.list">
+        <ng-container
+          [ngTemplateOutlet]="customTemplate || defaultTemplate"
+          [ngTemplateOutletContext]="{item: item, context: this}"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+  <div class="list-group" *ngFor="let groupItem of groupedList.list; else emptyData">
+    <h3>{{groupItem.name}}</h3>
+    <div class="list">
+      <ng-container *ngFor="let item of groupItem.list">
+        <ng-container
+          [ngTemplateOutlet]="customTemplate || defaultTemplate"
+          [ngTemplateOutletContext]="{item: item, context: this}"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+</section>
+
+<ng-template #defaultTemplate let-item='item' let-context="context">
+  <app-base-list-item
+    [item]="item"
+    [selectable]="context.selectable"
+    (itemClicked)="context.onItemClicked(item)"></app-base-list-item>
+</ng-template>
+
+<ng-template #emptyData>
+  <div app-empty-message>No data to display</div>
+</ng-template>

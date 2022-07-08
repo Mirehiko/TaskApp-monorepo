@@ -10,7 +10,6 @@ import { AuthRestService } from './rest/auth-rest.service';
 export class AuthService {
   private token: string | null = null;
   public user: UserResponseDto;
-  // public user: UserResponseDto;
 
   constructor(
     private authRestService: AuthRestService,
@@ -28,9 +27,13 @@ export class AuthService {
     // localStorage.setItem('permit', `${JSON.stringify(user)}`);
   }
 
+  async register(): Promise<void> {
+    // TODO: Добавить возможности регистрации и изменения/востановления пароля
+  }
+
   async logout(): Promise<void> {
     this.user = null as unknown as UserResponseDto;
-    this.removeToken()
+    this.removeToken();
     await this.router.navigate([ "/login" ]);
   }
 
@@ -45,7 +48,7 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    this.token = localStorage.getItem('authToken');
+    this.token = localStorage.getItem('auth-token');
     return this.token;
   }
 

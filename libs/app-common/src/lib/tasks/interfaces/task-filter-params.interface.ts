@@ -1,3 +1,4 @@
+import { IDateRange } from "../../common";
 import { TaskPriority, TaskStatus } from "../enums";
 
 
@@ -10,7 +11,7 @@ export interface ITaskFilterParams {
   updatedBy?: number[];
   createdAt?: any;
   priority?: TaskPriority[];
-  dates?: {startDate: string, endDate: string};
+  dates?: IDateRange;
   pinned?: boolean;
   tags?: number[];
   list?: number[];

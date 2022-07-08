@@ -1,0 +1,8 @@
+<app-navigable-page [pageName]="'Tasks'">
+  <section class="page-body">
+    <app-task-tree *ngIf="dataLoaded" [dataList]="tasks" [config]="taskListConfig" [menuItems]="menuItems" (itemAction)="onMenuAction($event)"></app-task-tree>
+  </section>
+  <section class="page-detail">
+    <router-outlet></router-outlet>
+  </section>
+</app-navigable-page>

@@ -41,13 +41,11 @@ export class LoginPageComponent implements OnInit, OnDestroy {
     if ( !this.form.invalid ) {
       const user = this.form.value;
       await this.authService.login(user);
-      this.router.navigate(['/main/dashboard']);
+      this.router.navigate(['/taskapp/dashboard']);
       this.form.enable();
     }
     else {
       this.form.enable();
     }
   }
-
-
 }

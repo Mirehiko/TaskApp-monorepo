@@ -1,4 +1,4 @@
-import { MoveDto } from '@finapp/app-common';
+import { IGetParamsData, MoveDto } from '@finapp/app-common';
 import { HttpException, HttpStatus, Param } from '@nestjs/common';
 import { FindOneOptions, In, IsNull, Not, Repository } from 'typeorm';
 import { TreeEntity } from './base-tree-repository';
@@ -6,8 +6,8 @@ import { User } from './common/user/schemas/user.entity';
 import { BaseListRepository } from './base-list-repository';
 
 
-export class BaseService<T, U extends GetParamsData> {
-	protected repository: Repository<T>;
+export class BaseService<T, U extends IGetParamsData> {
+  protected repository: Repository<T>;
 	protected entityNotFoundMessage: string;
 
   /**
@@ -49,9 +49,9 @@ export class BaseService<T, U extends GetParamsData> {
 				return entity;
 			}
 
-			if (paramsData.checkOnly) {
-				return;
-			}
+			// if (paramsData.checkOnly) {
+			// 	return;
+			// }
 
 			throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
 		}
@@ -120,13 +120,10 @@ export class BaseService<T, U extends GetParamsData> {
       throw new Error(e);
     }
   }
-
 }
 
-export class BaseListService<T extends TreeEntity<T>, U extends GetParamsData> extends BaseService<T, U> {
+export class BaseListService<T extends TreeEntity<T>, U extends IGetParamsData> extends BaseService<T, U> {
   protected repository: BaseListRepository<T>;
-	protected entityNotFoundMessage: string;
-
   /**
    *
    * @param moveDto
@@ -151,23 +148,3 @@ export class BaseListService<T extends TreeEntity<T>, U extends GetParamsData> e
   }
 }
 
-
-export interface GetParamsData {
-	withRelations?: boolean;
-	checkOnly?: boolean;
-	params?: GetParams;
-}
-
-export interface GetParams {
-	id?: number;
-	name?: string;
-	createdAt?: {
-		startDate: string;
-		endDate: string;
-	};
-	updatedAt?: {
-		startDate: string;
-		endDate: string;
-	};
-  withDeleted?: boolean;
-}

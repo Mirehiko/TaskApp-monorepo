@@ -4,12 +4,11 @@ import { ListRepository } from './list-repository';
 import { TaskTreeRepository } from '../task/task-repository';
 import { List } from './schemas/list.entity';
 import { User } from '../../common/user/schemas/user.entity';
-import { ListBehaviorType, ListRequestDto, ListType } from '@finapp/app-common';
-import { ListGetParams, ListGetParamsData } from './interfaces/list-params';
+import { IListGetParams, IListGetParamsData, ListBehaviorType, ListRequestDto, ListType } from '@finapp/app-common';
 
 
 @Injectable()
-export class ListService extends BaseListService<List, ListGetParamsData> {
+export class ListService extends BaseListService<List, IListGetParamsData> {
   protected entityNotFoundMessage: string = 'Нет такого счета';
   protected entityOrRelationNotFoundMessage: string = '';
 
@@ -79,7 +78,7 @@ export class ListService extends BaseListService<List, ListGetParamsData> {
    * Search lists
    * @param paramsData
    */
-  async searchListsBy(paramsData: ListGetParams): Promise<List[]> {
+  async searchListsBy(paramsData: IListGetParams): Promise<List[]> {
     const qb = this.repository.createQueryBuilder('lists')
       .where("lists.name LIKE :text", { text: `%${paramsData.name || ''}%` });
 

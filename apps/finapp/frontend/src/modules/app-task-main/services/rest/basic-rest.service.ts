@@ -17,7 +17,7 @@ export abstract class BaseRestService {
           if (sub) {
             sub.unsubscribe();
           }
-          ok(response.body as T)
+          ok(response as T);
         }, (error) => {
           if (sub) {
             sub.unsubscribe();
@@ -29,7 +29,7 @@ export abstract class BaseRestService {
   }
 
   public async POST<T>(url: string, data?: any, options?: any): Promise<T> {
-    return await this.doRequest<T>('post', url, data, options);
+    return await this.doRequest<T>('post', url, { body: data }, options);
   }
 
   public async GET<T>(url: string, data?: any, options?: any): Promise<T> {
@@ -37,7 +37,7 @@ export abstract class BaseRestService {
   }
 
   public async PATCH<T>(url: string, data?: any, options?: any): Promise<T> {
-    return await this.doRequest<T>('patch', url, data, options);
+    return await this.doRequest<T>('patch', url, { body: data }, options);
   }
 
   public async DELETE<T>(url: string, data?: any, options?: any): Promise<T> {
