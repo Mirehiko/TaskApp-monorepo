@@ -1,8 +1,9 @@
 <ng-container *ngIf="dataSource.data.length; else emptyData">
-  <mat-tree #tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100" [trackBy]="trackBy">
-    <mat-tree-node *matTreeNodeDef="let node; when: hasChildGroup" matTreeNodePadding
+  <mat-tree #tree [dataSource]="dataSource" [treeControl]="treeControl" class="w-100" >
+    <mat-tree-node *matTreeNodeDef="let node; when: isGroup" matTreeNodePadding
                    class="mat-tree-node__group w-100"
                    [matTreeNodePaddingIndent]="15"
+                   [class.mat-tree-node-hidden]="node.isGroup && !node.children.length"
                    (keydown)="selectItemOnKey($event, node)"
                    (click)="selectItemOnClick($event, node)"
     >

@@ -49,7 +49,6 @@ export class BaseTreeComponent<T> implements OnInit {
   dataSource: MatTreeFlatDataSource<ITreeItem<T>, TreeItemFlatNode<T>>;
   selection = new SelectionModel<TreeItemFlatNode<T>>(true);
 
-  _groupInitiated: boolean = false;
   hasGroups: boolean = false;
 
   constructor(
@@ -68,13 +67,13 @@ export class BaseTreeComponent<T> implements OnInit {
 
     _database._dataChange.subscribe(data => {
       this.dataSource.data = data;
-      if (this._groupInitiated || !this.hasGroups) {
+      if (!this.hasGroups || !this._database.initGroups) {
         return;
       }
       this.dataSource.data.forEach(g => {
         this.treeControl.expand(this.nestedNodeMap.get(g)!);
       });
-      this._groupInitiated = true;
+      this._database.initGroups = false;
     });
   }
 
@@ -93,9 +92,9 @@ export class BaseTreeComponent<T> implements OnInit {
         filteredGroupData.map(item => {
           groupItem.children.push(item);
         });
-        if (groupItem.children.length > 0) {
+        // if (groupItem.children.length > 0) {
           this.groupedData.push(groupItem);
-        }
+        // }
       });
       this.hasGroups = true;
     }
@@ -111,7 +110,7 @@ export class BaseTreeComponent<T> implements OnInit {
   isExpandable = (node: TreeItemFlatNode<T>) => node.expandable;
   getChildren = (node: ITreeItem<T>): ITreeItem<T>[] => node.children;
   hasChild = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.expandable && !_nodeData.isGroup;
-  hasChildGroup = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.expandable && _nodeData.isGroup;
+  isGroup = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.isGroup;
   hasNoContent = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData === undefined;
   readonly trackBy = (_: number, node: TreeItemFlatNode<T>) => node.id;
 
@@ -484,6 +483,8 @@ export class BaseTreeComponent<T> implements OnInit {
     }
   }
 
+
+
   onMenuAction(node: TreeItemFlatNode<T>, action: ListItemOption): void {
     switch (action) {
       case ListItemOption.COPY_LINK: {
@@ -493,6 +494,19 @@ export class BaseTreeComponent<T> implements OnInit {
       case ListItemOption.ADD_CHILD: {
         this.addNewChildrenItem(node);
         this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === -1));
+        break;
+      }
+      case ListItemOption.PIN: {
+        if (node.pinned) {
+          this._database.unpin('asd', node);
+        }
+        else {
+          this._database.pin('asd', node);
+        }
+        break;
+      }
+      case ListItemOption.DELETE: {
+        this.deleteNode(node);
         break;
       }
       default: {

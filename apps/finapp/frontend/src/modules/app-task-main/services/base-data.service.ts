@@ -7,23 +7,36 @@ export class BaseTreeDatabaseService<T> {
   private _childCount: number = 0;
   protected parents = new Map<ITreeItem<T> | -1, ITreeItem<T>[]>();
   protected childParent = new Map<ITreeItem<T>, ITreeItem<T> | -1>();
+  protected pinnedGroup = new ITreeItem();
   public _dataChange = new BehaviorSubject<ITreeItem<T>[]>([]);
   private list: ITreeItem<T>[] = [];
+  public initGroups: boolean = false;
+
   constructor() {
+    this.pinnedGroup.data = {};
+    this.pinnedGroup.data.id = -2;
+    this.pinnedGroup.data.parent_id = -1;
+    this.pinnedGroup.data.name = 'Pinned';
+    this.pinnedGroup.children = [];
+    this.pinnedGroup.id = -2;
+    this.pinnedGroup.isGroup = true;
     this.initialize();
   }
 
 
   public initialize(items: ITreeItem<T>[] = [], expanded: boolean = true) {
     // this.expanded = expanded;
-    this.list = items;
+    // this._filterPinned(items);
+    this.list = [this.pinnedGroup, ...items];
     this._map(this.list, -1);
     this._countChildren();
+    this.initGroups = true;
     this._dataChange.next(this.list);
   }
 
   public get data(): ITreeItem<T>[] {
-    return this._dataChange.value;
+    // return this._dataChange.value;
+    return this.list;
   }
 
   public addChildren(parent: ITreeItem<T>, items: ITreeItem<T>[]): void {
@@ -131,6 +144,67 @@ export class BaseTreeDatabaseService<T> {
       // item.position =
     })
   }
+
+  public pin(groupId: string, item: ITreeItem<T>): void {
+    this._pinItem(item, true);
+    this.list[0].children.push(item);
+    const parentNode: ITreeItem<T> = this.childParent.get(item) as ITreeItem<T>;
+    const children = this.parents.get(parentNode!);
+    const index = children!.findIndex(i => i.id === item.id);
+    children!.splice(index, 1);
+    this._dataChange.next(this.data);
+  }
+
+  public unpin(groupId: string, item: ITreeItem<T>): void {
+    this._pinItem(item, false);
+    const index = this.list[0].children.findIndex(i => i.id === item.id);
+    this.list[0].children.splice(index, 1);
+    const parentNode = this.childParent.get(item);
+    this.parents.get(parentNode!)?.push(item);
+
+    // if (!this.list[0].children.length || this.parents.get(parentNode!)?.length === 1) {
+    //   this.initGroups = true;
+    // }
+
+    this._dataChange.next(this.data);
+  }
+
+  private _pinItem(item: ITreeItem<T>, isPinned: boolean): void {
+    item.pinned = isPinned;
+    item.children?.map(ch => {
+      ch.pinned = isPinned;
+      this._pinItem(ch, isPinned);
+      return ch;
+    });
+  }
+
+  // private _filterPinned(data: ITreeItem<T>[]): void {
+  //   data.forEach(item => {
+  //     if (item.pinned) {
+  //       this.pinnedGroup.children.push(item);
+  //     }
+  //     if (item.children?.length) {
+  //       this._filterPinned(item.children);
+  //     }
+  //   });
+  // }
+  //
+  // private excludePinned(data: ITreeItem<T>[]): ITreeItem<T>[] {
+  //   return data.filter
+  // }
+
+  // public fillPinnedGroup(): void {
+  //   this.list.forEach(group => {
+  //     group.list.map(item => {
+  //       if (item.pinned) {
+  //         this._pinnedRows.insertTo(item);
+  //       }
+  //     });
+  //     this._pinnedRows.list.forEach(item => {
+  //       group.remove(item);
+  //     });
+  //   })
+  // }
 
   public clear(): void {
     this.parents.clear();
