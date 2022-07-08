@@ -17,12 +17,15 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
   public form: FormGroup;
   public taskIn: TaskResponseDto;
   private taskOut: TaskRequestDto;
+  public baseUrl: string = '/taskapp/ttp/';
+  public parentLink: string;
   // public dataLoaded: boolean = false;
   constructor(
     injector: Injector,
     public core: CoreService,
     private taskRestService: TaskRestService,
     private route: ActivatedRoute,
+    private router: Router,
   ){
     super(injector);
   }
@@ -36,7 +39,13 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
   }
 
   protected async initData(): Promise<void> {
+    this.parentLink = '';
     await this.getData();
+
+    if (this.taskIn.parent_id !== -1) {
+      this.parentLink = this.baseUrl + this.taskIn.parent_id;
+    }
+
     await this.initForm();
   }
 
@@ -64,5 +73,11 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
     else {
       this.taskIn = await this.taskRestService.getById(this.params.routeParams['taskId']);
     }
+
+
+  }
+
+  public navigate(url: string): void {
+    this.router.navigate([url]);
   }
 }

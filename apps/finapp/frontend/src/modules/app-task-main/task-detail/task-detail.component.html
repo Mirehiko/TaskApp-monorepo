@@ -1,7 +1,17 @@
 <ng-container *ngIf="componentReady">
-  <form *ngIf="form" [formGroup]="form">
-    <h2 inputDirective formControlName="name" >{{taskIn.name}}</h2>
-    <pre inputDirective formControlName="description">{{taskIn.description}}</pre>
-    <button (click)="save()">save</button>
-  </form>
+
+  <div class="page-body">
+    <div class="page-header">header</div>
+
+    <form *ngIf="form" [formGroup]="form" class="form section">
+      <a *ngIf="!!parentLink" (click)="navigate(parentLink)">parent node</a>
+      <h2 class="f-control control-name" [lockEnter]="true" inputDirective formControlName="name" (contentChanged)="save()">{{taskIn.name}}</h2>
+      <pre class="f-control control-description" inputDirective formControlName="description" (contentChanged)="save()">{{taskIn.description}}</pre>
+
+      <div>tags</div>
+    </form>
+    <div class="section">children</div>
+  </div>
+
+  <div class="page-footer">footer</div>
 </ng-container>

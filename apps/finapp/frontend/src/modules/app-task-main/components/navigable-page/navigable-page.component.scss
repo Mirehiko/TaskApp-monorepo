@@ -1,10 +1,12 @@
 .navigable-page {
   display: flex;
+  height: 100%;
 }
 
 .page-section {
   width: 50%;
   padding: 0 10px;
+  height: inherit;
 }
 .navigable-page-menu {
   width: 200px;

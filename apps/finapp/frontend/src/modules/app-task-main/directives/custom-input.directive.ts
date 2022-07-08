@@ -44,6 +44,7 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
   @Output() contentChanged: EventEmitter<string> = new EventEmitter<string>();
   @Output() onEnter: EventEmitter<string> = new EventEmitter<string>();
   @Input() editable: boolean = false;
+  @Input() lockEnter: boolean = false;
   protected focused: boolean = false;
   protected deleted: boolean = false;
 
@@ -54,7 +55,7 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
   }
 
   @HostListener('keydown', ['$event']) onEnterDown(e: KeyboardEvent) {
-    if (e.keyCode === KeyCodeName.ENTER) {
+    if (e.keyCode === KeyCodeName.ENTER && this.lockEnter) {
       e.preventDefault();
       this.onChange(this.el.nativeElement.innerHTML);
       this.onEnter.emit(this.el.nativeElement.innerHTML);
