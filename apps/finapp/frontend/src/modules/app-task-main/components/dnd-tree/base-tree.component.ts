@@ -200,10 +200,12 @@ export class BaseTreeComponent<T> implements OnInit {
         return;
       }
       case KeyCodeName.HOME: {
+        // TODO: go to top
         nextItem = this.treeControl.dataNodes[0];
         break;
       }
       case KeyCodeName.END: {
+        // TODO: go to last or child of last (if opened)
         nextItem = this.treeControl.dataNodes[this.treeControl.dataNodes.length - 1];
         break;
       }

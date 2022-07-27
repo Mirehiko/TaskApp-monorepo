@@ -19,6 +19,7 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
   private taskOut: TaskRequestDto;
   public baseUrl: string = '/taskapp/ttp/';
   public parentLink: string;
+  public placeholderText: string = 'Description';
   // public dataLoaded: boolean = false;
   constructor(
     injector: Injector,

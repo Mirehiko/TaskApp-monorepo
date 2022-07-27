@@ -7,4 +7,5 @@ export interface IElementStyle {
   width?: string | number;
   top?: string;
   left?: string;
+  height?: string;
 }

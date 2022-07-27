@@ -45,8 +45,14 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
   @Output() onEnter: EventEmitter<string> = new EventEmitter<string>();
   @Input() editable: boolean = false;
   @Input() lockEnter: boolean = false;
+  @Input() placeholder: string = '';
+  @Input() classList: string = '';
   protected focused: boolean = false;
   protected deleted: boolean = false;
+  protected parentElement = document.createElement('div');
+  protected placeholderElement = document.createElement('span');
+  protected initiated: boolean = false;
+
 
   @HostListener('focus')
   @HostListener('click') onMouseClick(e: MouseEvent) {
@@ -55,6 +61,8 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
   }
 
   @HostListener('keydown', ['$event']) onEnterDown(e: KeyboardEvent) {
+    this.changePlaceholderState();
+
     if (e.keyCode === KeyCodeName.ENTER && this.lockEnter) {
       e.preventDefault();
       this.onChange(this.el.nativeElement.innerHTML);
@@ -63,6 +71,8 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
   }
 
   @HostListener('keyup', ['$event']) onInput(e: KeyboardEvent) {
+    this.changePlaceholderState();
+
     if (this.deleted) {
       return;
     }
@@ -80,12 +90,35 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     this.setStyles(this.defaultStyle);
     this.contentChanged.emit(this.el.nativeElement.innerHTML);
     this.focused = false;
+    this.changePlaceholderState();
   }
 
 
   constructor(
     @Inject(ElementRef) protected el: ElementRef,
-  ) {}
+  ) {
+    this.parentElement.classList.add('control-container');
+    this.placeholderElement.classList.add('control-placeholder');
+  }
+
+  initControl() {
+    if (this.initiated) {
+      return;
+    }
+    this.placeholderElement.innerHTML = this.placeholder;
+    this.placeholderElement.style.position = 'absolute';
+    this.placeholderElement.style.zIndex = '0';
+    this.parentElement.style.position = 'relative';
+    if (this.classList) {
+      this.parentElement.classList.add(...this.classList.split(' '));
+    }
+    this.el.nativeElement.style.position = 'relative';
+    this.el.nativeElement.style.zIndex = '1';
+    this.el.nativeElement.parentElement.replaceChild(this.parentElement, this.el.nativeElement);
+    this.parentElement.append(this.placeholderElement);
+    this.parentElement.append(this.el.nativeElement);
+    this.changePlaceholderState();
+  }
 
   onChange: any = () => {}
 
@@ -131,32 +164,38 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['editable'].currentValue) {
+    if (changes['editable']?.currentValue) {
       this.setStyles(this.defaultEditStyle);
       this.focused = true;
 
       setTimeout(() => {
         this.el.nativeElement.focus();
         const sel = document.getSelection();
-        sel.selectAllChildren(this.el.nativeElement);
-        sel.collapseToEnd();
+        sel?.selectAllChildren(this.el.nativeElement);
+        sel?.collapseToEnd();
       }, 0);
     }
   }
 
   ngAfterViewInit(): void {
+    this.initControl();
     this.setStyles(this.defaultStyle);
   }
 
   private setStyles(style: IElementStyle): void {
-    this.el.nativeElement.style.backgroundColor = style.bgColor;
-    this.el.nativeElement.style.color = style.color;
+    this.el.nativeElement.style.backgroundColor = style.bgColor || '';
+    this.el.nativeElement.style.color = style.color || '';
     if (!this.focused) {
-      this.el.nativeElement.style.cursor = style.cursor;
+      this.el.nativeElement.style.cursor = style.cursor || 'default';
     }
-    this.el.nativeElement.style.outline = style.outline;
-    this.el.nativeElement.contentEditable = style.contentEditable;
+    this.el.nativeElement.style.outline = style.outline || '0';
+    this.el.nativeElement.contentEditable = `${!!style.contentEditable}`;
     this.el.nativeElement.parentElement.style.width = style.width;
+    this.el.nativeElement.style.height = style.height || 'auto';
+  }
+
+  private changePlaceholderState(): void {
+    this.placeholderElement.style.opacity = this.el.nativeElement.innerHTML.length ? '0' : '0.5';
   }
 
   private defaultStyle: IElementStyle = {
@@ -165,7 +204,8 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     contentEditable: false,
     cursor: 'default',
     outline: '0',
-    width: '100%'
+    width: '100%',
+    height: '14px'
   }
 
   private defaultHoverStyle: IElementStyle = {
@@ -174,7 +214,8 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     contentEditable: true,
     cursor: 'text',
     outline: '0',
-    width: '100%'
+    width: '100%',
+    height: '14px'
   }
 
   private defaultEditStyle: IElementStyle = {
@@ -183,7 +224,8 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     contentEditable: true,
     cursor: 'text',
     outline: '0',
-    width: '100%'
+    width: '100%',
+    height: '14px'
   }
 }
 

@@ -11,6 +11,22 @@ h2 {
 }
 .form {
   border-bottom: 1px solid #efefef;
+
+  ::ng-deep {
+    .control-placeholder {
+      position: absolute;
+    }
+    .f-control {
+      padding: 0 5px;
+    }
+    .control-description, .control-description * {
+      height: 100%;
+      display: block;
+      font-size: 14px;
+      line-height: 20px;
+      font-family: sans-serif;
+    }
+  }
 }
 .section {
   padding: 15px 10px;
@@ -18,13 +34,4 @@ h2 {
 .page-header, .page-body {
   height: 50px;
 }
-.f-control {
-  padding: 0 5px;
-}
-.control-description {
-  height: 100%;
-  display: block;
-  font-size: 14px;
-  line-height: 20px;
-  font-family: sans-serif;
-}
+

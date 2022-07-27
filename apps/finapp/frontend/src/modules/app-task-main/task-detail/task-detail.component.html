@@ -5,8 +5,9 @@
 
     <form *ngIf="form" [formGroup]="form" class="form section">
       <a *ngIf="!!parentLink" (click)="navigate(parentLink)">parent node</a>
-      <h2 class="f-control control-name" [lockEnter]="true" inputDirective formControlName="name" (contentChanged)="save()">{{taskIn.name}}</h2>
-      <pre class="f-control control-description" inputDirective formControlName="description" (contentChanged)="save()">{{taskIn.description}}</pre>
+      <h2 [classList]="'f-control control-name'" [lockEnter]="true" inputDirective formControlName="name" (contentChanged)="save()"
+        [placeholder]="'Что нужно сделать'">{{taskIn.name}}</h2>
+      <pre [classList]="'f-control control-description'" inputDirective formControlName="description" (contentChanged)="save()" [placeholder]="placeholderText">{{taskIn.description}}</pre>
 
       <div>tags</div>
     </form>
