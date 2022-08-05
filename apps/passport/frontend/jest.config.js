@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: 'taskapp-frontend',
+  displayName: 'passport-frontend',
   preset: '../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   globals: {
@@ -8,7 +8,7 @@ module.exports = {
       stringifyContentPathRegex: '\\.(html|svg)$',
     },
   },
-  coverageDirectory: '../../../coverage/apps/taskapp/frontend',
+  coverageDirectory: '../../../coverage/apps/passport/frontend',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': 'jest-preset-angular',
   },

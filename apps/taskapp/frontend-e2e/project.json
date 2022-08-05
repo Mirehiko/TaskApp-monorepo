@@ -24,5 +24,5 @@
     }
   },
   "tags": [],
-  "implicitDependencies": ["frontend"]
+  "implicitDependencies": ["taskapp-frontend"]
 }

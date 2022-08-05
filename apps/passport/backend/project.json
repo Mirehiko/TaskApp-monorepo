@@ -1,16 +1,16 @@
 {
-  "root": "apps/taskapp/backend",
-  "sourceRoot": "apps/taskapp/backend/src",
+  "root": "apps/passport/backend",
+  "sourceRoot": "apps/passport/backend/src",
   "projectType": "application",
   "targets": {
     "build": {
       "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/taskapp/backend",
-        "main": "apps/taskapp/backend/src/main.ts",
-        "tsConfig": "apps/taskapp/backend/tsconfig.app.json",
-        "assets": ["apps/taskapp/backend/src/assets"]
+        "outputPath": "dist/apps/passport/backend",
+        "main": "apps/passport/backend/src/main.ts",
+        "tsConfig": "apps/passport/backend/tsconfig.app.json",
+        "assets": ["apps/passport/backend/src/assets"]
       },
       "configurations": {
         "production": {
@@ -19,31 +19,31 @@
           "inspect": false,
           "fileReplacements": [
             {
-              "replace": "apps/taskapp/backend/src/environments/environment.ts",
-              "with": "apps/taskapp/backend/src/environments/environment.prod.ts"
+              "replace": "apps/passport/backend/src/environments/environment.ts",
+              "with": "apps/passport/backend/src/environments/environment.prod.ts"
             }
           ]
         }
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nrwl/node:execute",
       "options": {
-        "buildTarget": "taskapp-backend:build"
+        "buildTarget": "passport-backend:build"
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/taskapp/backend/**/*.ts"]
+        "lintFilePatterns": ["apps/passport/backend/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/taskapp/backend"],
+      "outputs": ["coverage/apps/passport/backend"],
       "options": {
-        "jestConfig": "apps/taskapp/backend/jest.config.js",
+        "jestConfig": "apps/passport/backend/jest.config.js",
         "passWithNoTests": true
       }
     }

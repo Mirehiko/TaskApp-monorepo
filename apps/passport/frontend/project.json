@@ -1,24 +1,24 @@
 {
   "projectType": "application",
-  "root": "apps/taskapp/frontend",
-  "sourceRoot": "apps/taskapp/frontend/src",
+  "root": "apps/passport/frontend",
+  "sourceRoot": "apps/passport/frontend/src",
   "prefix": "taskapp",
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/taskapp/frontend",
-        "index": "apps/taskapp/frontend/src/index.html",
-        "main": "apps/taskapp/frontend/src/main.ts",
-        "polyfills": "apps/taskapp/frontend/src/polyfills.ts",
-        "tsConfig": "apps/taskapp/frontend/tsconfig.app.json",
+        "outputPath": "dist/apps/passport/frontend",
+        "index": "apps/passport/frontend/src/index.html",
+        "main": "apps/passport/frontend/src/main.ts",
+        "polyfills": "apps/passport/frontend/src/polyfills.ts",
+        "tsConfig": "apps/passport/frontend/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
-          "apps/taskapp/frontend/src/favicon.ico",
-          "apps/taskapp/frontend/src/assets"
+          "apps/passport/frontend/src/favicon.ico",
+          "apps/passport/frontend/src/assets"
         ],
-        "styles": ["apps/taskapp/frontend/src/styles.scss"],
+        "styles": ["apps/passport/frontend/src/styles.scss"],
         "scripts": []
       },
       "configurations": {
@@ -37,8 +37,8 @@
           ],
           "fileReplacements": [
             {
-              "replace": "apps/taskapp/frontend/src/environments/environment.ts",
-              "with": "apps/taskapp/frontend/src/environments/environment.prod.ts"
+              "replace": "apps/passport/frontend/src/environments/environment.ts",
+              "with": "apps/passport/frontend/src/environments/environment.prod.ts"
             }
           ],
           "outputHashing": "all"
@@ -58,37 +58,34 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "browserTarget": "taskapp-frontend:build:production"
+          "browserTarget": "passport-frontend:build:production"
         },
         "development": {
-          "browserTarget": "taskapp-frontend:build:development"
+          "browserTarget": "passport-frontend:build:development"
         }
       },
-      "defaultConfiguration": "development",
-      "options": {
-        "proxyConfig": "apps/taskapp/frontend/proxy.conf.json"
-      }
+      "defaultConfiguration": "development"
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "taskapp-frontend:build"
+        "browserTarget": "passport-frontend:build"
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
         "lintFilePatterns": [
-          "apps/taskapp/frontend/src/**/*.ts",
-          "apps/taskapp/frontend/src/**/*.html"
+          "apps/passport/frontend/src/**/*.ts",
+          "apps/passport/frontend/src/**/*.html"
         ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/taskapp/frontend"],
+      "outputs": ["coverage/apps/passport/frontend"],
       "options": {
-        "jestConfig": "apps/taskapp/frontend/jest.config.js",
+        "jestConfig": "apps/passport/frontend/jest.config.js",
         "passWithNoTests": true
       }
     }
