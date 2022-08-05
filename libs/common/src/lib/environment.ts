@@ -4,7 +4,7 @@ export class Environment {
     //   frontend: { url: "http://passport.kinetix.com", },
     //   backend: { url: "http://passport.kinetix.com", },
     // },
-    finApp: {
+    taskapp: {
       frontend: { url: "http://kinetix.com", },
       backend: { url: "http://kinetix.com", },
     }
@@ -15,7 +15,7 @@ export class Environment {
     //   frontend: { url: "http://localhost:4210", },
     //   backend: { url: "http://localhost:4211", },
     // },
-    finApp: {
+    taskapp: {
       frontend: { url: "http://localhost:4200", },
       backend: { url: "http://localhost:4500/api", },
     }
@@ -26,7 +26,7 @@ export class Environment {
     //   frontend: { url: "http://localhost:4210", },
     //   backend: { url: "http://localhost:4211", },
     // },
-    finApp: {
+    taskapp: {
       frontend: { url: "", },
       backend: { url: "/api", },
     }
@@ -42,7 +42,7 @@ export type InstanceEnvironment = {
   //     url: string;
   //   };
   // },
-  finApp: {
+  taskapp: {
     frontend: {
       url: string;
     };

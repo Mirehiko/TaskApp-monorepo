@@ -1,29 +1,29 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/finapp/backend/src",
+  "sourceRoot": "apps/taskapp/backend/src",
   "monorepo": true,
-  "root": "apps/finapp/backend",
+  "root": "apps/taskapp/backend",
   "compilerOptions": {
     "webpack": true,
-    "tsConfigPath": "apps/finapp/backend/tsconfig.app.json"
+    "tsConfigPath": "apps/taskapp/backend/tsconfig.app.json"
   },
   "projects": {
     "backend": {
       "type": "application",
-      "root": "apps/finapp/backend",
+      "root": "apps/taskapp/backend",
       "entryFile": "main",
-      "sourceRoot": "apps/finapp/backend/src",
+      "sourceRoot": "apps/taskapp/backend/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/finapp/backend/tsconfig.app.json"
+        "tsConfigPath": "apps/taskapp/backend/tsconfig.app.json"
       }
     },
-    "finapp": {
+    "taskapp": {
       "type": "application",
-      "root": "apps/finapp",
+      "root": "apps/taskapp",
       "entryFile": "main",
-      "sourceRoot": "apps/finapp/src",
+      "sourceRoot": "apps/taskapp/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/finapp/tsconfig.app.json"
+        "tsConfigPath": "apps/taskapp/tsconfig.app.json"
       }
     }
   }

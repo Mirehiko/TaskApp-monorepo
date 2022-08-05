@@ -1,4 +1,4 @@
-import { CategoryResponseDto, UserResponseDto } from '@finapp/app-common';
+import { CategoryResponseDto, UserResponseDto } from '@taskapp/app-common';
 
 
 export interface OperationMetadata {

@@ -34,8 +34,8 @@
   },
   "projects": {
     "backend": {
-      "root": "apps/finapp/backend",
-      "sourceRoot": "apps/finapp/backend/src",
+      "root": "apps/taskapp/backend",
+      "sourceRoot": "apps/taskapp/backend/src",
       "projectType": "application",
       "prefix": "backend",
       "architect": {
@@ -43,10 +43,10 @@
           "builder": "@nrwl/node:build",
           "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/apps/finapp/backend",
-            "main": "apps/finapp/backend/src/main.ts",
-            "tsConfig": "apps/finapp/backend/tsconfig.app.json",
-            "assets": ["apps/finapp/backend/src/assets"]
+            "outputPath": "dist/apps/taskapp/backend",
+            "main": "apps/taskapp/backend/src/main.ts",
+            "tsConfig": "apps/taskapp/backend/tsconfig.app.json",
+            "assets": ["apps/taskapp/backend/src/assets"]
           },
           "configurations": {
             "production": {
@@ -55,16 +55,16 @@
               "inspect": false,
               "fileReplacements": [
                 {
-                  "replace": "apps/finapp/backend/src/environments/environment.ts",
-                  "with": "apps/finapp/backend/src/environments/environment.prod.ts"
+                  "replace": "apps/taskapp/backend/src/environments/environment.ts",
+                  "with": "apps/taskapp/backend/src/environments/environment.prod.ts"
                 }
               ]
             },
             "staging": {
               "fileReplacements": [
                 {
-                  "replace": "apps/finapp/backend/src/environments/environment.ts",
-                  "with": "apps/finapp/backend/src/environments/environment.staging.ts"
+                  "replace": "apps/taskapp/backend/src/environments/environment.ts",
+                  "with": "apps/taskapp/backend/src/environments/environment.staging.ts"
                 }
               ]
             }
@@ -79,14 +79,14 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["apps/finapp/backend/**/*.ts"]
+            "lintFilePatterns": ["apps/taskapp/backend/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/finapp/backend"],
+          "outputs": ["coverage/apps/taskapp/backend"],
           "options": {
-            "jestConfig": "apps/finapp/backend/jest.config.js",
+            "jestConfig": "apps/taskapp/backend/jest.config.js",
             "passWithNoTests": true
           }
         },
@@ -104,28 +104,28 @@
     },
     "frontend": {
       "projectType": "application",
-      "root": "apps/finapp/frontend",
-      "sourceRoot": "apps/finapp/frontend/src",
+      "root": "apps/taskapp/frontend",
+      "sourceRoot": "apps/taskapp/frontend/src",
       "prefix": "frontend",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/finapp/frontend",
-            "index": "apps/finapp/frontend/src/index.html",
-            "main": "apps/finapp/frontend/src/main.ts",
-            "polyfills": "apps/finapp/frontend/src/polyfills.ts",
-            "tsConfig": "apps/finapp/frontend/tsconfig.app.json",
+            "outputPath": "dist/apps/taskapp/frontend",
+            "index": "apps/taskapp/frontend/src/index.html",
+            "main": "apps/taskapp/frontend/src/main.ts",
+            "polyfills": "apps/taskapp/frontend/src/polyfills.ts",
+            "tsConfig": "apps/taskapp/frontend/tsconfig.app.json",
             "assets": [
-              "apps/finapp/frontend/src/favicon.ico",
-              "apps/finapp/frontend/src/assets"
+              "apps/taskapp/frontend/src/favicon.ico",
+              "apps/taskapp/frontend/src/assets"
             ],
             "styles": [
-              "apps/finapp/frontend/src/styles/styles.scss"
+              "apps/taskapp/frontend/src/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "apps/finapp/frontend/src/styles"
+                "apps/taskapp/frontend/src/styles"
               ]
             },
             "scripts": []
@@ -134,8 +134,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "apps/finapp/frontend/src/environments/environment.ts",
-                  "with": "apps/finapp/frontend/src/environments/environment.prod.ts"
+                  "replace": "apps/taskapp/frontend/src/environments/environment.ts",
+                  "with": "apps/taskapp/frontend/src/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,
@@ -161,8 +161,8 @@
             "staging": {
               "fileReplacements": [
                 {
-                  "replace": "apps/finapp/frontend/src/environments/environment.ts",
-                  "with": "apps/finapp/frontend/src/environments/environment.staging.ts"
+                  "replace": "apps/taskapp/frontend/src/environments/environment.ts",
+                  "with": "apps/taskapp/frontend/src/environments/environment.staging.ts"
                 }
               ],
               "optimization": true,
@@ -200,16 +200,16 @@
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
-              "apps/finapp/frontend/src/**/*.ts",
-              "apps/finapp/frontend/src/**/*.html"
+              "apps/taskapp/frontend/src/**/*.ts",
+              "apps/taskapp/frontend/src/**/*.html"
             ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/finapp/frontend"],
+          "outputs": ["coverage/apps/taskapp/frontend"],
           "options": {
-            "jestConfig": "apps/finapp/frontend/jest.config.js",
+            "jestConfig": "apps/taskapp/frontend/jest.config.js",
             "passWithNoTests": true
           }
         }

@@ -1,4 +1,4 @@
-import { RequestObjectWithId } from '@finapp/app-common';
+import { RequestObjectWithId } from '@taskapp/app-common';
 import { IsOptional, IsString } from 'class-validator';
 
 

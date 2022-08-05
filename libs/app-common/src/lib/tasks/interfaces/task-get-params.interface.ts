@@ -1,4 +1,4 @@
-import { IGetParams, IGetParamsData, TaskBehavior, TaskPriority, TaskStatus } from '@finapp/app-common';
+import { IGetParams, IGetParamsData, TaskBehavior, TaskPriority, TaskStatus } from '@taskapp/app-common';
 
 
 export interface ITaskGetParamsData extends IGetParamsData {

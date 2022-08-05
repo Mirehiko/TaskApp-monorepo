@@ -1,10 +1,10 @@
 {
   "version": 2,
   "projects": {
-    "backend": "apps/finapp/backend",
+    "backend": "apps/taskapp/backend",
     "common": "libs/common",
     "app-common": "libs/app-common",
-    "frontend": "apps/finapp/frontend",
-    "frontend-e2e": "apps/finapp/frontend-e2e"
+    "frontend": "apps/taskapp/frontend",
+    "frontend-e2e": "apps/taskapp/frontend-e2e"
   }
 }

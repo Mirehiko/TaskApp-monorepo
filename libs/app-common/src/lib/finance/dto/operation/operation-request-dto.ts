@@ -1,4 +1,4 @@
-import { OperationStatus, OperationType } from '@finapp/app-common';
+import { OperationStatus, OperationType } from '@taskapp/app-common';
 import { IsNotEmpty, IsOptional } from "class-validator";
 import { Expose } from 'class-transformer';
 
