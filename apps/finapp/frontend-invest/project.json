@@ -1,24 +1,24 @@
 {
   "projectType": "application",
-  "root": "apps/taskapp/frontend",
-  "sourceRoot": "apps/taskapp/frontend/src",
+  "root": "apps/finapp/frontend-invest",
+  "sourceRoot": "apps/finapp/frontend-invest/src",
   "prefix": "taskapp",
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/taskapp/frontend",
-        "index": "apps/taskapp/frontend/src/index.html",
-        "main": "apps/taskapp/frontend/src/main.ts",
-        "polyfills": "apps/taskapp/frontend/src/polyfills.ts",
-        "tsConfig": "apps/taskapp/frontend/tsconfig.app.json",
+        "outputPath": "dist/apps/finapp/frontend-invest",
+        "index": "apps/finapp/frontend-invest/src/index.html",
+        "main": "apps/finapp/frontend-invest/src/main.ts",
+        "polyfills": "apps/finapp/frontend-invest/src/polyfills.ts",
+        "tsConfig": "apps/finapp/frontend-invest/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
-          "apps/taskapp/frontend/src/favicon.ico",
-          "apps/taskapp/frontend/src/assets"
+          "apps/finapp/frontend-invest/src/favicon.ico",
+          "apps/finapp/frontend-invest/src/assets"
         ],
-        "styles": ["apps/taskapp/frontend/src/styles.scss"],
+        "styles": ["apps/finapp/frontend-invest/src/styles.scss"],
         "scripts": []
       },
       "configurations": {
@@ -37,8 +37,8 @@
           ],
           "fileReplacements": [
             {
-              "replace": "apps/taskapp/frontend/src/environments/environment.ts",
-              "with": "apps/taskapp/frontend/src/environments/environment.prod.ts"
+              "replace": "apps/finapp/frontend-invest/src/environments/environment.ts",
+              "with": "apps/finapp/frontend-invest/src/environments/environment.prod.ts"
             }
           ],
           "outputHashing": "all"
@@ -58,37 +58,34 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "browserTarget": "frontend:build:production"
+          "browserTarget": "finapp-frontend-invest:build:production"
         },
         "development": {
-          "browserTarget": "frontend:build:development"
+          "browserTarget": "finapp-frontend-invest:build:development"
         }
       },
-      "defaultConfiguration": "development",
-      "options": {
-        "proxyConfig": "apps/taskapp/frontend/proxy.conf.json"
-      }
+      "defaultConfiguration": "development"
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "frontend:build"
+        "browserTarget": "finapp-frontend-invest:build"
       }
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
         "lintFilePatterns": [
-          "apps/taskapp/frontend/src/**/*.ts",
-          "apps/taskapp/frontend/src/**/*.html"
+          "apps/finapp/frontend-invest/src/**/*.ts",
+          "apps/finapp/frontend-invest/src/**/*.html"
         ]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/apps/taskapp/frontend"],
+      "outputs": ["coverage/apps/finapp/frontend-invest"],
       "options": {
-        "jestConfig": "apps/taskapp/frontend/jest.config.js",
+        "jestConfig": "apps/finapp/frontend-invest/jest.config.js",
         "passWithNoTests": true
       }
     }

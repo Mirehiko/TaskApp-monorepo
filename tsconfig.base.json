@@ -15,8 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@taskapp/common": ["libs/common/src/index.ts"],
-      "@taskapp/app-common": ["libs/app-common/src/index.ts"]
+      "@taskapp/app-common": ["libs/app-common/src/index.ts"],
+      "@taskapp/common": ["libs/common/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
