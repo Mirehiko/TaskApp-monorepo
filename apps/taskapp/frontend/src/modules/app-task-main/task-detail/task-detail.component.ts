@@ -1,11 +1,15 @@
 import { Component, Injector, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TaskRequestDto, TaskResponseDto } from '@taskapp/app-common';
+import { TagResponseDto, TaskRequestDto, TaskResponseDto } from '@taskapp/app-common';
 import { TaskRestService } from '../services/rest/task-rest.service';
 import { BaseDetailPage } from '../components/base-detail-page';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CoreService } from '../services/core.service';
 import { MatDialog } from '@angular/material/dialog';
+import { IActionListItem, IListItemAction, ITreeItem } from '../components/list-module/base-list.component';
+import { taskListConfig } from './task-tree-config';
+import { TaskListMenuAction } from '../task-common/task-common';
+import { TaskTreeHelper } from '../helpers/task-helpers';
 
 
 @Component({
@@ -14,12 +18,17 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrls: ['task-detail.component.scss'],
 })
 export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDestroy {
+  public taskListConfig = taskListConfig;
   public form: FormGroup;
   public taskIn: TaskResponseDto;
   private taskOut: TaskRequestDto;
   public baseUrl: string = '/taskapp/ttp/';
   public parentLink: string;
   public placeholderText: string = 'Description';
+  public children: ITreeItem<TaskResponseDto>[] = [];
+  public tags: TagResponseDto[] = [];
+  public menuItems: IActionListItem<TaskListMenuAction>[] = [];
+
   // public dataLoaded: boolean = false;
   constructor(
     injector: Injector,
@@ -75,7 +84,13 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
       this.taskIn = await this.taskRestService.getById(this.params.routeParams['taskId']);
     }
 
+    const children = await this.taskRestService.getList();
+    this.children = await TaskTreeHelper.mapDtoToTree(children);
 
+  }
+
+  public onMenuAction(action: IListItemAction): void {
+    console.log(action)
   }
 
   public navigate(url: string): void {

@@ -36,6 +36,7 @@ export class BaseTreeComponent<T> implements OnInit {
   @ViewChild('tree') private tree: MatTree<T>;
   groupDivider: (data: any[], type: any) => any[];
   groupedData: ITreeItem<T>[] = [];
+  public currentFocusId: number = -2;
 
   flatNodeMap = new Map<TreeItemFlatNode<T>, ITreeItem<T>>();
   nestedNodeMap = new Map<ITreeItem<T>, TreeItemFlatNode<T>>();
@@ -121,20 +122,23 @@ export class BaseTreeComponent<T> implements OnInit {
     event.stopPropagation();
     event.preventDefault();
 
+    this.currentFocusId = item.data.id;
     if (!event.ctrlKey && !event.shiftKey) {
       this.selectedItems = [item];
-      this.openDetailView(item.data.id);
       this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === item.data.id));
+      if (!this.config.lockNavigateToItemOnKey) {
+        this.openDetailView(item.data.id);
+      }
       return;
     }
+
     item.selected = !item.selected;
+    this.currentFocusId = item.selected ? item.data.id : -2;
     this.selectedItems =
       item.selected ? this.selectedItems.concat(item) : this.selectedItems.filter(i => i.data.id != item.data.id);
-    if (this.selectedItems.length > 1) {
-      this.openMultiSelectionView();
-    }
-    else {
-      this.openDetailView(item.data.id);
+
+    if (!this.config.lockNavigateToItemOnKey) {
+      this.isMultiSelection() ? this.openMultiSelectionView() : this.openDetailView(item.data.id);
     }
   }
 
@@ -145,13 +149,18 @@ export class BaseTreeComponent<T> implements OnInit {
     let nextItem: TreeItemFlatNode<T>;
     let searchData: TreeItemFlatNode<T>[] = [];
     let checkLevel = false;
-
+    let isMulti = false;
+    let currentIndex;
     switch (event.keyCode) {
       case KeyCodeName.ARROW_LEFT:
       case KeyCodeName.ARROW_RIGHT: {return;}
       case KeyCodeName.ARROW_UP: {
+        if (event.ctrlKey) {
+          return;
+        }
+        isMulti = event.shiftKey;
         searchData = this.getLevelData(item);
-        const currentIndex = searchData.indexOf(item);
+        currentIndex = searchData.indexOf(item);
         nextItem = BaseTreeComponent.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
 
         if (item.level > 0 && BaseTreeComponent.isFirstElement(currentIndex)) {
@@ -166,12 +175,17 @@ export class BaseTreeComponent<T> implements OnInit {
         break;
       }
       case KeyCodeName.ARROW_DOWN: {
-        if (event.shiftKey) {
+        if (event.shiftKey && event.ctrlKey) {
           checkLevel = true;
         }
+        else if (event.ctrlKey) {
+          return;
+        }
+
+        isMulti = event.shiftKey;
 
         searchData = this.getLevelData(item);
-        const currentIndex = searchData.indexOf(item);
+        currentIndex = searchData.indexOf(item);
 
         if (item.expandable && (checkLevel || this.treeControl.isExpanded(item))) {
           searchData = this.getChildrenByLevel(item, item.level + 1);
@@ -231,13 +245,32 @@ export class BaseTreeComponent<T> implements OnInit {
       this.expandNodes(item);
     }
 
-    if (nextItem!) {
-      if (nextItem.isGroup) {
-        return;
-      }
-      this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === nextItem.data.id));
-      this.openDetailView(nextItem.data.id === -1 ? 'new' : nextItem.data.id);
+    if (!nextItem!) {
+      return;
     }
+    if (nextItem.isGroup) {
+      return;
+    }
+
+    if (isMulti) {
+      const selectionIndex = this.selectedItems.findIndex(i => i.data.id === nextItem.data.id);
+      this.selectedItems =
+        selectionIndex === -1
+          ? this.selectedItems.concat(nextItem) : this.selectedItems.splice(0, selectionIndex + 1);
+    }
+    else {
+      this.selectedItems = [nextItem];
+    }
+
+    this.currentFocusId = nextItem.data.id;
+    this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === nextItem.data.id), isMulti);
+    if (!this.config.lockNavigateToItemOnKey) {
+      this.isMultiSelection() ? this.openMultiSelectionView() : this.openDetailView(nextItem.data.id === -1 ? 'new' : nextItem.data.id);
+    }
+  }
+
+  private isMultiSelection(): boolean {
+    return this.selectedItems.length > 1;
   }
 
   private getLastNodeOfExpanded(item: TreeItemFlatNode<T>): TreeItemFlatNode<T> {
@@ -310,14 +343,19 @@ export class BaseTreeComponent<T> implements OnInit {
     return index === list.length - 1;
   }
 
-  private changeSelection(index: number): void {
+  private changeSelection(index: number, multiselect: boolean = false): void {
     this.treeControl.dataNodes.forEach((node, idx) => {
-      node.selected = idx === index;
+      if (multiselect) {
+        node.selected = this.selectedItems.findIndex(i => i.data.id === node.data.id) !== -1;
+      }
+      else {
+        node.selected = idx === index;
+      }
     });
   }
 
   public openMultiSelectionView(): void {
-
+    console.log('multiselection')
   }
 
   public async openDetailView(entityId: number | string): Promise<void> {

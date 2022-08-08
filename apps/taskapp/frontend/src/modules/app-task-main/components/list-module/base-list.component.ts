@@ -60,6 +60,7 @@ export interface IListConfig {
   editableItem?: boolean;
   navigateTo?: string;
   checkboxOnly?: boolean;
+  lockNavigateToItemOnKey?: boolean;
 }
 
 @Component({

@@ -43,7 +43,7 @@
             <div class="mat-tree-node__name"
                  tabindex="-1"
                  listInputDirective
-                 [editable]="node.selected"
+                 [editable]="node.selected && node.data.id === currentFocusId"
                  (contentChanged)="updateTitle($event, node)">{{node.data.name}}</div>
           </app-custom-checkbox>
           <div class="mat-tree-node__icons">icons</div>
@@ -75,7 +75,7 @@
             <div class="mat-tree-node__name"
                  tabindex="-1"
                  listInputDirective
-                 [editable]="node.selected"
+                 [editable]="node.selected && node.data.id === currentFocusId"
                  (contentChanged)="updateTitle($event, node)">{{node.data.name}}</div>
           </app-custom-checkbox>
           <div class="mat-tree-node__icons">icons</div>

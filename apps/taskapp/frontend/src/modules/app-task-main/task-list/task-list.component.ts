@@ -10,21 +10,13 @@ import {
   ListItemOption,
 } from '../components/list-module/base-list.component';
 import { taskListConfig } from './task-tree-config';
+import { TaskListMenuAction } from '../task-common/task-common';
+import { TaskTreeHelper } from '../helpers/task-helpers';
 
 
 export class ContextMenu {
   // private _sections
 }
-
-enum TaskAction {
-  FOCUS = 'focus',
-  CONVERT_TO_TEXT = 'convertToText',
-  CONVERT_TO_TASK = 'convertToTask',
-}
-
-const TaskListMenuAction = { ...TaskAction, ...ListItemOption };
-type TaskListMenuAction = TaskAction | ListItemOption;
-
 
 
 @Component({
@@ -82,31 +74,9 @@ export class TaskListComponent implements OnInit {
 
   async getTasks(): Promise<void> {
     const tasks = await this.taskRestService.getList();
-    this.tasks = await this.mapItems(tasks);
+    this.tasks = await TaskTreeHelper.mapDtoToTree(tasks);
     this.dataLoaded = true;
   }
-  private async mapItems(items: TaskResponseDto[]): Promise<ITreeItem<TaskResponseDto>[]> {
-    return items.map(i => this.mapDtoToTree(i));
-  }
-
-  private mapDtoToTree(item: TaskResponseDto): ITreeItem<TaskResponseDto> {
-    const dataItem: ITreeItem<TaskResponseDto> = {
-      id: item.id,
-      data: item,
-      children: [],
-      isGroup: false,
-    };
-    if (item?.pinned) {
-      dataItem.pinned = item.pinned;
-    }
-    if (item.children?.length) {
-      item.children.forEach((child: TaskResponseDto) => {
-        dataItem.children.push(this.mapDtoToTree(child));
-      });
-    }
-    return dataItem;
-  }
-
 
   public onMenuAction(action: IListItemAction): void {
     console.log(action)

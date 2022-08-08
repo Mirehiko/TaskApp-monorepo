@@ -1,18 +1,19 @@
 <ng-container *ngIf="componentReady">
+  <div class="page-header">header</div>
+  <div class="page-body scrollable">
+    <div class=" ">
+      <form *ngIf="form" [formGroup]="form" class="form section">
+        <a *ngIf="!!parentLink" (click)="navigate(parentLink)">parent node</a>
+        <h2 [classList]="'f-control control-name'" [lockEnter]="true" inputDirective formControlName="name" (contentChanged)="save()"
+            [placeholder]="'Что нужно сделать'">{{taskIn.name}}</h2>
+        <pre [classList]="'f-control control-description'" inputDirective formControlName="description" (contentChanged)="save()" [placeholder]="placeholderText">{{taskIn.description}}</pre>
 
-  <div class="page-body">
-    <div class="page-header">header</div>
-
-    <form *ngIf="form" [formGroup]="form" class="form section">
-      <a *ngIf="!!parentLink" (click)="navigate(parentLink)">parent node</a>
-      <h2 [classList]="'f-control control-name'" [lockEnter]="true" inputDirective formControlName="name" (contentChanged)="save()"
-        [placeholder]="'Что нужно сделать'">{{taskIn.name}}</h2>
-      <pre [classList]="'f-control control-description'" inputDirective formControlName="description" (contentChanged)="save()" [placeholder]="placeholderText">{{taskIn.description}}</pre>
-
-      <div>tags</div>
-    </form>
-    <div class="section">children</div>
+        <div>tags</div>
+      </form>
+      <div class="section">
+        <app-task-tree *ngIf="dataLoaded" [dataList]="children" [config]="taskListConfig" [menuItems]="menuItems" (itemAction)="onMenuAction($event)"></app-task-tree>
+      </div>
+    </div>
   </div>
-
   <div class="page-footer">footer</div>
 </ng-container>
