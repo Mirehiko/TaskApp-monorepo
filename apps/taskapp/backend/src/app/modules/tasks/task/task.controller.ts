@@ -61,8 +61,16 @@ export class TaskController {
   // @UseGuards(JwtAuthGuard, RolesGuard)
   @Get('task/:id')
   async getTaskTreeById(@Param('id') id: number): Promise<TaskResponseDto> {
-    const task = await this.service.getTreeByID(id, ['assignee', 'reviewer', 'createdBy', 'updatedBy', 'list', 'tags']);
+    const task = await this.service.getTreeByID(id, 0, ['assignee', 'reviewer', 'createdBy', 'updatedBy', 'list', 'tags', 'children']);
     return plainToClass(TaskResponseDto, task, { enableCircularCheck: true, enableImplicitConversion: true });
+  }
+
+  @ApiOperation({summary: 'Получение дочерних задач'})
+  @ApiResponse({status: 200, type: Role})
+  @Get('task/:id/children')
+  async getTaskTreeChildrenById(@Param('id') id: number): Promise<TaskResponseDto[]> {
+    const task = await this.service.getTreeByID(id, null, ['assignee', 'children']);
+    return plainToClass(TaskResponseDto, task.children, { enableCircularCheck: true });
   }
 
 	@ApiOperation({summary: 'Создание задачи/подзадачи'})

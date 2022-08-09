@@ -46,7 +46,7 @@
                  [editable]="node.selected && node.data.id === currentFocusId"
                  (contentChanged)="updateTitle($event, node)">{{node.data.name}}</div>
           </app-custom-checkbox>
-          <div class="mat-tree-node__icons">icons</div>
+          <ng-container *ngTemplateOutlet="actions"></ng-container>
         </div>
       </div>
     </mat-tree-node>
@@ -78,7 +78,7 @@
                  [editable]="node.selected && node.data.id === currentFocusId"
                  (contentChanged)="updateTitle($event, node)">{{node.data.name}}</div>
           </app-custom-checkbox>
-          <div class="mat-tree-node__icons">icons</div>
+          <ng-container *ngTemplateOutlet="actions"></ng-container>
         </div>
           <!--      <button mat-icon-button (click)="addNewItem(node)"><mat-icon>add</mat-icon></button>-->
       </div>
@@ -108,4 +108,8 @@
 
 <ng-template #emptyData>
   <div app-empty-message>No data to display</div>
+</ng-template>
+
+<ng-template #actions>
+  <div class="mat-tree-node__actions">actions</div>
 </ng-template>

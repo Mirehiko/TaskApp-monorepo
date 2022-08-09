@@ -1,5 +1,5 @@
 import { MatTree, MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { SelectionModel } from '@angular/cdk/collections';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,7 +26,7 @@ class TreeItemFlatNode<T> extends ITreeItem<T> {
   styles: [],
   providers: []
 })
-export class BaseTreeComponent<T> implements OnInit {
+export class BaseTreeComponent<T> implements OnInit, OnChanges {
   @Input() listName: string;
   @Input() dataList: ITreeItem<T>[] = [];
   @Input() config: IListConfig;
@@ -79,7 +79,19 @@ export class BaseTreeComponent<T> implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.groupDivider = this.config.groupDivider ? this.config.groupDivider : this.groupDivider;
+    await this.initData();
+  }
+
+  async ngOnChanges(changes: SimpleChanges): Promise<void> {
+    if (changes['dataList']) {
+      await this.initData();
+    }
+  }
+
+  async initData(): Promise<void> {
+    if (!this.groupDivider) {
+      this.groupDivider = this.config.groupDivider ? this.config.groupDivider : this.groupDivider;
+    }
     await this.divideOnGroups(this.dataList);
     this._database.initialize(this.groupedData);
   }
@@ -93,15 +105,15 @@ export class BaseTreeComponent<T> implements OnInit {
         filteredGroupData.map(item => {
           groupItem.children.push(item);
         });
-        // if (groupItem.children.length > 0) {
-          this.groupedData.push(groupItem);
-        // }
+        this.groupedData.push(groupItem);
+
       });
       this.hasGroups = true;
     }
     else {
       this.hasGroups = false;
       list.forEach(item => {
+        console.log(item)
         this.groupedData.push(item);
       });
     }

@@ -82,11 +82,9 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
     }
     else {
       this.taskIn = await this.taskRestService.getById(this.params.routeParams['taskId']);
+      const children = await this.taskRestService.getChildrenById(this.params.routeParams['taskId']);
+      this.children = await TaskTreeHelper.mapDtoToTree(children);
     }
-
-    const children = await this.taskRestService.getList();
-    this.children = await TaskTreeHelper.mapDtoToTree(children);
-
   }
 
   public onMenuAction(action: IListItemAction): void {

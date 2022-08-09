@@ -33,6 +33,10 @@ export class TaskRestService extends BaseRestService {
     return await this.GET<TaskResponseDto>(`${this.baseUrl}/task/${taskId}`);
   }
 
+  public async getChildrenById(taskId: number): Promise<TaskResponseDto[]> {
+    return await this.GET<TaskResponseDto[]>(`${this.baseUrl}/task/${taskId}/children`);
+  }
+
   public async getList(): Promise<TaskResponseDto[]> {
     return await this.GET<TaskResponseDto[]>(`${this.baseUrl}/tasks`);
   }

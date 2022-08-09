@@ -51,9 +51,17 @@ export class CategoryController {
 	@ApiResponse({status: 200, type: Role})
 	@Get('category/:id')
 	async getCategoryTreeById(@Param('id') id: number): Promise<CategoryResponseDto> {
-	  const category = await this.service.getTreeByID(id, ['createdBy']);
+	  const category = await this.service.getTreeByID(id, 0, ['createdBy']);
 	  return plainToClass(CategoryResponseDto, category, { enableCircularCheck: true });
 	}
+
+  @ApiOperation({summary: 'Получение задачи'})
+  @ApiResponse({status: 200, type: Role})
+  @Get('category/:id')
+  async getCategoryTreeChildrenById(@Param('id') id: number): Promise<CategoryResponseDto> {
+    const category = await this.service.getTreeByID(id, null, ['createdBy']);
+    return plainToClass(CategoryResponseDto, category, { enableCircularCheck: true });
+  }
 
 	@ApiOperation({summary: 'Создание задачи/подзадачи'})
 	@Post('category')

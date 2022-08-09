@@ -22,10 +22,12 @@ export class BaseTreeService<T extends TreeEntity<T>, U extends IGetParamsData> 
    * @param id
    * @param relations
    */
-  public async getTreeByID(id: number, relations: string[] = []): Promise<T> {
+  public async getTreeByID(id: number, depth: number, relations: string[] = []): Promise<T> {
     const entity = await this.repository.findOne(id, { relations });
     if (entity) {
-      await this.repository.findDescendantsTree(entity, {depth: 2 });
+      entity.children = depth !== null
+        ? (await this.repository.findDescendantsTree(entity, {depth})).children
+        : (await this.repository.findDescendantsTree(entity)).children;
       return entity;
     }
     throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);

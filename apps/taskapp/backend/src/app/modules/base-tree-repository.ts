@@ -39,7 +39,7 @@ export class BaseTreeRepository<T extends TreeEntity<T>> extends TreeRepository<
   async getChildrenTreeOfEntity(entities: Array<T>, relations: string[] = []): Promise<T[]> {
     await Promise.all(
       entities.map(async (entity: T) => {
-        entity = (await this.manager.getTreeRepository(this.metadata.name).findDescendantsTree(entity, {relations})) as T;
+        entity = (await this.manager.getTreeRepository(this.metadata.name).findDescendantsTree(entity, {depth: 1, relations})) as T;
         if (entity.children.length) {
           entity.children = await this.getChildrenTreeOfEntity(entity.children, relations);
         }
