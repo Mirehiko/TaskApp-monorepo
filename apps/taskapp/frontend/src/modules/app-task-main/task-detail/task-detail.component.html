@@ -8,7 +8,9 @@
             [placeholder]="'Что нужно сделать'">{{taskIn.name}}</h2>
         <pre [classList]="'f-control control-description'" inputDirective formControlName="description" (contentChanged)="save()" [placeholder]="placeholderText">{{taskIn.description}}</pre>
 
-        <div>tags</div>
+        <div>
+          <span *ngFor="let tag of tags">{{tag.name}}</span> <button>+</button>
+        </div>
       </form>
       <div class="section">
         <app-task-tree *ngIf="dataLoaded" [dataList]="children" [config]="taskListConfig" [menuItems]="menuItems" (itemAction)="onMenuAction($event)"></app-task-tree>

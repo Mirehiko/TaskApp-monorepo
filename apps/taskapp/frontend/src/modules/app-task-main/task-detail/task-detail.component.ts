@@ -10,6 +10,7 @@ import { IActionListItem, IListItemAction, ITreeItem } from '../components/list-
 import { taskListConfig } from './task-tree-config';
 import { TaskListMenuAction } from '../task-common/task-common';
 import { TaskTreeHelper } from '../helpers/task-helpers';
+import { TagRestService } from '../services/rest/tag-rest.service';
 
 
 @Component({
@@ -36,6 +37,7 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
     private taskRestService: TaskRestService,
     private route: ActivatedRoute,
     private router: Router,
+    private tagRestService: TagRestService,
   ){
     super(injector);
   }
@@ -85,6 +87,7 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
       const children = await this.taskRestService.getChildrenById(this.params.routeParams['taskId']);
       this.children = await TaskTreeHelper.mapDtoToTree(children);
     }
+    this.tags = this.taskIn.tags;
   }
 
   public onMenuAction(action: IListItemAction): void {

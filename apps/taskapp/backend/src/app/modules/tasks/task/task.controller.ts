@@ -62,7 +62,7 @@ export class TaskController {
   @Get('task/:id')
   async getTaskTreeById(@Param('id') id: number): Promise<TaskResponseDto> {
     const task = await this.service.getTreeByID(id, 0, ['assignee', 'reviewer', 'createdBy', 'updatedBy', 'list', 'tags', 'children']);
-    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true, enableImplicitConversion: true });
+    return plainToClass(TaskResponseDto, task, { enableCircularCheck: true });
   }
 
   @ApiOperation({summary: 'Получение дочерних задач'})

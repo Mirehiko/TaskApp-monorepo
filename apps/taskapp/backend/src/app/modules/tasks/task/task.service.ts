@@ -117,7 +117,7 @@ export class TaskService extends BaseTreeService<Task, ITaskGetParamsData> {
     if (!tags.length) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
-    const tagList = task.tags ? [...task.tags, ...tags.filter(t => task.tags.map(tt => tt.id).includes(t.id))] : tags;
+    const tagList = task.tags.length ? [...task.tags, ...tags.filter(t => !task.tags.map(tt => tt.id).includes(t.id))] : tags;
     task.tags = tagList;
     await this.repository.save(task);
     return tagList;
