@@ -2,14 +2,17 @@
   "version": 2,
   "projects": {
     "app-common": "libs/app-common",
-    "backend": "apps/taskapp/backend",
     "common": "libs/common",
     "finapp-backend": "apps/finapp/backend",
     "finapp-frontend-invest": "apps/finapp/frontend-invest",
     "finapp-frontend-invest-e2e": "apps/finapp/frontend-invest-e2e",
     "finapp-frontend-main": "apps/finapp/frontend-main",
     "finapp-frontend-main-e2e": "apps/finapp/frontend-main-e2e",
-    "frontend": "apps/taskapp/frontend",
-    "frontend-e2e": "apps/taskapp/frontend-e2e"
+    "passport-backend": "apps/passport/backend",
+    "passport-frontend": "apps/passport/frontend",
+    "passport-frontend-e2e": "apps/passport/frontend-e2e",
+    "taskapp-frontend": "apps/taskapp/frontend",
+    "taskapp-frontend-e2e": "apps/taskapp/frontend-e2e",
+    "taskapp-backend": "apps/taskapp/backend"
   }
 }

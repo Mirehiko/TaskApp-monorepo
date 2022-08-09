@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: 'taskapp-backend',
+  displayName: 'passport-backend',
   preset: '../../../jest.preset.js',
   globals: {
     'ts-jest': {
@@ -11,5 +11,5 @@ module.exports = {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../../coverage/apps/taskapp/backend',
+  coverageDirectory: '../../../coverage/apps/passport/backend',
 };
