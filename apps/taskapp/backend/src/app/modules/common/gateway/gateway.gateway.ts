@@ -18,7 +18,7 @@ import { TaskCommentEntity } from '../../tasks/task-comment/schemas/task-comment
 import { User } from '../user/schemas/user.entity';
 
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:5000', 'http://localhost:3000', 'http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: ['http://localhost:5002', 'http://localhost:3000', 'http://localhost:4200'] } })
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect, OnModuleInit {
   @WebSocketServer()
   server: Server;

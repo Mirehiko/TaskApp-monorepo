@@ -9,7 +9,9 @@
         <pre [classList]="'f-control control-description'" inputDirective formControlName="description" (contentChanged)="save()" [placeholder]="placeholderText">{{taskIn.description}}</pre>
 
         <div>
-          <span *ngFor="let tag of tags">{{tag.name}}</span> <button>+</button>
+          <div custom-tag>
+            <span tag-item *ngFor="let tag of tags" (click)="searchByTag(tag)" (onClose)="removeTag(tag)">{{tag.name}}</span>
+          </div>
         </div>
       </form>
       <div class="section">

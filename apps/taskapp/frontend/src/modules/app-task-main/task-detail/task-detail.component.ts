@@ -97,4 +97,20 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
   public navigate(url: string): void {
     this.router.navigate([url]);
   }
+
+  public searchByTag(tag: TagResponseDto): void {
+    // TODO: search by tag
+    // this.navigate([''])
+  }
+
+  public async removeTag(tag: TagResponseDto): Promise<void> {
+    console.log(tag)
+    if (this.isNew) {
+
+    }
+    else {
+      await this.taskRestService.removeTaskTags(this.taskIn.id, [tag.id]);
+    }
+    this.tags.filter(t => t.id !== tag.id);
+  }
 }

@@ -10,16 +10,13 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { User } from "./schemas/user.entity";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { RolesGuard } from "../auth/roles.guard";
 import { Roles } from '../auth/roles-auth.decorator';
-import { ValidationPipe } from "../../../pipes/validation.pipe";
 import { FileInterceptor } from "@nestjs/platform-express";
 import {
   BanUserDto,
   IUserGetParamsData,
-  RoleResponseDto,
   UserRequestDto,
   UserResponseDto,
   UserRolesDto

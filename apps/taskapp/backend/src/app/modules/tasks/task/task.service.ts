@@ -129,7 +129,7 @@ export class TaskService extends BaseTreeService<Task, ITaskGetParamsData> {
    * @param tagIds
    */
   async removeTags(id: number, tagIds: number[]): Promise<any> {
-    const task = await this.repository.findOne(id, {relations: ['tags']});
+    const task = await this.repository.findOne(id, {relations: ["tags"]});
     if (!task) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
@@ -137,10 +137,10 @@ export class TaskService extends BaseTreeService<Task, ITaskGetParamsData> {
     if (!tags.length) {
       throw new HttpException(this.entityNotFoundMessage, HttpStatus.NOT_FOUND);
     }
-    if (!task.tags) {
+    if (!task.tags?.length) {
       return;
     }
-    task.tags = task.tags.filter(tt => !tags.map(t => t.id).includes(tt.id));
+    task.tags = task.tags.filter(tt => !tagIds.includes(tt.id));
     await this.repository.save(task);
   }
 

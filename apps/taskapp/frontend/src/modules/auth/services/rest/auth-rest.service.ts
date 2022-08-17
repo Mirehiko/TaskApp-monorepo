@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 
 @Injectable({ providedIn: "root" })
 export class AuthRestService {
-  private baseUrl = 'http://localhost:5000/api/auth';
+  private baseUrl = 'http://localhost:5002/api/auth';
 
   constructor(
     private http: HttpClient,

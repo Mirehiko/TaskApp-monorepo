@@ -1,4 +1,4 @@
-import { TaskResponseDto } from '@taskapp/app-common';
+import { TagResponseDto, TaskResponseDto } from '@taskapp/app-common';
 import { ITreeItem } from '../components/list-module/base-list.component';
 
 
@@ -36,6 +36,26 @@ export class TaskTreeHelper extends EntityTreeHelper<TaskResponseDto> {
     }
     if (item.children?.length) {
       item.children.forEach((child: TaskResponseDto) => {
+        dataItem.children.push(this._mapper(child));
+      });
+    }
+    return dataItem;
+  }
+}
+
+export class TagTreeHelper extends EntityTreeHelper<TagResponseDto> {
+  _mapper(item: TagResponseDto): ITreeItem<TagResponseDto> {
+    const dataItem: ITreeItem<TagResponseDto> = {
+      id: item.id,
+      data: item,
+      children: [],
+      isGroup: false,
+    };
+    // if (item?.pinned) {
+    //   dataItem.pinned = item.pinned;
+    // }
+    if (item.children?.length) {
+      item.children.forEach((child: TagResponseDto) => {
         dataItem.children.push(this._mapper(child));
       });
     }

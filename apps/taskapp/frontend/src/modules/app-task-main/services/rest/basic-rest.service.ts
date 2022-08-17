@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 
 
 export abstract class BaseRestService {
-  public baseUrl = 'http://localhost:5000/api/main';
+  public baseUrl = 'http://localhost:5002/api/main';
 
   constructor(protected http: HttpClient) {
   }
@@ -41,10 +41,10 @@ export abstract class BaseRestService {
   }
 
   public async DELETE<T>(url: string, data?: any, options?: any): Promise<T> {
-    return await this.doRequest<T>('delete', url, data, options);
+    return await this.doRequest<T>('delete', url, { body: data }, options);
   }
 
   public async PUT<T>(url: string, data?: any, options?: any): Promise<T> {
-    return await this.doRequest<T>('pu', url, data, options);
+    return await this.doRequest<T>('pu', url, { body: data }, options);
   }
 }

@@ -11,6 +11,22 @@
 development:
 - run script start:backend
 - run script start:frontend
+#Swagger
+http://localhost:5002/api/docs/
+```
+
+## Test
+
+```bash
+# unit tests
+$ npm run test
+
+# e2e tests
+$ npm run test:e2e
+
+# test coverage
+$ npm run test:cov
+```
 
 [comment]: <> (This project was generated using [Nx]&#40;https://nx.dev&#41;.)
 
