@@ -48,4 +48,8 @@ export class LoginPageComponent implements OnInit, OnDestroy {
       this.form.enable();
     }
   }
+
+  public onClick(): void {
+    // @todo: restore pass form
+  }
 }
