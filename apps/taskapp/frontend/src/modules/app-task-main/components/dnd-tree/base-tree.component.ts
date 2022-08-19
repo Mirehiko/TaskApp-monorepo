@@ -494,6 +494,8 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
       this._database.addChildren(parentNode, [this.addItemTemplate(-1, node.data.id, '', false)]);
       this.treeControl.expand(node);
     }
+    this.currentFocusId = -1;
+
     // else {
     //   this._database.insertItemTo(null, [newItem]);
     // }
@@ -513,9 +515,11 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
 
   addNewItem(node: TreeItemFlatNode<T> | null = null) {
     const originNode = this.flatNodeMap.get(node!);
+    const newNode =
     this._database.insertTo(
       originNode!,
       [this.addItemTemplate(-1, node?.data.parent_id, '', false)]);
+    this.currentFocusId = -1;
   }
 
   /** Save the node to database */
