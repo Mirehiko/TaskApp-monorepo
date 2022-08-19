@@ -1,12 +1,25 @@
-input[type="text"].tag-control, .tag-control {
-  height: 18px;
-  padding: 0 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  background: transparent;
-  font-size: 12px;
-}
-input[type="text"].tag-input {
-  padding: 0;
-  margin: 0;
+:host {
+  display: block;
+  ::ng-deep .control-container {
+    width: auto !important;
+    align-items: center;
+    justify-content: center;
+
+    .control-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #32c9d9;
+      font-weight: bold;
+    }
+    .tag-control {
+      height: 18px !important;
+      padding: 0 10px;
+      border-radius: 10px;
+      border: 1px solid #32c9d9;
+      background: transparent;
+      font-size: 14px;
+      position: relative;
+    }
+  }
 }

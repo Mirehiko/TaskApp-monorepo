@@ -7,4 +7,7 @@ import { Component } from '@angular/core';
 })
 export class TagSelectionListComponent {
 
+  getValue(value: string) {
+    console.log(value)
+  }
 }

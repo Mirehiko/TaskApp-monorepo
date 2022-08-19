@@ -27,8 +27,9 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
   public parentLink: string;
   public placeholderText: string = 'Description';
   public children: ITreeItem<TaskResponseDto>[] = [];
-  public tags: TagResponseDto[] = [];
+  public taskTags: TagResponseDto[] = [];
   public menuItems: IActionListItem<TaskListMenuAction>[] = [];
+  public notAssignedTags: TagResponseDto[] = [];
 
   // public dataLoaded: boolean = false;
   constructor(
@@ -87,7 +88,10 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
       const children = await this.taskRestService.getChildrenById(this.params.routeParams['taskId']);
       this.children = await TaskTreeHelper.mapDtoToTree(children);
     }
-    this.tags = this.taskIn.tags;
+    this.taskTags = this.taskIn.tags;
+    const tags = await this.tagRestService.getList();
+    const taskTagIds = this.taskTags.map(t => t.id);
+    this.notAssignedTags = tags.filter(t => taskTagIds.includes(t.id));
   }
 
   public onMenuAction(action: IListItemAction): void {
@@ -99,8 +103,18 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
   }
 
   public searchByTag(tag: TagResponseDto): void {
-    // TODO: search by tag
+    // TODO: navigate and search by tag
     // this.navigate([''])
+  }
+
+  public searchTagByString(name: string): TagResponseDto[] {
+    return this.notAssignedTags.filter(t => t.name.includes(name));
+  }
+
+  public async addTag(tag: TagResponseDto): Promise<void> {
+    await this.taskRestService.addTaskTags(this.taskIn.id, [tag.id]);
+    this.taskTags.push(tag);
+    this.notAssignedTags = this.notAssignedTags.filter(t => t.id !== tag.id);
   }
 
   public async removeTag(tag: TagResponseDto): Promise<void> {
@@ -110,6 +124,7 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
     else {
       await this.taskRestService.removeTaskTags(this.taskIn.id, [tag.id]);
     }
-    this.tags = this.tags.filter(t => t.id !== tag.id);
+    this.taskTags = this.taskTags.filter(t => t.id !== tag.id);
+    this.notAssignedTags.push(tag);
   }
 }

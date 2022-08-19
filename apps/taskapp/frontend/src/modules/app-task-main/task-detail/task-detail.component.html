@@ -4,13 +4,13 @@
     <div class=" ">
       <form *ngIf="form" [formGroup]="form" class="form section">
         <a *ngIf="!!parentLink" (click)="navigate(parentLink)">parent node</a>
-        <h2 [classList]="'f-control control-name'" [lockEnter]="true" inputDirective formControlName="name" (contentChanged)="save()"
+        <h2 [classList]="'f-control control-name'" [minHeight]="'initial'" [lockEnter]="true" inputDirective formControlName="name" (contentChanged)="save()"
             [placeholder]="'Что нужно сделать'">{{taskIn.name}}</h2>
-        <pre [classList]="'f-control control-description'" inputDirective formControlName="description" (contentChanged)="save()" [placeholder]="placeholderText">{{taskIn.description}}</pre>
+        <pre [classList]="'f-control control-description'" [minHeight]="'100px'" inputDirective formControlName="description" (contentChanged)="save()" [placeholder]="placeholderText">{{taskIn.description}}</pre>
 
         <div>
           <div custom-tag>
-            <span tag-item *ngFor="let tag of tags" (click)="searchByTag(tag)" (onClose)="removeTag(tag)">{{tag.name}}</span>
+            <span tag-item *ngFor="let tag of taskTags" (click)="searchByTag(tag)" (onClose)="removeTag(tag)">{{tag.name}}</span>
           </div>
         </div>
       </form>

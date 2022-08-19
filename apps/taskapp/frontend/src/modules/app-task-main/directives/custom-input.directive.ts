@@ -46,7 +46,10 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
   @Input() editable: boolean = false;
   @Input() lockEnter: boolean = false;
   @Input() placeholder: string = '';
+  @Input() minHeight: string = 'auto';
   @Input() classList: string = '';
+  @Input() opacity: number = 0.5;
+  @Output() inputChanged: EventEmitter<string> = new EventEmitter<string>();
   protected focused: boolean = false;
   protected deleted: boolean = false;
   protected parentElement = document.createElement('div');
@@ -58,6 +61,8 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
   @HostListener('click') onMouseClick(e: MouseEvent) {
     this.setStyles(this.defaultEditStyle);
     this.focused = true;
+    setTimeout(() => this.focus, 0);
+    this.changePlaceholderState();
   }
 
   @HostListener('keydown', ['$event']) onEnterDown(e: KeyboardEvent) {
@@ -106,26 +111,37 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
       return;
     }
     this.placeholderElement.innerHTML = this.placeholder;
-    this.placeholderElement.style.position = 'absolute';
+    this.placeholderElement.style.position = 'relative';
     this.placeholderElement.style.zIndex = '0';
+    this.placeholderElement.style.width = '100%';
+    this.placeholderElement.style.height = '100%';
     this.parentElement.style.position = 'relative';
+    this.parentElement.style.display = 'inline-flex';
+    this.parentElement.style.minHeight = `${this.minHeight}`;
+
     if (this.classList) {
       this.parentElement.classList.add(...this.classList.split(' '));
     }
-    this.el.nativeElement.style.position = 'relative';
+    this.el.nativeElement.style.position = 'absolute';
     this.el.nativeElement.style.zIndex = '1';
+    this.el.nativeElement.style.width = '100%';
+    this.el.nativeElement.style.height = '100%';
+    this.el.nativeElement.style.lineHeight = 'initial';
     this.el.nativeElement.parentElement.replaceChild(this.parentElement, this.el.nativeElement);
     this.parentElement.append(this.placeholderElement);
     this.parentElement.append(this.el.nativeElement);
     this.changePlaceholderState();
   }
 
-  onChange: any = () => {}
+  onChange: any = () => {
+    this.inputChanged.emit(this.el.nativeElement.innerHTML);
+  }
 
   onTouch: any = () => {}
 
   writeValue(value: string) {
     this.value = value;
+    this.changePlaceholderState();
   }
 
   onCurrentChange(value: string): void {
@@ -151,6 +167,13 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     this.disabled = disabled;
   }
 
+  focus(): void {
+    this.el.nativeElement.focus();
+    const sel = document.getSelection();
+    sel?.selectAllChildren(this.el.nativeElement);
+    sel?.collapseToEnd();
+  }
+
   validate(control: AbstractControl): ValidationErrors | null {
     const value = control.value;
     if (value !== '') {
@@ -168,12 +191,7 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
       this.setStyles(this.defaultEditStyle);
       this.focused = true;
 
-      setTimeout(() => {
-        this.el.nativeElement.focus();
-        const sel = document.getSelection();
-        sel?.selectAllChildren(this.el.nativeElement);
-        sel?.collapseToEnd();
-      }, 0);
+      setTimeout(() => this.focus, 0);
     }
   }
 
@@ -191,11 +209,20 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     this.el.nativeElement.style.outline = style.outline || '0';
     this.el.nativeElement.contentEditable = `${!!style.contentEditable}`;
     this.el.nativeElement.parentElement.style.width = style.width;
-    this.el.nativeElement.style.height = style.height || 'auto';
+    this.el.nativeElement.style.height = style.height || '100%';
   }
 
   private changePlaceholderState(): void {
-    this.placeholderElement.style.opacity = this.el.nativeElement.innerHTML.length ? '0' : '0.5';
+    if (this.el.nativeElement.innerHTML.length || this.focused) {
+      this.placeholderElement.style.opacity = '0';
+      this.el.nativeElement.style.position = 'relative';
+      this.placeholderElement.style.position = 'absolute';
+    }
+    else {
+      this.placeholderElement.style.opacity = `${this.opacity}`;
+      this.el.nativeElement.style.position = 'absolute';
+      this.placeholderElement.style.position = 'relative';
+    }
   }
 
   private defaultStyle: IElementStyle = {
@@ -205,7 +232,6 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     cursor: 'default',
     outline: '0',
     width: '100%',
-    height: '14px'
   }
 
   private defaultHoverStyle: IElementStyle = {
@@ -215,7 +241,6 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     cursor: 'text',
     outline: '0',
     width: '100%',
-    height: '14px'
   }
 
   private defaultEditStyle: IElementStyle = {
@@ -225,7 +250,6 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     cursor: 'text',
     outline: '0',
     width: '100%',
-    height: '14px'
   }
 }
 
@@ -250,6 +274,7 @@ export class CustomListInputDirective extends CustomInputDirective {
     if (e.keyCode === KeyCodeName.ENTER) {
       e.preventDefault();
       this.onChange(this.el.nativeElement.innerHTML);
+      this.el.nativeElement.blur();
       this.onEnter.emit(this.el.nativeElement.innerHTML);
     }
     if ((e.keyCode === KeyCodeName.ESCAPE || e.keyCode === KeyCodeName.DELETE) && this.el.nativeElement.innerHTML.trim().length === 0) {

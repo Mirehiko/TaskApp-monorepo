@@ -1,4 +1,7 @@
-<button class="tag-control tag-button" title="Add more">
-  +
-</button>
-<input type="text" class="tag-control tag-input">
+<div
+  class="tag-control tag-button"
+  [classList]="'f-control control-name'"
+  [opacity]="1"
+  inputDirective formControlName="name"
+  (inputChanged)="getValue($event)"
+  [placeholder]="'+'"></div>

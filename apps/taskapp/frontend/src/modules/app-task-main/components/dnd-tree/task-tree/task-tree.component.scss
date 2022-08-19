@@ -4,6 +4,9 @@
       border-color: #9196af;
       background: #9196af;
     }
+    .span-text {
+      width: 100%;
+    }
   }
 }
 .mat-tree-node-hidden {
@@ -50,7 +53,7 @@
 
 .mat-tree-node__name, .mat-tree-node__name * {
   font-size: 14px;
-  height: auto !important;
+  //height: auto !important;
 }
 
 
@@ -73,4 +76,3 @@
     justify-content: center;
   }
 }
-
