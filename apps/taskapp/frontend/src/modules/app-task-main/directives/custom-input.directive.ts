@@ -52,6 +52,7 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
   @Output() inputChanged: EventEmitter<string> = new EventEmitter<string>();
   protected focused: boolean = false;
   protected deleted: boolean = false;
+
   protected parentElement = document.createElement('div');
   protected placeholderElement = document.createElement('span');
   protected initiated: boolean = false;
@@ -115,6 +116,7 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     this.placeholderElement.style.zIndex = '0';
     this.placeholderElement.style.width = '100%';
     this.placeholderElement.style.height = '100%';
+    this.placeholderElement.style.lineHeight = 'initial';
     this.parentElement.style.position = 'relative';
     this.parentElement.style.display = 'inline-flex';
     this.parentElement.style.minHeight = `${this.minHeight}`;
@@ -217,8 +219,12 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
       this.placeholderElement.style.opacity = '0';
       this.el.nativeElement.style.position = 'relative';
       this.placeholderElement.style.position = 'absolute';
+      this.placeholderElement.classList.add('placeholder-hidden');
+      this.el.nativeElement.classList.add('input-focused');
     }
     else {
+      this.placeholderElement.classList.remove('placeholder-hidden');
+      this.el.nativeElement.classList.remove('input-focused');
       this.placeholderElement.style.opacity = `${this.opacity}`;
       this.el.nativeElement.style.position = 'absolute';
       this.placeholderElement.style.position = 'relative';

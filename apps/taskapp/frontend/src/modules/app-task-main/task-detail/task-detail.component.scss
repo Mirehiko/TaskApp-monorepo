@@ -4,17 +4,24 @@
   height: inherit;
   justify-content: space-between;
 }
+
 h2 {
   font-size: 18px;
   font-weight: bold;
   margin: 10px 0 15px;
 }
+
 .form {
   border-bottom: 1px solid #efefef;
 
   ::ng-deep {
     .control-placeholder {
       position: absolute;
+    }
+    .control-name .control-placeholder {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0 15px;
     }
     .f-control {
       padding: 0 5px;

@@ -5,21 +5,20 @@
     align-items: center;
     justify-content: center;
 
+    height: 18px !important;
+    padding: 0 10px;
+    border-radius: 10px;
+    border: 1px solid #32c9d9;
+    background: transparent;
+    font-size: 14px;
+    position: relative;
+
     .control-placeholder {
-      display: flex;
-      align-items: center;
-      justify-content: center;
       color: #32c9d9;
       font-weight: bold;
     }
-    .tag-control {
-      height: 18px !important;
-      padding: 0 10px;
-      border-radius: 10px;
-      border: 1px solid #32c9d9;
-      background: transparent;
-      font-size: 14px;
-      position: relative;
+    .input-focused {
+      width: 80px !important;
     }
   }
 }
