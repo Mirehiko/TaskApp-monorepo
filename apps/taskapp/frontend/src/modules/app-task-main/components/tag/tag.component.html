@@ -1,6 +1,17 @@
-<div class="tag-container">
-  <div class="tag-list">
-    <ng-content></ng-content>
+<section class="tag-container">
+  <ng-content select=".tag-list"></ng-content>
+  <div>
+    <div
+      class="tag-control tag-button"
+      [classList]="'control-tag'"
+      [opacity]="1"
+      inputDirective formControlName="name"
+      (focusChanged)="focusChanged($event)"
+      (inputChanged)="changes($event)"
+      [clearOnBlur]="true"
+      [placeholder]="'+'"></div>
+    <div class="options-wrapper" *ngIf="focused" (click)="onClick()">
+      <ng-content select=".options-list"></ng-content>
+    </div>
   </div>
-  <tag-selection-list></tag-selection-list>
-</div>
+</section>

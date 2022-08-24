@@ -1,0 +1,10 @@
+:host {
+  position: absolute;
+  width: 100%;
+  max-width: 200px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #efefef;
+  box-shadow: 0px 1px 5px 0px #ccc;
+  z-index: 10;
+}

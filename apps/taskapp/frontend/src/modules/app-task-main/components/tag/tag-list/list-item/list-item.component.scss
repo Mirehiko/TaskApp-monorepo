@@ -1,4 +1,4 @@
-:host(.tag-item) {
+:host(.list-item) {
   border-radius: 15px;
   line-height: 18px;
   align-items: center;
@@ -10,7 +10,7 @@
   background: #ccc;
 
   &:hover {
-    .tag-item__close {
+    .list-item__close {
       display: flex;
     }
   }
@@ -20,7 +20,7 @@
   }
 }
 
-.tag-item__close {
+.list-item__close {
   position: absolute;
   top: -6px;
   right: -6px;

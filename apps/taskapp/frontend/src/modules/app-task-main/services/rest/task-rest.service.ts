@@ -37,8 +37,12 @@ export class TaskRestService extends BaseRestService {
     return await this.GET<TaskResponseDto[]>(`${this.baseUrl}/task/${taskId}/children`);
   }
 
+  public async getTree(): Promise<TaskResponseDto[]> {
+    return await this.GET<TaskResponseDto[]>(`${this.baseUrl}/tasks-tree`);
+  }
+
   public async getList(): Promise<TaskResponseDto[]> {
-    return await this.GET<TaskResponseDto[]>(`${this.baseUrl}/tasks`);
+    return await this.GET<TaskResponseDto[]>(`${this.baseUrl}/tasks-list`);
   }
 
   public async search(params: ITaskGetParams): Promise<TaskResponseDto[]> {

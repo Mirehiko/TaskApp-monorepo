@@ -18,6 +18,14 @@ export class BaseTreeService<T extends TreeEntity<T>, U extends IGetParamsData> 
   }
 
   /**
+   *
+   * @param relations
+   */
+  public async getAllList(relations: string[] = []): Promise<T[]> {
+    return await this.repository.getTreeAsList(relations);
+  }
+
+  /**
    * Get entity tree by id with relations
    * @param id
    * @param relations

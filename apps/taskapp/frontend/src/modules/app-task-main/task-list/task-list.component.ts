@@ -73,7 +73,7 @@ export class TaskListComponent implements OnInit {
   }
 
   async getTasks(): Promise<void> {
-    const tasks = await this.taskRestService.getList();
+    const tasks = await this.taskRestService.getTree();
     this.tasks = await TaskTreeHelper.mapDtoToTree(tasks);
     this.dataLoaded = true;
   }

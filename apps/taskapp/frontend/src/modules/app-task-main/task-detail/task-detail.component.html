@@ -9,8 +9,14 @@
         <pre [classList]="'f-control control-description'" [minHeight]="'100px'" inputDirective formControlName="description" (contentChanged)="save()" [placeholder]="placeholderText">{{taskIn.description}}</pre>
 
         <div>
-          <div custom-tag>
-            <span tag-item *ngFor="let tag of taskTags" (click)="searchByTag(tag)" (onClose)="removeTag(tag)">{{tag.name}}</span>
+          <div custom-tag (valueChanged)="searchTagByString($event)">
+            <options-list class="options-list">
+              <div options-item *ngFor="let tag of filteredTags" (click)="addTag(tag)">{{tag.name}}</div>
+            </options-list>
+
+            <div tag-list class="tag-list">
+              <span list-item *ngFor="let tag of taskTags" (click)="searchByTag(tag)" (onClose)="removeTag(tag)">{{tag.name}}</span>
+            </div>
           </div>
         </div>
       </form>

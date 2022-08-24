@@ -1,6 +1,6 @@
 import { Component, Injector, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TagResponseDto, TaskRequestDto, TaskResponseDto } from '@taskapp/app-common';
+import { TagRequestDto, TagResponseDto, TaskRequestDto, TaskResponseDto } from '@taskapp/app-common';
 import { TaskRestService } from '../services/rest/task-rest.service';
 import { BaseDetailPage } from '../components/base-detail-page';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -30,6 +30,7 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
   public taskTags: TagResponseDto[] = [];
   public menuItems: IActionListItem<TaskListMenuAction>[] = [];
   public notAssignedTags: TagResponseDto[] = [];
+  public filteredTags: TagResponseDto[] = [];
 
   // public dataLoaded: boolean = false;
   constructor(
@@ -91,7 +92,8 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
     this.taskTags = this.taskIn.tags;
     const tags = await this.tagRestService.getList();
     const taskTagIds = this.taskTags.map(t => t.id);
-    this.notAssignedTags = tags.filter(t => taskTagIds.includes(t.id));
+    this.notAssignedTags = tags.filter(t => !taskTagIds.includes(t.id));
+    this.searchTagByString('');
   }
 
   public onMenuAction(action: IListItemAction): void {
@@ -107,14 +109,39 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
     // this.navigate([''])
   }
 
-  public searchTagByString(name: string): TagResponseDto[] {
-    return this.notAssignedTags.filter(t => t.name.includes(name));
+  public searchTagByString(name: string): void {
+    this.filteredTags = this.notAssignedTags.filter(t => t.name.toLowerCase().includes(name.toLowerCase()));
+    if (this.filteredTags.length === 0) {
+      this.filteredTags.push({
+        id: -1,
+        name: `Создать тег '${name}'`,
+        children: [],
+        color: '',
+        icon: '',
+        parent_id: -1
+      });
+    }
   }
 
   public async addTag(tag: TagResponseDto): Promise<void> {
+    if (tag.id === -1) {
+      await this.createNewTagAndAttachToTask({
+        name: tag.name?.match(/\'(.*)\'/)?.pop() as string,
+        icon: '',
+        color: '',
+        parent_id: -1
+      });
+      return;
+    }
     await this.taskRestService.addTaskTags(this.taskIn.id, [tag.id]);
     this.taskTags.push(tag);
     this.notAssignedTags = this.notAssignedTags.filter(t => t.id !== tag.id);
+    this.filteredTags = this.notAssignedTags;
+  }
+
+  private async createNewTagAndAttachToTask(tmpTag: TagRequestDto): Promise<void> {
+    const tag = await this.tagRestService.create(tmpTag);
+    await this.addTag(tag);
   }
 
   public async removeTag(tag: TagResponseDto): Promise<void> {
@@ -126,5 +153,6 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
     }
     this.taskTags = this.taskTags.filter(t => t.id !== tag.id);
     this.notAssignedTags.push(tag);
+    this.filteredTags = this.notAssignedTags;
   }
 }

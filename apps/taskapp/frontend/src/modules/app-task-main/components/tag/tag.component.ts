@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: '[custom-tag]',
@@ -6,4 +6,20 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['tag.component.scss']
 })
 export class TagComponent<T> {
+  @Output() valueChanged: EventEmitter<string> = new EventEmitter<string>();
+  public focused: boolean = false;
+
+  public changes(value: string) {
+    this.valueChanged.emit(value);
+  }
+
+  public focusChanged(focused: boolean): void {
+    if (focused) {
+      this.focused = focused;
+    }
+  }
+
+  public onClick(): void {
+    this.focused = false
+  }
 }

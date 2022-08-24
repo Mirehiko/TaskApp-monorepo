@@ -11,7 +11,7 @@ import { TaskService } from './task.service';
 import { plainToClass } from 'class-transformer';
 import {
   IDateRange,
-  MoveDto, TaskPriority,
+  MoveDto, TagResponseDto, TaskPriority,
   TaskRequestDto,
   TaskResponseDto, TaskStatus
 } from '@taskapp/app-common';
@@ -34,13 +34,19 @@ export class TaskController {
 	@ApiResponse({status: 200, type: [TaskResponseDto]})
 	// @Roles("ADMIN")
 	// @UseGuards(JwtAuthGuard, RolesGuard)
-	@Get('tasks')
-	async getTasks(): Promise<TaskResponseDto[]> {
+	@Get('tasks-tree')
+	async getTasksTree(): Promise<TaskResponseDto[]> {
     const tasks = await this.service.getAllTrees(
       ['parent', 'children', 'createdBy', 'updatedBy', 'assignee', 'reviewer', 'tags']
     );
     return plainToClass(TaskResponseDto, tasks, { enableCircularCheck: true });
 	}
+
+  @Get('tasks-list')
+  async getTasksList(): Promise<TagResponseDto[]> {
+    const tags = await this.service.getAllList(['createdBy']);
+    return plainToClass(TagResponseDto, tags, { enableCircularCheck: true });
+  }
 
   @ApiOperation({summary: 'Поиск задач'})
   @Get('tasks/search')
@@ -84,7 +90,7 @@ export class TaskController {
   @Post('task/move')
   async moveTasks(@Body() moveDto: MoveDto, @Req() req): Promise<TaskResponseDto[]> {
 	  await this.service.moveTo(moveDto, req.user);
-	  return await this.getTasks();
+	  return await this.getTasksTree();
   }
 
   @ApiOperation({summary: 'Назначить исполнителя для задачи'})

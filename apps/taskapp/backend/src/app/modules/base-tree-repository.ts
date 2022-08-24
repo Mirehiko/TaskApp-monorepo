@@ -14,6 +14,19 @@ export interface TreeEntity<E> {
 }
 
 export class BaseTreeRepository<T extends TreeEntity<T>> extends TreeRepository<T> {
+  async getTreeAsList(relations: string[] = []): Promise<T[]> {
+    const tree: T[] = await this.findTrees({relations});
+    return this.mapTreeToList(tree);
+  }
+
+  public mapTreeToList(tree: T[]): T[] {
+    return tree.reduce((ac, i) => {
+      ac = i.children?.length ? ac.concat(this.mapTreeToList(i.children)) : [];
+      i.children = [];
+      return ac.concat(i);
+    }, []);
+  }
+
   /**
    * Move nodes to selected node
    * @param parent

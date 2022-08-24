@@ -45,10 +45,12 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
   @Output() onEnter: EventEmitter<string> = new EventEmitter<string>();
   @Input() editable: boolean = false;
   @Input() lockEnter: boolean = false;
+  @Input() clearOnBlur: boolean = false;
   @Input() placeholder: string = '';
   @Input() minHeight: string = 'auto';
   @Input() classList: string = '';
   @Input() opacity: number = 0.5;
+  @Output() focusChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() inputChanged: EventEmitter<string> = new EventEmitter<string>();
   protected focused: boolean = false;
   protected deleted: boolean = false;
@@ -62,6 +64,7 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
   @HostListener('click') onMouseClick(e: MouseEvent) {
     this.setStyles(this.defaultEditStyle);
     this.focused = true;
+    this.focusChanged.emit(this.focused);
     setTimeout(() => this.focus, 0);
     this.changePlaceholderState();
   }
@@ -93,10 +96,15 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     if (this.deleted) {
       return;
     }
+    if (this.clearOnBlur) {
+      this.value = '';
+      this.el.nativeElement.innerHTML = '';
+    }
     this.setStyles(this.defaultStyle);
     this.contentChanged.emit(this.el.nativeElement.innerHTML);
     this.focused = false;
     this.changePlaceholderState();
+    this.focusChanged.emit(this.focused);
   }
 
 
@@ -192,7 +200,7 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     if (changes['editable']?.currentValue) {
       this.setStyles(this.defaultEditStyle);
       this.focused = true;
-
+      this.focusChanged.emit(this.focused);
       setTimeout(() => this.focus, 0);
     }
   }

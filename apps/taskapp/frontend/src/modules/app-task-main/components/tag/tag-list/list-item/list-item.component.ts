@@ -1,12 +1,12 @@
 import { Component, EventEmitter, HostBinding, Output } from '@angular/core';
 
 @Component({
-  selector: '[tag-item]',
-  templateUrl: 'tag-item.component.html',
-  styleUrls: ['tag-item.component.scss']
+  selector: '[list-item]',
+  templateUrl: 'list-item.component.html',
+  styleUrls: ['list-item.component.scss']
 })
-export class TagItemComponent {
-  @HostBinding('class') class = 'tag-item';
+export class ListItemComponent {
+  @HostBinding('class') class = 'list-item';
   @Output() onClose: EventEmitter<true> = new EventEmitter<true>();
 
   onClick(evt: Event): void {

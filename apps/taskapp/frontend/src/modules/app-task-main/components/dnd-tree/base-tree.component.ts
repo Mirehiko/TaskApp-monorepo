@@ -113,7 +113,6 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
     else {
       this.hasGroups = false;
       list.forEach(item => {
-        console.log(item)
         this.groupedData.push(item);
       });
     }

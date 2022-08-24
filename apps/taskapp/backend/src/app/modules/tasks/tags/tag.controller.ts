@@ -19,8 +19,14 @@ export class TagController {
   @ApiResponse({status: 200, type: [TagResponseDto]})
   // @Roles("ADMIN")
   // @UseGuards(JwtAuthGuard, RolesGuard)
-  @Get('tags')
-  async getTags(): Promise<TagResponseDto[]> {
+  @Get('tags-list')
+  async getTagsList(): Promise<TagResponseDto[]> {
+    const tags = await this.service.getAllList(['createdBy']);
+    return plainToClass(TagResponseDto, tags, { enableCircularCheck: true });
+  }
+
+  @Get('tags-tree')
+  async getTagsTree(): Promise<TagResponseDto[]> {
     const tags = await this.service.getAllTrees(['createdBy']);
     return plainToClass(TagResponseDto, tags, { enableCircularCheck: true });
   }
@@ -58,7 +64,7 @@ export class TagController {
   @Post('tags/move')
   async moveTags(@Body() moveDto: MoveDto, @Req() req): Promise<TagResponseDto[]> {
     await this.service.moveTo(moveDto, req.userApiOperation);
-    return await this.getTags();
+    return await this.getTagsTree();
   }
 
   @ApiOperation({summary: 'Обновление задачи'})

@@ -25,8 +25,12 @@ export class TagRestService extends BaseRestService {
     return await this.GET<TagResponseDto>(`${this.baseUrl}/tag/${tagId}`);
   }
 
+  public async getTree(): Promise<TagResponseDto[]> {
+    return await this.GET<TagResponseDto[]>(`${this.baseUrl}/tags-tree`);
+  }
+
   public async getList(): Promise<TagResponseDto[]> {
-    return await this.GET<TagResponseDto[]>(`${this.baseUrl}/tags`);
+    return await this.GET<TagResponseDto[]>(`${this.baseUrl}/tags-list`);
   }
 
   public async search(params: ITagGetParams): Promise<TagResponseDto[]> {
