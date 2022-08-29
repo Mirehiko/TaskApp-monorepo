@@ -14,9 +14,7 @@
               <div options-item *ngFor="let tag of filteredTags" (click)="addTag(tag)">{{tag.name}}</div>
             </options-list>
 
-            <div tag-list class="tag-list">
-              <span list-item *ngFor="let tag of taskTags" (click)="searchByTag(tag)" (onClose)="removeTag(tag)">{{tag.name}}</span>
-            </div>
+            <span class="tag-list" list-item *ngFor="let tag of taskTags" (click)="searchByTag(tag)" (onClose)="removeTag(tag)">{{tag.name}}</span>
           </div>
         </div>
       </form>

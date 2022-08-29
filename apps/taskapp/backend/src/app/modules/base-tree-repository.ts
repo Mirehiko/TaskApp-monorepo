@@ -21,9 +21,10 @@ export class BaseTreeRepository<T extends TreeEntity<T>> extends TreeRepository<
 
   public mapTreeToList(tree: T[]): T[] {
     return tree.reduce((ac, i) => {
-      ac = i.children?.length ? ac.concat(this.mapTreeToList(i.children)) : [];
+      ac = i.children?.length ? ac.concat(...this.mapTreeToList(i.children)) : ac;
       i.children = [];
-      return ac.concat(i);
+      ac = ac.concat(i);
+      return ac;
     }, []);
   }
 

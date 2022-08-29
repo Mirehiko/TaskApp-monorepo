@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+
 
 @Component({
   selector: '[custom-tag]',
@@ -19,7 +20,7 @@ export class TagComponent<T> {
     }
   }
 
-  public onClick(): void {
-    this.focused = false
+  public onClick(e: any): void {
+    this.focused = false;
   }
 }

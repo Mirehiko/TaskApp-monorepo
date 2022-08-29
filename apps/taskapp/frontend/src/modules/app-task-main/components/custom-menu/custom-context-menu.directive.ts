@@ -42,6 +42,7 @@ export class CustomContextMenuDirective implements OnInit, OnDestroy {
     this.menuComponent.data = this.data;
 
     e.preventDefault();
+    e.stopPropagation();
     await this.destroy();
 
     const scroll$ = fromEvent(document, 'wheel');

@@ -1,82 +1,73 @@
 import { Directive, ElementRef, HostBinding, Input, OnDestroy, OnInit } from '@angular/core';
 import { fromEvent, map, merge, Subject, takeUntil, tap } from 'rxjs';
-import { OptionsListComponent } from './options-list/options-list.component';
+import { OptionsListContainerComponent } from './options-list-container/options-list-container.component';
 
 
 @Directive({
   selector: '[optionsMenu]'
 })
 export class OptionsMenuDirective implements OnInit, OnDestroy {
-  @Input() menuComponent: OptionsListComponent;
-  @Input() data: any;
+  @Input() menuComponent: OptionsListContainerComponent;
   private _destroy$ = new Subject<void>();
   private _context$ = new Subject<void>();
 
-  @HostBinding('class') class = 'context-menu';
+  @HostBinding('class') class = 'options-list-wrapper';
 
   constructor(private el: ElementRef) {}
 
   ngOnInit(): void {
-    // if (!this.menuComponent.available) {
-    //   return;
-    // }
-    // this.menuComponent.data = this.data;
-    const mainContext$ = fromEvent(this.el.nativeElement, 'contextmenu');
-    const bindRightHandler = this.onRightClickHandler.bind(this);
+    const mainContext$ = fromEvent(this.el.nativeElement, 'click');
+    const bindClickHandler = this.onClickHandler.bind(this);
     mainContext$.pipe(
-      tap(bindRightHandler),
+      tap(bindClickHandler),
       takeUntil(this._context$)
     ).subscribe();
   }
 
   async ngOnDestroy(): Promise<void> {
-    // this.menuComponent.hide();
+    this.menuComponent.hide();
     this._context$.next();
     await this.destroy();
   }
 
-  private async onRightClickHandler(e: any): Promise<void> {
-    // if (!this.menuComponent?.available) {
-    //   await this.ngOnDestroy();
-    // }
-    // this.menuComponent.data = this.data;
+  private async onClickHandler(e: any): Promise<void> {
+    await this.destroy();
 
     e.preventDefault();
-    await this.destroy();
+    e.stopPropagation();
 
     const scroll$ = fromEvent(document, 'wheel');
 
     scroll$.pipe(
       tap(() => {
-        // if (this.menuComponent.visible && !this.isInViewport()) {
-        //   this.hideMenuAndRemoveScrollListener();
-        // }
-      }),
-      takeUntil(this._destroy$)
-    ).subscribe();
-
-    const documentClick$ = fromEvent(document, 'click');
-    const itemClick$ = fromEvent(this.el.nativeElement, 'click');
-    const context$ = fromEvent(document, 'contextmenu');
-    const outEvents$ = merge(documentClick$, itemClick$, context$);
-    outEvents$.pipe(
-      map((evt: any) => {
-        evt.stopPropagation();
-        if (evt.type === 'click' || !evt.target.closest('.context-menu')) {
+        if (this.menuComponent.visible && !this.isInViewport()) {
           this.hideMenuAndRemoveScrollListener();
         }
       }),
       takeUntil(this._destroy$)
     ).subscribe();
 
-    // this.menuComponent.show({
-    //   top: `${e.y}px`,
-    //   left: `${e.x}px`,
-    // });
+    const documentClick$ = fromEvent(document, 'click');
+    const itemClick$ = fromEvent(this.el.nativeElement, 'click');
+    const outEvents$ = merge(documentClick$, itemClick$);
+    outEvents$.pipe(
+      map((evt: any) => {
+        evt.stopPropagation();
+        if (evt.type === 'click' || !evt.target.closest('.options-list-wrapper')) {
+          this.hideMenuAndRemoveScrollListener();
+        }
+      }),
+      takeUntil(this._destroy$)
+    ).subscribe();
+
+    this.menuComponent.show({
+      top: `${e.y}px`,
+      left: `${e.x}px`,
+    });
   }
 
   private async hideMenuAndRemoveScrollListener(): Promise<void> {
-    // this.menuComponent.hide();
+    this.menuComponent.hide();
     await this.destroy();
   }
 
