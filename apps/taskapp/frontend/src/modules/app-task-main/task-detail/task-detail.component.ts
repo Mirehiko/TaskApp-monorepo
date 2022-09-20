@@ -50,6 +50,36 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
   }
 
   ngOnInit(): void {
+    this.menuItems = [
+      {
+        name: 'Create child',
+        action: TaskListMenuAction.ADD_CHILD,
+      },
+      {
+        name: 'Delete',
+        action: TaskListMenuAction.DELETE,
+      },
+      {
+        name: 'Pin',
+        action: TaskListMenuAction.PIN,
+      },
+      {
+        name: 'Move',
+        action: TaskListMenuAction.MOVE,
+      },
+      {
+        name: 'Duplicate',
+        action: TaskListMenuAction.COPY,
+      },
+      {
+        name: 'Focus',
+        action: TaskListMenuAction.FOCUS,
+      },
+      {
+        name: 'Copy link',
+        action: TaskListMenuAction.COPY_LINK,
+      },
+    ];
   }
 
   protected async initData(): Promise<void> {

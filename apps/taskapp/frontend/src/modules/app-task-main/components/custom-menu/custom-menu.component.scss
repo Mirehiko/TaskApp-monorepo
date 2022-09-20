@@ -1,7 +1,7 @@
-:host {
+.list-item-menu {
   display: none;
 }
-:host(.list-item-menu--opened) {
+.list-item-menu--opened {
   display: block;
   position: fixed;
   max-width: 192px;

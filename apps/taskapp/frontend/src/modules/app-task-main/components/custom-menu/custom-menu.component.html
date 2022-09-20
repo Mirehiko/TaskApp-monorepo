@@ -1,1 +1,5 @@
-<div><ng-content></ng-content></div>
+<ng-template #templatePortalContent>
+  <div #menuContainer class="list-item-menu" [class.list-item-menu--opened]="visible">
+    <ng-content></ng-content>
+  </div>
+</ng-template>

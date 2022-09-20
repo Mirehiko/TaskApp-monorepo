@@ -9,23 +9,6 @@ type TaskGroupsByPriority = TaskPriority | AdditionTaskGroups;
 const TaskGroupsByPriority = { ...TaskPriority, ...AdditionTaskGroups };
 
 export const taskListConfig: IListConfig = {
-  groups: [{
-    name: 'High',
-    type: TaskPriority.HIGH
-  },
-  {
-    name: 'Medium',
-    type: TaskPriority.MEDIUM
-  },
-  {
-    name: 'Low',
-    type: TaskPriority.LOW
-  },
-  {
-    name: 'None',
-    type: TaskPriority.NONE
-  }],
-
   pinnable: true,
   listDescription: [
     {
@@ -35,7 +18,6 @@ export const taskListConfig: IListConfig = {
       field: 'createdAt',
     }
   ],
-  navigateTo: '/taskapp/ttp',
   checkboxOnly: true,
   lockNavigateToItemOnKey: true,
 }
