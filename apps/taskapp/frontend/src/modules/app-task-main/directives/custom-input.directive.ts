@@ -65,7 +65,7 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
     this.setStyles(this.defaultEditStyle);
     this.focused = true;
     this.focusChanged.emit(this.focused);
-    setTimeout(() => this.focus, 0);
+    this.focus();
     this.changePlaceholderState();
   }
 
@@ -201,7 +201,8 @@ export class CustomInputDirective implements ControlValueAccessor, Validator, On
       this.setStyles(this.defaultEditStyle);
       this.focused = true;
       this.focusChanged.emit(this.focused);
-      setTimeout(() => this.focus, 0);
+
+      this.focus();
     }
   }
 

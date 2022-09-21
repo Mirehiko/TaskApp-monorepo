@@ -160,16 +160,22 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
     let nextItem: TreeItemFlatNode<T>;
     let searchData: TreeItemFlatNode<T>[] = [];
     let checkLevel = false;
+    let collapseNode = false;
     let isMulti = false;
     let currentIndex;
     switch (event.keyCode) {
       case KeyCodeName.ARROW_LEFT:
       case KeyCodeName.ARROW_RIGHT: {return;}
       case KeyCodeName.ARROW_UP: {
-        if (event.ctrlKey) {
+        if (event.shiftKey && event.ctrlKey) {
+          collapseNode = true;
+        }
+        else if (event.ctrlKey) {
           return;
         }
-        isMulti = event.shiftKey;
+
+        isMulti = event.shiftKey && !collapseNode;
+
         searchData = this.getLevelData(item);
         currentIndex = searchData.indexOf(item);
         nextItem = BaseTreeComponent.isFirstElement(currentIndex) ? searchData[searchData.length - 1] : searchData[currentIndex - 1];
@@ -193,7 +199,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
           return;
         }
 
-        isMulti = event.shiftKey;
+        isMulti = event.shiftKey && !checkLevel;
 
         searchData = this.getLevelData(item);
         currentIndex = searchData.indexOf(item);
@@ -252,8 +258,14 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
       }
     }
 
+    if (item.expandable && collapseNode) {
+      this.treeControl.collapse(item);
+      return;
+    }
+
     if (item.expandable && checkLevel) {
-      this.expandNodes(item);
+      this.treeControl.expand(item);
+      return;
     }
 
     if (!nextItem!) {
