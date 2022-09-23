@@ -2,7 +2,7 @@
   <div class="page-menu">
     <app-nested-list [data]="tags">
       <ng-template let-item #item>
-        <span>{{item.name}}</span>
+        <span app-nested-list-item>{{item.name}}</span>
       </ng-template>
     </app-nested-list>
   </div>

@@ -1,13 +1,53 @@
-<ul cdkDropList class="example-list" (cdkDropListDropped)="drop($event)" *ngIf="data.length">
-  <ng-container *ngFor="let item of data">
-    <li class="example-box" cdkDrag>
-      <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+<ul cdkDropList class="nested-list" (cdkDropListDropped)="drop($event)" *ngIf="data.length">
+  <ng-container *ngFor="let dataItem of data">
+    <ng-container *ngIf="dataItem.children.length; else simpleItem">
+      <div class="nested-list-group" cdkDrag>
+        <div class="nested-item-placeholder" *cdkDragPlaceholder></div>
+        <div class="nested-list-group-name ni-wrapper">
+          <div class="ni-description">
+            [>]
+            <ng-container
+              *ngIf="itemTemplateRef"
+              [ngTemplateOutlet]="itemTemplateRef"
+              [ngTemplateOutletContext]="{$implicit:dataItem}">
+            </ng-container>
+          </div>
+          <div class="ni-actions">[...]</div>
+        </div>
+
+        <ul class="nested-list-group-list">
+          <ng-container
+            *ngFor="let child of dataItem.children"
+            [ngTemplateOutlet]="item"
+            [ngTemplateOutletContext]="{$implicit:child}">
+          </ng-container>
+        </ul>
+      </div>
+    </ng-container>
+
+    <ng-template #simpleItem>
       <ng-container
-        *ngIf="itemTemplateRef"
-        [ngTemplateOutlet]="itemTemplateRef"
-        [ngTemplateOutletContext]="{$implicit:item}">
+        [ngTemplateOutlet]="item"
+        [ngTemplateOutletContext]="{$implicit:dataItem}">
       </ng-container>
-    </li>
+    </ng-template>
+
+    <ng-template #item let-content>
+      <li class="nested-item" cdkDrag>
+        <div class="nested-item-placeholder" *cdkDragPlaceholder></div>
+        <div class="ni-wrapper">
+          <div class="ni-description">
+            [>]
+            <ng-container
+              *ngIf="itemTemplateRef"
+              [ngTemplateOutlet]="itemTemplateRef"
+              [ngTemplateOutletContext]="{$implicit:content}">
+            </ng-container>
+          </div>
+          <div class="ni-actions">[...]</div>
+        </div>
+      </li>
+    </ng-template>
   </ng-container>
 </ul>
 
