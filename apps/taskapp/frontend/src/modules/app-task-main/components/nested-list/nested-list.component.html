@@ -1,0 +1,15 @@
+<ul cdkDropList class="example-list" (cdkDropListDropped)="drop($event)" *ngIf="data.length">
+  <ng-container *ngFor="let item of data">
+    <li class="example-box" cdkDrag>
+      <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+      <ng-container
+        *ngIf="itemTemplateRef"
+        [ngTemplateOutlet]="itemTemplateRef"
+        [ngTemplateOutletContext]="{$implicit:item}">
+      </ng-container>
+    </li>
+  </ng-container>
+</ul>
+
+
+

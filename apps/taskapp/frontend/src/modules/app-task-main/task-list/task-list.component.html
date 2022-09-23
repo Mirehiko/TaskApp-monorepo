@@ -1,4 +1,11 @@
 <app-navigable-page [pageName]="'Tasks'">
+  <div class="page-menu">
+    <app-nested-list [data]="tags">
+      <ng-template let-item #item>
+        <span>{{item.name}}</span>
+      </ng-template>
+    </app-nested-list>
+  </div>
   <div class="page page-body">
     <app-task-tree *ngIf="dataLoaded" [dataList]="tasks" [config]="taskListConfig" [menuItems]="menuItems" (itemAction)="onMenuAction($event)"></app-task-tree>
   </div>

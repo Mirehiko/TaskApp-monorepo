@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { CustomElementsModule } from '../components/custom-elements.module';
 import { MatModule } from '../../../app/shared/app-common.module';
 import { NavigablePageModule } from '../components/navigable-page/navigable-page.module';
+import { NestedListModule } from '../components/nested-list/nested-list.module';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { NavigablePageModule } from '../components/navigable-page/navigable-page
     MatModule,
     NavigablePageModule,
     DndTreeModule,
+    NestedListModule,
     RouterModule.forChild([
       {
         path: "",
