@@ -1,8 +1,8 @@
 <app-navigable-page [pageName]="'Tasks'">
   <div class="page-menu">
-    <app-nested-list [data]="tags">
+    <app-nested-list [data]="tags" (itemClick)="getTasksByTag($event)" [draggable]="true">
       <ng-template let-item #item>
-        <span app-nested-list-item>{{item.name}}</span>
+        <span app-nested-list-item >{{item.name}}</span>
       </ng-template>
     </app-nested-list>
   </div>

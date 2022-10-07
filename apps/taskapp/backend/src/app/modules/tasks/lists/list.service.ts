@@ -4,7 +4,14 @@ import { ListRepository } from './list-repository';
 import { TaskTreeRepository } from '../task/task-repository';
 import { List } from './schemas/list.entity';
 import { User } from '../../common/user/schemas/user.entity';
-import { IListGetParams, IListGetParamsData, ListBehaviorType, ListRequestDto, ListType } from '@taskapp/app-common';
+import {
+  IListGetParams,
+  IListGetParamsData,
+  ListBehaviorType,
+  ListRequestDto,
+  ListType,
+  TreeEntityType
+} from '@taskapp/app-common';
 
 
 @Injectable()
@@ -35,7 +42,7 @@ export class ListService extends BaseListService<List, IListGetParamsData> {
     list.behavior_type = requestDto.behavior_type || ListBehaviorType.PERSONAL;
     list.icon = requestDto.icon || '';
     list.parent_id = requestDto.parent_id || -1;
-    list.type = requestDto.type || ListType.LIST;
+    list.type = requestDto.type || TreeEntityType.DETAIL;
 
     if (requestDto.parent_id && requestDto.parent_id !== -1) {
       list.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
@@ -65,6 +72,7 @@ export class ListService extends BaseListService<List, IListGetParamsData> {
     list.archived = requestDto.archived || list.archived;
     list.behavior_type = requestDto.behavior_type || list.behavior_type;
     list.updatedBy = author;
+    list.type = requestDto.type || list.type;
 
     try {
       return await this.repository.save(list);

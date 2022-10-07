@@ -1,5 +1,5 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
-import { RequestObjectWithId } from '../../../common';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { RequestObjectWithId, TreeEntityType } from '../../../common';
 import { TaskPriority, TaskStatus } from '../../enums';
 
 
@@ -53,4 +53,10 @@ export class TaskRequestDto implements RequestObjectWithId {
   @IsString()
   @IsOptional()
   pinned?: boolean;
+
+  @IsOptional()
+  sortOrder?: number;
+
+  @IsNotEmpty()
+  type: TreeEntityType = TreeEntityType.DETAIL;
 }

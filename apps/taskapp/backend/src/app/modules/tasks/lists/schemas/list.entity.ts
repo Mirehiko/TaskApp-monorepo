@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
 import { Task } from '../../task/schemas/task.entity';
-import { ListBehaviorType, ListType } from '@taskapp/app-common';
+import { ListBehaviorType, ListType, TreeEntityType } from '@taskapp/app-common';
 import { User } from '../../../common/user/schemas/user.entity';
 
 
@@ -25,9 +25,13 @@ export class List extends BaseEntity {
   @Column('text')
   color: string = '';
 
-  @ApiProperty({ example: 'folder', description: 'Тип списка'})
-  @Column({type: "enum", enum: Object.values(ListType), default: ListType.LIST})
-  type: ListType;
+  @ApiProperty({ example: 'detail', description: 'Тип вершины'})
+  @Column({type: "enum", enum: Object.values(TreeEntityType), default: TreeEntityType.DETAIL})
+  type: TreeEntityType;
+
+  @ApiProperty({ example: '1', description: 'порядок сортировки'})
+  @Column({ nullable: false })
+  sortOrder: number = -1;
 
   @ApiProperty({ example: 'folder', description: 'Тип списка'})
   @Column({type: "enum", enum: Object.values(ListBehaviorType), default: ListBehaviorType.PERSONAL})

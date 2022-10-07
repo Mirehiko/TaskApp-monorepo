@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
-import { ListType } from "../../enums";
 import { Expose } from "class-transformer";
+import { BaseTreeDto, TreeEntityType } from '../../../common';
 
 
 export class ListResponseDto {
@@ -32,8 +32,13 @@ export class ListResponseDto {
   description?: string;
 
   @Expose()
-  type?: ListType;
-
-  @Expose()
   archived?: boolean;
+
+  @IsNotEmpty()
+  @Expose()
+  sortOrder: number;
+
+  @IsNotEmpty()
+  @Expose()
+  type: TreeEntityType = TreeEntityType.DETAIL;
 }

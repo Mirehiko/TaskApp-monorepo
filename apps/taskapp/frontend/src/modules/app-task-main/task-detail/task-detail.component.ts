@@ -1,11 +1,10 @@
 import { Component, Injector, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TagRequestDto, TagResponseDto, TaskRequestDto, TaskResponseDto } from '@taskapp/app-common';
+import { TagRequestDto, TagResponseDto, TaskRequestDto, TaskResponseDto, TreeEntityType } from '@taskapp/app-common';
 import { TaskRestService } from '../services/rest/task-rest.service';
 import { BaseDetailPage } from '../components/base-detail-page';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CoreService } from '../services/core.service';
-import { MatDialog } from '@angular/material/dialog';
 import { IActionListItem, IListItemAction, ITreeItem } from '../components/list-module/base-list.component';
 import { taskListConfig } from './task-tree-config';
 import { TaskListMenuAction } from '../task-common/task-common';
@@ -148,7 +147,9 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
         children: [],
         color: '',
         icon: '',
-        parent_id: -1
+        parent_id: -1,
+        type: TreeEntityType.DETAIL,
+        sortOrder: -1
       });
     }
   }
@@ -159,7 +160,8 @@ export class TaskDetailComponent extends BaseDetailPage implements OnInit, OnDes
         name: tag.name?.match(/\'(.*)\'/)?.pop() as string,
         icon: '',
         color: '',
-        parent_id: -1
+        parent_id: -1,
+        type: tag.type
       });
       return;
     }

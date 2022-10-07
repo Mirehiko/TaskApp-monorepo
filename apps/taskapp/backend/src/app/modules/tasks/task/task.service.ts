@@ -6,7 +6,7 @@ import {
   ITaskGetParamsData,
   TaskPriority,
   TaskRequestDto,
-  TaskStatus
+  TaskStatus, TreeEntityType
 } from '@taskapp/app-common';
 import { TaskTreeRepository } from './task-repository';
 import { ListRepository } from '../lists/list-repository';
@@ -48,6 +48,7 @@ export class TaskService extends BaseTreeService<Task, ITaskGetParamsData> {
     newTask.priority = requestDto.priority || TaskPriority.NONE;
     newTask.startDate = requestDto.startDate || null;
     newTask.endDate = requestDto.endDate || null;
+    newTask.type = requestDto.type || TreeEntityType.DETAIL;
 
     if (requestDto.assignee) {
       newTask.assignee = await this.userRepository.findOneOrFail({id: requestDto.assignee});
@@ -94,6 +95,7 @@ export class TaskService extends BaseTreeService<Task, ITaskGetParamsData> {
     task.startDate = requestDto.startDate || null;
     task.endDate = requestDto.endDate || null;
     task.updatedBy = author;
+    task.type = requestDto.type || task.type;
 
     try {
       return await this.repository.save(task);

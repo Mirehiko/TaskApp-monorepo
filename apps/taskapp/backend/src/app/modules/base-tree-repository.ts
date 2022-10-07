@@ -1,6 +1,6 @@
 import { User } from './common/user/schemas/user.entity';
 import { In, TreeRepository } from 'typeorm';
-import { MoveDto } from '@taskapp/app-common';
+import { MoveDto, TreeEntityType } from '@taskapp/app-common';
 
 
 export interface TreeEntity<E> {
@@ -8,9 +8,11 @@ export interface TreeEntity<E> {
   parent: any;
   name: string;
   parent_id: number;
+  type: TreeEntityType;
   createdBy?: User;
   updatedBy?: User;
   children?: E[];
+  sortOrder: number;
 }
 
 export class BaseTreeRepository<T extends TreeEntity<T>> extends TreeRepository<T> {

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TaskRestService } from '../services/rest/task-rest.service';
 import { AuthService } from '../../auth/services/auth.service';
 import { SocketNotificationService } from '../services/socket-notification.service';
-import { ListResponseDto, TagResponseDto, TaskResponseDto } from '@taskapp/app-common';
+import { ListResponseDto, TagRequestDto, TagResponseDto, TaskResponseDto } from '@taskapp/app-common';
 import {
   IActionListItem,
   IListItemAction,
@@ -86,5 +86,9 @@ export class TaskListComponent implements OnInit {
 
   public onMenuAction(action: IListItemAction): void {
     console.log(action)
+  }
+
+  public async getTasksByTag(item: TagResponseDto): Promise<void> {
+    console.log(item)
   }
 }

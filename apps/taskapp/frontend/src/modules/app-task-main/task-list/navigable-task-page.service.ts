@@ -13,6 +13,8 @@ export class NavigableTaskPageService {
   public lists: ListResponseDto[] = [];
   public $tags: Subject<TagResponseDto[]> = new Subject();
   public $lists: Subject<ListResponseDto[]> = new Subject();
+  public selectedTags: number[] = [];
+  public selectedLists: number[] = [];
 
 
   constructor(
@@ -33,7 +35,7 @@ export class NavigableTaskPageService {
   }
 
   async getTags(): Promise<TagResponseDto[]> {
-    this.tags = await this.tagRestService.getTree();
+    this.tags = await this.tagRestService.getList();
     this.$tags.next(this.tags);
     return this.tags;
   }
@@ -43,5 +45,4 @@ export class NavigableTaskPageService {
     this.$lists.next(this.lists);
     return this.lists;
   }
-
 }

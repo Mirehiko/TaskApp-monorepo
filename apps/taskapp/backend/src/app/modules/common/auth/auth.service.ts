@@ -64,7 +64,7 @@ export class AuthService {
    */
   async signIn(authUserDto: AuthUserDto): Promise<AuthResponseDto> {
     const user = await this.validateUser(authUserDto);
-    const token = await this.generateToken(user);
+    const token = await this.generateToken(user, {expiresIn: moment().add(7, 'days').valueOf()});
     if (user.status === UserStatusEnum.PENDING) {
       // operation.status = UserStatusEnum.ACTIVE;
       // await this.userService.usersRepository.save(operation);
@@ -91,14 +91,12 @@ export class AuthService {
     if (withStatusCheck && (user.status === UserStatusEnum.BLOCKED)) {
       throw new MethodNotAllowedException();
     }
-    const token = await this.generateToken(user);
-    const expireAt = moment()
-      .add(7, 'day')
-      .toISOString();
+    const expireAt = moment();
+    const token = await this.generateToken(user, {expiresIn: expireAt.valueOf()});
 
     await this.saveToken({
       token,
-      expireAt,
+      expireAt: expireAt.toISOString(),
       userId: user.id,
     });
 
@@ -239,5 +237,4 @@ export class AuthService {
     const user = await this.jwtService.verify(token);
     return await this.userService.getByID(user.id);
   }
-
 }

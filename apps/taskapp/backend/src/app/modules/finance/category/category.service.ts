@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { CategoryTreeRepository } from './category-repository';
 import { Category } from './schemas/category.entity';
-import { CategoryRequestDto, ICategoryGetParams, IGetParamsData } from '@taskapp/app-common';
+import { CategoryRequestDto, ICategoryGetParams, IGetParamsData, TreeEntityType } from '@taskapp/app-common';
 import { UserRepository } from '../../common/user/user-repository';
 import { User } from '../../common/user/schemas/user.entity';
 import { BaseTreeService } from '../../base-tree-service';
@@ -34,6 +34,7 @@ export class CategoryService extends BaseTreeService<Category, IGetParamsData> {
     category.color = requestDto.color || '';
     category.icon = requestDto.icon || '';
     category.parent_id = requestDto.parent_id || -1;
+    category.type = requestDto.type || TreeEntityType.DETAIL;
 
     if (requestDto.parent_id && requestDto.parent_id !== -1) {
       category.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
@@ -61,6 +62,7 @@ export class CategoryService extends BaseTreeService<Category, IGetParamsData> {
     category.icon = requestDto.icon || category.icon;
     category.color = requestDto.color || category.color;
     category.updatedBy = author;
+    category.type = requestDto.type || category.type;
 
     try {
       return await this.repository.save(category);

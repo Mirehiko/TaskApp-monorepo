@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, Tree, TreeChildren, TreeParent } from 'typeorm';
 import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
-import { TaskBehavior, TaskPriority, TaskStatus } from '@taskapp/app-common';
+import { TaskBehavior, TaskPriority, TaskStatus, TreeEntityType } from '@taskapp/app-common';
 import { Tag } from '../../tags/schemas/tag.entity';
 import { List } from '../../lists/schemas/list.entity';
 import { TreeEntity } from '../../../base-tree-repository';
@@ -106,5 +106,12 @@ export class Task extends BaseEntity implements TreeEntity<Task> {
   @OneToMany(() => TaskCommentEntity, taskCommentEntity => taskCommentEntity.task)
   comments: TaskCommentEntity[];
 
+  @ApiProperty({ example: 'detail', description: 'Тип вершины'})
+  @Column({type: "enum", enum: Object.values(TreeEntityType), default: TreeEntityType.DETAIL})
+  type: TreeEntityType;
+
+  @ApiProperty({ example: '1', description: 'порядок сортировки'})
+  @Column({ nullable: false })
+  sortOrder: number = -1;
   // TODO: move some information to different metadata?
 }

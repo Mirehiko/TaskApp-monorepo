@@ -12,6 +12,7 @@ import { BaseEntity } from '../../../base-entity';
 import { User } from '../../../common/user/schemas/user.entity';
 import { Task } from '../../task/schemas/task.entity';
 import { TreeEntity } from '../../../base-tree-repository';
+import { TreeEntityType } from '../../../../../../../../../libs/app-common/src';
 
 
 @Entity()
@@ -62,4 +63,11 @@ export class Tag extends BaseEntity implements TreeEntity<Tag> {
   @ManyToMany(() => Task, task => task.tags)
   tasks: Task[];
 
+  @ApiProperty({ example: 'detail', description: 'Тип вершины'})
+  @Column({type: "enum", enum: Object.values(TreeEntityType), default: TreeEntityType.DETAIL})
+  type: TreeEntityType;
+
+  @ApiProperty({ example: '1', description: 'порядок сортировки'})
+  @Column({ nullable: false })
+  sortOrder: number = -1;
 }

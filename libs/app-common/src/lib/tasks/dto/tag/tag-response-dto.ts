@@ -1,8 +1,9 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
 import { Expose } from "class-transformer";
+import { BaseTreeDto, TreeEntityType } from '../../../common';
 
 
-export class TagResponseDto {
+export class TagResponseDto extends BaseTreeDto {
   @Expose()
   id: number;
 
@@ -24,4 +25,12 @@ export class TagResponseDto {
   @IsOptional()
   @Expose()
   children?: TagResponseDto[];
+
+  @IsNotEmpty()
+  @Expose()
+  sortOrder: number;
+
+  @IsNotEmpty()
+  @Expose()
+  type: TreeEntityType = TreeEntityType.DETAIL;
 }

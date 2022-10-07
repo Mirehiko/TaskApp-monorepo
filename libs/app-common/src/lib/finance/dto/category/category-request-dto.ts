@@ -1,4 +1,5 @@
 import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
+import { TreeEntityType } from '../../../common';
 
 
 export class CategoryRequestDto {
@@ -25,4 +26,10 @@ export class CategoryRequestDto {
   @IsBoolean()
   @IsOptional()
   archived?: boolean;
+
+  @IsOptional()
+  sortOrder?: number;
+
+  @IsNotEmpty()
+  type: TreeEntityType = TreeEntityType.DETAIL;
 }

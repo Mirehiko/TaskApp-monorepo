@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable, Param } from '@nestjs/common';
 import { Tag } from './schemas/tag.entity';
 import { TagTreeRepository } from './tag-repository';
 import { TaskTreeRepository } from '../task/task-repository';
-import { IGetParamsData, ITagGetParams, TagRequestDto } from '@taskapp/app-common';
+import { IGetParamsData, ITagGetParams, TagRequestDto, TreeEntityType } from '@taskapp/app-common';
 import { User } from '../../common/user/schemas/user.entity';
 import { BaseTreeService } from '../../base-tree-service';
 
@@ -33,6 +33,7 @@ export class TagService extends BaseTreeService<Tag, IGetParamsData> {
     tag.color = requestDto.color || '';
     tag.icon = requestDto.icon || '';
     tag.parent_id = requestDto.parent_id || -1;
+    tag.type = requestDto.type || TreeEntityType.DETAIL;
 
     if (requestDto.parent_id && requestDto.parent_id !== -1) {
       tag.parent = await this.repository.findOne({where: {id: requestDto.parent_id}});
@@ -59,6 +60,7 @@ export class TagService extends BaseTreeService<Tag, IGetParamsData> {
     tag.icon = requestDto.icon || tag.icon;
     tag.color = requestDto.color || tag.color;
     tag.updatedBy = author;
+    tag.type = requestDto.type || tag.type;
 
     try {
       return await this.repository.save(tag);

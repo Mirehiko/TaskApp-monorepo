@@ -53,7 +53,7 @@ export class TaskRestService extends BaseRestService {
     return await this.POST<TaskResponseDto>(`${this.baseUrl}/task/${taskId}/assign`, { assigneeId });
   }
 
-  public async serReviewer(taskId: number, reviewerId: number): Promise<TaskResponseDto> {
+  public async setReviewer(taskId: number, reviewerId: number): Promise<TaskResponseDto> {
     return await this.POST<TaskResponseDto>(`${this.baseUrl}/task/${taskId}/reviewer`, { reviewerId });
   }
 
