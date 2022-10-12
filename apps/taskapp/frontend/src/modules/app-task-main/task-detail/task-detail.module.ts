@@ -6,6 +6,7 @@ import { CustomElementsModule } from '../components/custom-elements.module';
 import { MatModule } from '../../../app/shared/app-common.module';
 import { TaskDetailComponent } from './task-detail.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { BaseTreeDatabaseService } from '../services/base-data.service';
 
 
 @NgModule({
@@ -29,7 +30,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     TaskDetailComponent
   ],
   exports: [
-  ]
+  ],
 })
 export class TaskDetailModule {
 }

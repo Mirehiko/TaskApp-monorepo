@@ -17,7 +17,6 @@ import { TaskRestService } from './services/rest/task-rest.service';
   ],
   exports: [
   ],
-  providers: [TaskRestService]
 })
 export class TaskAppModule {
 }

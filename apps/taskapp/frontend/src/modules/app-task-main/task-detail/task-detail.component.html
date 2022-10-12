@@ -3,7 +3,7 @@
   <div class="page-body scrollable">
     <div class=" ">
       <form *ngIf="form" [formGroup]="form" class="form section">
-        <a *ngIf="!!parentLink" (click)="navigate(parentLink)">parent node</a>
+        <a *ngIf="!!parentLink" (click)="navigate(parentLink)">{{taskIn.parent_id}}</a>
         <h2 [classList]="'f-control control-name'" [minHeight]="'initial'" [lockEnter]="true" inputDirective formControlName="name" (contentChanged)="save()"
             [placeholder]="'Что нужно сделать'">{{taskIn.name}}</h2>
         <pre [classList]="'f-control control-description'" [minHeight]="'100px'" inputDirective formControlName="description" (contentChanged)="save()" [placeholder]="placeholderText">{{taskIn.description}}</pre>

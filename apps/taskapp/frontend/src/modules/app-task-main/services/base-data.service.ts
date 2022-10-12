@@ -1,18 +1,23 @@
 import { BehaviorSubject } from 'rxjs';
 import { ITreeItem } from '../components/list-module/base-list.component';
+import { Injectable } from '@angular/core';
+import { BaseTreeEntityRestService } from './rest/base-tree-entity-rest.service';
 
 
-export class BaseTreeDatabaseService<T> {
+@Injectable()
+export abstract class BaseTreeDatabaseService<requestDto, responseDto, params> {
   private _expanded: boolean = false;
   private _childCount: number = 0;
-  protected parents = new Map<ITreeItem<T> | -1, ITreeItem<T>[]>();
-  protected childParent = new Map<ITreeItem<T>, ITreeItem<T> | -1>();
+  protected parents = new Map<ITreeItem<responseDto> | -1, ITreeItem<responseDto>[]>();
+  protected childParent = new Map<ITreeItem<responseDto>, ITreeItem<responseDto> | -1>();
   protected pinnedGroup = new ITreeItem();
-  public _dataChange = new BehaviorSubject<ITreeItem<T>[]>([]);
-  private list: ITreeItem<T>[] = [];
+  public _dataChange = new BehaviorSubject<ITreeItem<responseDto>[]>([]);
+  private list: ITreeItem<responseDto>[] = [];
   public initGroups: boolean = false;
 
-  constructor() {
+  constructor(
+    protected rest: BaseTreeEntityRestService<requestDto, responseDto, params>
+  ) {
     this.pinnedGroup.data = {};
     this.pinnedGroup.data.id = -2;
     this.pinnedGroup.data.parent_id = -1;
@@ -23,8 +28,10 @@ export class BaseTreeDatabaseService<T> {
     this.initialize();
   }
 
+  public abstract restInsert(items: ITreeItem<responseDto>[], parentId?: number): Promise<ITreeItem<responseDto>[]>;
+  public abstract restUpdate(item: ITreeItem<responseDto>, name: string): Promise<void>;
 
-  public initialize(items: ITreeItem<T>[] = [], expanded: boolean = true) {
+  public initialize(items: ITreeItem<responseDto>[] = [], expanded: boolean = true) {
     // this.expanded = expanded;
     // this._filterPinned(items);
     this.list = [this.pinnedGroup, ...items];
@@ -34,49 +41,55 @@ export class BaseTreeDatabaseService<T> {
     this._dataChange.next(this.list);
   }
 
-  public get data(): ITreeItem<T>[] {
+  public get data(): ITreeItem<responseDto>[] {
     // return this._dataChange.value;
     return this.list;
   }
 
-  public addChildren(parent: ITreeItem<T>, items: ITreeItem<T>[]): void {
+  public async addChildren(parent: ITreeItem<responseDto>, items: ITreeItem<responseDto>[]): Promise<ITreeItem<responseDto>[]> {
     if (!parent.children) {
       parent.children = [];
     }
 
+    const createdItems = await this.restInsert(items, parent.id);
+
     const p = this.parents.get(parent!);
-    items.forEach(item => {
+    createdItems.forEach(item => {
       p?.push(item);
       this.childParent.set(item, parent);
     });
 
     this._dataChange.next(this.data);
+    return createdItems;
   }
 
-  public insertTo(item: ITreeItem<T>, items: ITreeItem<T>[], position?: number): void {
-    // item.groupId = this.id;
+  public async insertTo(item: ITreeItem<responseDto>, items: ITreeItem<responseDto>[], position?: number): Promise<ITreeItem<responseDto>[]> {
+    // this.restInsert()
+    const createdItems = await this.restInsert(items);
 
     const parentNode = this.childParent.get(item);
     const parent = this.parents.get(parentNode!);
 
     if (position) {
-      this.parents.get(parentNode!)?.splice(position + 1, 0, ...items);
+      this.parents.get(parentNode!)?.splice(position + 1, 0, ...createdItems);
     }
     else {
       const index = parent?.findIndex(i => i.id === item.id);
-      this.parents.get(parentNode!)?.splice(index! + 1, 0, ...items);
+      this.parents.get(parentNode!)?.splice(index! + 1, 0, ...createdItems);
     }
 
-    items.forEach(i => {
+    createdItems.forEach(i => {
       this.childParent.set(i, parentNode!);
-    })
-    this._dataChange.next(this.data);
+    });
 
+    this._dataChange.next(this.data);
     // this._recalculatePositions();
     this._countChildren();
+    return createdItems;
   }
 
-  public updateItem(item: ITreeItem<T>, name: string): void {
+  public async updateItem(item: ITreeItem<responseDto>, name: string): Promise<void> {
+    await this.restUpdate(item, name);
     const parent = this.childParent.get(item);
     this.parents.get(parent!)?.map(i => i.id === item.id ? item : i);
     this._dataChange.next(this.data);
@@ -86,7 +99,7 @@ export class BaseTreeDatabaseService<T> {
     return this._childCount;
   }
 
-  public removeItem(item: ITreeItem<T>): void {
+  public async removeItem(item: ITreeItem<responseDto>): Promise<void> {
     const parent = this.childParent.get(item);
 
     if (!parent) {
@@ -98,6 +111,9 @@ export class BaseTreeDatabaseService<T> {
     if (index === -1) {
       return;
     }
+
+    await this.rest.delete(item.id);
+
     this.parents.get(parent!)
       ?.splice(index!, 1);
     this.childParent.delete(item);
@@ -105,7 +121,7 @@ export class BaseTreeDatabaseService<T> {
     this._countChildren();
   }
 
-  private _map(data: ITreeItem<T>[], parent: ITreeItem<T> | -1): void {
+  private _map(data: ITreeItem<responseDto>[], parent: ITreeItem<responseDto> | -1): void {
     data.forEach(item => {
       this.parents.set(item, item.children || []);
       this.childParent.set(item, parent);
@@ -123,7 +139,7 @@ export class BaseTreeDatabaseService<T> {
     })
   }
 
-  private _counter(list: ITreeItem<T>[]): number {
+  private _counter(list: ITreeItem<responseDto>[]): number {
     return list.reduce((sum, item) => sum += !!item.children?.length ? this._counter(item.children) + 1 : 1, 0);
   }
 
@@ -145,17 +161,17 @@ export class BaseTreeDatabaseService<T> {
     })
   }
 
-  public pin(groupId: string, item: ITreeItem<T>): void {
+  public pin(groupId: string, item: ITreeItem<responseDto>): void {
     this._pinItem(item, true);
     this.list[0].children.push(item);
-    const parentNode: ITreeItem<T> = this.childParent.get(item) as ITreeItem<T>;
+    const parentNode: ITreeItem<responseDto> = this.childParent.get(item) as ITreeItem<responseDto>;
     const children = this.parents.get(parentNode!);
     const index = children!.findIndex(i => i.id === item.id);
     children!.splice(index, 1);
     this._dataChange.next(this.data);
   }
 
-  public unpin(groupId: string, item: ITreeItem<T>): void {
+  public unpin(groupId: string, item: ITreeItem<responseDto>): void {
     this._pinItem(item, false);
     const index = this.list[0].children.findIndex(i => i.id === item.id);
     this.list[0].children.splice(index, 1);
@@ -169,7 +185,7 @@ export class BaseTreeDatabaseService<T> {
     this._dataChange.next(this.data);
   }
 
-  private _pinItem(item: ITreeItem<T>, isPinned: boolean): void {
+  private _pinItem(item: ITreeItem<responseDto>, isPinned: boolean): void {
     item.pinned = isPinned;
     item.children?.map(ch => {
       ch.pinned = isPinned;
@@ -178,7 +194,7 @@ export class BaseTreeDatabaseService<T> {
     });
   }
 
-  // private _filterPinned(data: ITreeItem<T>[]): void {
+  // private _filterPinned(data: ITreeItem<responseDto>[]): void {
   //   data.forEach(item => {
   //     if (item.pinned) {
   //       this.pinnedGroup.children.push(item);
@@ -189,7 +205,7 @@ export class BaseTreeDatabaseService<T> {
   //   });
   // }
   //
-  // private excludePinned(data: ITreeItem<T>[]): ITreeItem<T>[] {
+  // private excludePinned(data: ITreeItem<responseDto>[]): ITreeItem<responseDto>[] {
   //   return data.filter
   // }
 
@@ -213,16 +229,3 @@ export class BaseTreeDatabaseService<T> {
     // this._childCount = 0;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

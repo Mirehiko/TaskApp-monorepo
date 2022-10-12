@@ -10,7 +10,7 @@ export class TaskRequestDto implements RequestObjectWithId {
 
   @IsOptional()
   @IsString()
-	name?: string;
+	name?: string = '';
 
   @IsString()
   @IsOptional()
@@ -58,5 +58,5 @@ export class TaskRequestDto implements RequestObjectWithId {
   sortOrder?: number;
 
   @IsNotEmpty()
-  type: TreeEntityType = TreeEntityType.DETAIL;
+  type?: TreeEntityType = TreeEntityType.DETAIL;
 }

@@ -24,36 +24,34 @@ class TreeItemFlatNode<T> extends ITreeItem<T> {
   selector: 'app-base-tree',
   template: '',
   styles: [],
-  providers: []
 })
-export class BaseTreeComponent<T> implements OnInit, OnChanges {
+export class BaseTreeComponent<requestDto, responseDto, params> implements OnInit, OnChanges {
   @Input() listName: string;
-  @Input() dataList: ITreeItem<T>[] = [];
+  @Input() dataList: ITreeItem<responseDto>[] = [];
   @Input() config: IListConfig;
   @Input() menuItems: IActionListItem<any>[] = [];
-  @Output() itemClicked: EventEmitter<number> = new EventEmitter<number>();
   @Output() itemAction: EventEmitter<IListItemAction> = new EventEmitter<IListItemAction>();
-  @ViewChild('tree') private tree: MatTree<T>;
+  @ViewChild('tree') private tree: MatTree<responseDto>;
   groupDivider: (data: any[], type: any) => any[];
-  groupedData: ITreeItem<T>[] = [];
+  groupedData: ITreeItem<responseDto>[] = [];
   public currentFocusId: number = -2;
 
-  flatNodeMap = new Map<TreeItemFlatNode<T>, ITreeItem<T>>();
-  nestedNodeMap = new Map<ITreeItem<T>, TreeItemFlatNode<T>>();
+  flatNodeMap = new Map<TreeItemFlatNode<responseDto>, ITreeItem<responseDto>>();
+  nestedNodeMap = new Map<ITreeItem<responseDto>, TreeItemFlatNode<responseDto>>();
 
-  selectedParent: TreeItemFlatNode<T> | null = null;
-  selectedItems: TreeItemFlatNode<T>[] = [];
+  selectedParent: TreeItemFlatNode<responseDto> | null = null;
+  selectedItems: TreeItemFlatNode<responseDto>[] = [];
   newItemName = '';
-  treeControl: FlatTreeControl<TreeItemFlatNode<T>>
+  treeControl: FlatTreeControl<TreeItemFlatNode<responseDto>>
 
-  treeFlattener: MatTreeFlattener<ITreeItem<T>, TreeItemFlatNode<T>>;
-  dataSource: MatTreeFlatDataSource<ITreeItem<T>, TreeItemFlatNode<T>>;
-  selection = new SelectionModel<TreeItemFlatNode<T>>(true);
+  treeFlattener: MatTreeFlattener<ITreeItem<responseDto>, TreeItemFlatNode<responseDto>>;
+  dataSource: MatTreeFlatDataSource<ITreeItem<responseDto>, TreeItemFlatNode<responseDto>>;
+  selection = new SelectionModel<TreeItemFlatNode<responseDto>>(true);
 
   hasGroups: boolean = false;
 
   constructor(
-    private _database: BaseTreeDatabaseService<T>,
+    private _database: BaseTreeDatabaseService<requestDto, responseDto, params>,
     private router: Router,
     private activatedRoute: ActivatedRoute,
   ) {
@@ -63,7 +61,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
       this.isExpandable,
       this.getChildren,
     );
-    this.treeControl = new FlatTreeControl<TreeItemFlatNode<T>>(this.getLevel, this.isExpandable);
+    this.treeControl = new FlatTreeControl<TreeItemFlatNode<responseDto>>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
     _database._dataChange.subscribe(data => {
@@ -96,7 +94,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
     this._database.initialize(this.groupedData);
   }
 
-  private async divideOnGroups(list: ITreeItem<T>[]): Promise<void> {
+  private async divideOnGroups(list: ITreeItem<responseDto>[]): Promise<void> {
     this.groupedData = [];
     if (this.config.groups && this.config.groups.length && this.config.groupDivider) {
       this.config.groups.forEach((group, index) => {
@@ -118,15 +116,15 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
     }
   }
 
-  getLevel = (node: TreeItemFlatNode<T>) => node.level;
-  isExpandable = (node: TreeItemFlatNode<T>) => node.expandable;
-  getChildren = (node: ITreeItem<T>): ITreeItem<T>[] => node.children;
-  hasChild = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.expandable && !_nodeData.isGroup;
-  isGroup = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData.isGroup;
-  hasNoContent = (_: number, _nodeData: TreeItemFlatNode<T>) => _nodeData === undefined;
-  readonly trackBy = (_: number, node: TreeItemFlatNode<T>) => node.id;
+  getLevel = (node: TreeItemFlatNode<responseDto>) => node.level;
+  isExpandable = (node: TreeItemFlatNode<responseDto>) => node.expandable;
+  getChildren = (node: ITreeItem<responseDto>): ITreeItem<responseDto>[] => node.children;
+  hasChild = (_: number, _nodeData: TreeItemFlatNode<responseDto>) => _nodeData.expandable && !_nodeData.isGroup;
+  isGroup = (_: number, _nodeData: TreeItemFlatNode<responseDto>) => _nodeData.isGroup;
+  hasNoContent = (_: number, _nodeData: TreeItemFlatNode<responseDto>) => _nodeData === undefined;
+  readonly trackBy = (_: number, node: TreeItemFlatNode<responseDto>) => node.id;
 
-  public selectItemOnClick(event: MouseEvent, item: TreeItemFlatNode<T>): void {
+  public selectItemOnClick(event: MouseEvent, item: TreeItemFlatNode<responseDto>): void {
     if (item.isGroup) {
       return;
     }
@@ -153,16 +151,17 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
     }
   }
 
-  public selectItemOnKey(event: KeyboardEvent, item: TreeItemFlatNode<T>): void {
+  public selectItemOnKey(event: KeyboardEvent, item: TreeItemFlatNode<responseDto>): void {
     if (item.isGroup) {
       return;
     }
-    let nextItem: TreeItemFlatNode<T>;
-    let searchData: TreeItemFlatNode<T>[] = [];
+    let nextItem: TreeItemFlatNode<responseDto>;
+    let searchData: TreeItemFlatNode<responseDto>[] = [];
     let checkLevel = false;
     let collapseNode = false;
     let isMulti = false;
     let currentIndex;
+
     switch (event.keyCode) {
       case KeyCodeName.ARROW_LEFT:
       case KeyCodeName.ARROW_RIGHT: {return;}
@@ -217,6 +216,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
         break;
       }
       case KeyCodeName.ENTER: {
+        console.log(item)
         if (item.data.id === -1) {
           return;
         }
@@ -296,7 +296,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
     return this.selectedItems.length > 1;
   }
 
-  private getLastNodeOfExpanded(item: TreeItemFlatNode<T>): TreeItemFlatNode<T> {
+  private getLastNodeOfExpanded(item: TreeItemFlatNode<responseDto>): TreeItemFlatNode<responseDto> {
     if (item.expandable && this.treeControl.isExpanded(item)) {
       const children = this.getChildrenByLevel(item, item.level + 1);
       return this.getLastNodeOfExpanded(children[children.length - 1]);
@@ -306,7 +306,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
     }
   }
 
-  private getNextAvailableNode(parent: TreeItemFlatNode<T>, arrow: KeyCodeName.ARROW_UP | KeyCodeName.ARROW_DOWN): TreeItemFlatNode<T> {
+  private getNextAvailableNode(parent: TreeItemFlatNode<responseDto>, arrow: KeyCodeName.ARROW_UP | KeyCodeName.ARROW_DOWN): TreeItemFlatNode<responseDto> {
     let upperLevelNodes;
     if (parent.data.parent_id) {
       upperLevelNodes = this.treeControl.dataNodes
@@ -335,7 +335,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
     }
   }
 
-  private expandNodes(node: TreeItemFlatNode<T>): void {
+  private expandNodes(node: TreeItemFlatNode<responseDto>): void {
     if (node.expandable) {
       this.treeControl.expand(node);
     }
@@ -345,7 +345,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
     }
   }
 
-  private getLevelData(item: TreeItemFlatNode<T>): TreeItemFlatNode<T>[] {
+  private getLevelData(item: TreeItemFlatNode<responseDto>): TreeItemFlatNode<responseDto>[] {
     return this.treeControl.dataNodes.filter(i => {
       if (i.level === item.level) {
         return i.data.parent_id === item.data.parent_id;
@@ -354,7 +354,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
     });
   }
 
-  private getChildrenByLevel(node: TreeItemFlatNode<T>, level: number): TreeItemFlatNode<T>[] {
+  private getChildrenByLevel(node: TreeItemFlatNode<responseDto>, level: number): TreeItemFlatNode<responseDto>[] {
     return this.treeControl.getDescendants(node).filter(i => i.level === level);
   }
 
@@ -390,10 +390,10 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
       {relativeTo: this.activatedRoute});
   }
 
-  transformer = (node: ITreeItem<T>, level: number) => {
+  transformer = (node: ITreeItem<responseDto>, level: number) => {
     const existingNode = this.nestedNodeMap.get(node);
     const flatNode = existingNode && existingNode.data.id === node.id
-      ? existingNode : node as TreeItemFlatNode<T>;
+      ? existingNode : node as TreeItemFlatNode<responseDto>;
     flatNode.level = level;
     flatNode.expandable = !!node.children?.length;
     flatNode.isGroup = node.isGroup;
@@ -403,7 +403,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
   };
 
   /** Whether all the descendants of the node are selected. */
-  descendantsAllSelected(node: TreeItemFlatNode<T>): boolean {
+  descendantsAllSelected(node: TreeItemFlatNode<responseDto>): boolean {
     const descendants = this.treeControl.getDescendants(node);
     return descendants.length > 0 &&
       descendants.every(child => {
@@ -412,14 +412,14 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
   }
 
   /** Whether part of the descendants are selected */
-  descendantsPartiallySelected(node: TreeItemFlatNode<T>): boolean {
+  descendantsPartiallySelected(node: TreeItemFlatNode<responseDto>): boolean {
     const descendants = this.treeControl.getDescendants(node);
     const result = descendants.some(child => this.selection.isSelected(child));
     return result && !this.descendantsAllSelected(node);
   }
 
   /** Toggle the to-do item selection. Select/deselect all the descendants node */
-  todoItemSelectionToggle(node: TreeItemFlatNode<T>): void {
+  todoItemSelectionToggle(node: TreeItemFlatNode<responseDto>): void {
     this.selection.toggle(node);
     const descendants = this.treeControl.getDescendants(node);
     this.selection.isSelected(node)
@@ -432,30 +432,28 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
   }
 
   /** Toggle a leaf to-do item selection. Check all the parents to see if they changed */
-  todoLeafItemSelectionToggle(node: TreeItemFlatNode<T>): void {
+  todoLeafItemSelectionToggle(node: TreeItemFlatNode<responseDto>): void {
     this.selection.toggle(node);
     this.checkAllParentsSelection(node);
   }
 
-  public updateTitle(data: string, node: TreeItemFlatNode<T>): void {
+  public async updateTitle(data: string, node: TreeItemFlatNode<responseDto>): Promise<void> {
     if (node.data.id === -1) {
       if (data.trim().length === 0) {
         return;
       }
       this.saveNode(node, data);
-      console.log('save new item')
     }
     else {
       if (data !== node.data.name) {
         this.saveNode(node, data);
-        console.log('update item')
       }
     }
   }
 
   /* Checks all the parents when a leaf node is selected/unselected */
-  checkAllParentsSelection(node: TreeItemFlatNode<T>): void {
-    let parent: TreeItemFlatNode<T> | null = this.getParentNode(node);
+  checkAllParentsSelection(node: TreeItemFlatNode<responseDto>): void {
+    let parent: TreeItemFlatNode<responseDto> | null = this.getParentNode(node);
     while (parent) {
       this.checkRootNodeSelection(parent);
       parent = this.getParentNode(parent);
@@ -463,7 +461,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
   }
 
   /** Check root node checked state and change it accordingly */
-  checkRootNodeSelection(node: TreeItemFlatNode<T>): void {
+  checkRootNodeSelection(node: TreeItemFlatNode<responseDto>): void {
     const nodeSelected = this.selection.isSelected(node);
     const descendants = this.treeControl.getDescendants(node);
     const descAllSelected =
@@ -479,7 +477,7 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
   }
 
   /* Get the parent node of a node */
-  getParentNode(node: TreeItemFlatNode<T>): TreeItemFlatNode<T> | null {
+  getParentNode(node: TreeItemFlatNode<responseDto>): TreeItemFlatNode<responseDto> | null {
     const currentLevel = this.getLevel(node);
 
     if (currentLevel < 1) {
@@ -499,21 +497,20 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
   }
 
   /** Select the category so we can insert the new item. */
-  addNewChildrenItem(node: TreeItemFlatNode<T>) {
+  async addNewChildrenItem(node: TreeItemFlatNode<responseDto>): Promise<void> {
     const parentNode = this.flatNodeMap.get(node);
+    console.log(node, parentNode)
     if (parentNode) {
-      this._database.addChildren(parentNode, [this.addItemTemplate(-1, node.data.id, '', false)]);
+      const createdChild = await this._database.addChildren(parentNode, [this.addItemTemplate(-1, node.data.id, '', false)]);
       this.treeControl.expand(node);
+      this.currentFocusId = createdChild[0].id;
+      this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === createdChild[0].id), false);
+      await this.openDetailView(createdChild[0].id === -1 ? 'new' : createdChild[0].id);
     }
-    this.currentFocusId = -1;
-
-    // else {
-    //   this._database.insertItemTo(null, [newItem]);
-    // }
   }
 
-  private addItemTemplate(id: number, parent: number, name: string, isGroup: boolean): ITreeItem<T> {
-    const item: ITreeItem<T> = new ITreeItem<T>();
+  private addItemTemplate(id: number, parent: number, name: string, isGroup: boolean): ITreeItem<responseDto> {
+    const item: ITreeItem<responseDto> = new ITreeItem<responseDto>();
     item.data = {};
     item.data.name = name;
     item.data.id = id;
@@ -524,35 +521,31 @@ export class BaseTreeComponent<T> implements OnInit, OnChanges {
     return item;
   }
 
-  addNewItem(node: TreeItemFlatNode<T> | null = null) {
+  async addNewItem(node: TreeItemFlatNode<responseDto> | null = null): Promise<void> {
     const originNode = this.flatNodeMap.get(node!);
     const newNode =
-    this._database.insertTo(
+    await this._database.insertTo(
       originNode!,
       [this.addItemTemplate(-1, node?.data.parent_id, '', false)]);
-    this.currentFocusId = -1;
+    this.currentFocusId = newNode[0].id;
+    this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === newNode[0].id), false);
+    await this.openDetailView(newNode[0].id === -1 ? 'new' : newNode[0].id);
   }
 
   /** Save the node to database */
-  saveNode(node: TreeItemFlatNode<T>, itemValue: string) {
+  saveNode(node: TreeItemFlatNode<responseDto>, itemValue: string) {
     const nestedNode = this.flatNodeMap.get(node);
     this._database.updateItem(nestedNode!, itemValue);
   }
 
-  deleteNode(node: TreeItemFlatNode<T>) {
+  async deleteNode(node: TreeItemFlatNode<responseDto>): Promise<void> {
     const originNode = this.flatNodeMap.get(node!);
     this.flatNodeMap.delete(node);
     this.nestedNodeMap.delete(originNode!);
     this._database.removeItem(originNode!);
-
-    if (node.data.id !== -1) {
-      // TODO: Query to database
-    }
   }
 
-
-
-  onMenuAction(node: TreeItemFlatNode<T>, action: ListItemOption): void {
+  onMenuAction(node: TreeItemFlatNode<responseDto>, action: ListItemOption): void {
     switch (action) {
       case ListItemOption.COPY_LINK: {
         this.copyLink(node.id);
