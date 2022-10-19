@@ -47,15 +47,13 @@ export abstract class BaseTreeDatabaseService<requestDto, responseDto, params> {
   }
 
   public async addChildren(parent: ITreeItem<responseDto>, items: ITreeItem<responseDto>[]): Promise<ITreeItem<responseDto>[]> {
-    if (!parent.children) {
-      parent.children = [];
-    }
-
     const createdItems = await this.restInsert(items, parent.id);
 
-    const p = this.parents.get(parent!);
+    const children = this.parents.get(parent);
+    parent.children = !children ? createdItems : [...parent.children, ...createdItems];
+    this.parents.set(parent, parent.children);
+
     createdItems.forEach(item => {
-      p?.push(item);
       this.childParent.set(item, parent);
     });
 
@@ -64,24 +62,22 @@ export abstract class BaseTreeDatabaseService<requestDto, responseDto, params> {
   }
 
   public async insertTo(item: ITreeItem<responseDto>, items: ITreeItem<responseDto>[], position?: number): Promise<ITreeItem<responseDto>[]> {
-    // this.restInsert()
-    const createdItems = await this.restInsert(items);
-
+    const parent_id = item.data.parent_id ? Number(item.data.parent_id) : -1;
     const parentNode = this.childParent.get(item);
-    const parent = this.parents.get(parentNode!);
-
-    if (position) {
-      this.parents.get(parentNode!)?.splice(position + 1, 0, ...createdItems);
+    if (!this.parents.get(parentNode!)) {
+      this.parents.set(parentNode!, []);
+      item.children = [];
     }
-    else {
-      const index = parent?.findIndex(i => i.id === item.id);
-      this.parents.get(parentNode!)?.splice(index! + 1, 0, ...createdItems);
+    const createdItems = await this.restInsert(items, parent_id);
+
+    let insertIndex = position ? position : this.parents.get(parentNode!)?.findIndex(i => i.id === item.id);
+    if (parentNode && parentNode !== -1) {
+      this.parents.get(parentNode!)?.splice(insertIndex! + 1, 0, ...createdItems);
     }
 
     createdItems.forEach(i => {
       this.childParent.set(i, parentNode!);
     });
-
     this._dataChange.next(this.data);
     // this._recalculatePositions();
     this._countChildren();

@@ -98,7 +98,7 @@ export class BaseTreeComponent<requestDto, responseDto, params> implements OnIni
     this.groupedData = [];
     if (this.config.groups && this.config.groups.length && this.config.groupDivider) {
       this.config.groups.forEach((group, index) => {
-        const groupItem = this.addItemTemplate(-2, index, group.name, true);
+        const groupItem = this._addItemTemplate(-2, index, group.name, true);
         const filteredGroupData = this.groupDivider(list, group.type);
         filteredGroupData.map(item => {
           groupItem.children.push(item);
@@ -216,7 +216,6 @@ export class BaseTreeComponent<requestDto, responseDto, params> implements OnIni
         break;
       }
       case KeyCodeName.ENTER: {
-        console.log(item)
         if (item.data.id === -1) {
           return;
         }
@@ -499,9 +498,8 @@ export class BaseTreeComponent<requestDto, responseDto, params> implements OnIni
   /** Select the category so we can insert the new item. */
   async addNewChildrenItem(node: TreeItemFlatNode<responseDto>): Promise<void> {
     const parentNode = this.flatNodeMap.get(node);
-    console.log(node, parentNode)
     if (parentNode) {
-      const createdChild = await this._database.addChildren(parentNode, [this.addItemTemplate(-1, node.data.id, '', false)]);
+      const createdChild = await this._database.addChildren(parentNode, [this._addItemTemplate(-1, node.data.id, '', false)]);
       this.treeControl.expand(node);
       this.currentFocusId = createdChild[0].id;
       this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === createdChild[0].id), false);
@@ -509,7 +507,18 @@ export class BaseTreeComponent<requestDto, responseDto, params> implements OnIni
     }
   }
 
-  private addItemTemplate(id: number, parent: number, name: string, isGroup: boolean): ITreeItem<responseDto> {
+  async addNewItem(node: TreeItemFlatNode<responseDto> | null = null): Promise<void> {
+    const originNode = this.flatNodeMap.get(node!);
+    const newNode =
+      await this._database.insertTo(
+        originNode!,
+        [this._addItemTemplate(-1, node?.data.parent_id, '', false)]);
+    this.currentFocusId = newNode[0].id;
+    this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === newNode[0].id), false);
+    await this.openDetailView(newNode[0].id === -1 ? 'new' : newNode[0].id);
+  }
+
+  private _addItemTemplate(id: number, parent: number, name: string, isGroup: boolean): ITreeItem<responseDto> {
     const item: ITreeItem<responseDto> = new ITreeItem<responseDto>();
     item.data = {};
     item.data.name = name;
@@ -519,17 +528,6 @@ export class BaseTreeComponent<requestDto, responseDto, params> implements OnIni
     item.data.parent_id = parent;
     item.children = [];
     return item;
-  }
-
-  async addNewItem(node: TreeItemFlatNode<responseDto> | null = null): Promise<void> {
-    const originNode = this.flatNodeMap.get(node!);
-    const newNode =
-    await this._database.insertTo(
-      originNode!,
-      [this.addItemTemplate(-1, node?.data.parent_id, '', false)]);
-    this.currentFocusId = newNode[0].id;
-    this.changeSelection(this.treeControl.dataNodes.findIndex(i => i.data.id === newNode[0].id), false);
-    await this.openDetailView(newNode[0].id === -1 ? 'new' : newNode[0].id);
   }
 
   /** Save the node to database */
