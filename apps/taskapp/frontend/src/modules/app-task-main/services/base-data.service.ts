@@ -30,6 +30,8 @@ export abstract class BaseTreeDatabaseService<requestDto, responseDto, params> {
 
   public abstract restInsert(items: ITreeItem<responseDto>[], parentId?: number): Promise<ITreeItem<responseDto>[]>;
   public abstract restUpdate(item: ITreeItem<responseDto>, name: string): Promise<void>;
+  public abstract restMove(items: ITreeItem<responseDto>[], parent_id: number): Promise<void>;
+  public abstract restDuplicate(items: ITreeItem<responseDto>[], parent_id: number): Promise<ITreeItem<responseDto>[]>;
 
   public initialize(items: ITreeItem<responseDto>[] = [], expanded: boolean = true) {
     // this.expanded = expanded;
@@ -89,6 +91,10 @@ export abstract class BaseTreeDatabaseService<requestDto, responseDto, params> {
     const parent = this.childParent.get(item);
     this.parents.get(parent!)?.map(i => i.id === item.id ? item : i);
     this._dataChange.next(this.data);
+  }
+
+  public async moveItems(items: ITreeItem<responseDto>, parent: ITreeItem<responseDto>): Promise<void> {
+
   }
 
   public get childCount(): number {

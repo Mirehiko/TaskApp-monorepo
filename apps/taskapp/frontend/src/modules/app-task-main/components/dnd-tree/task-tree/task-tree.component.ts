@@ -29,6 +29,14 @@ export class TaskTreeDatabaseService extends BaseTreeDatabaseService<TaskRequest
     }));
     return await TaskTreeHelper.mapDtoToTree(tasks);
   }
+
+  public async restMove(items: ITreeItem<TaskResponseDto>[], parent_id: number): Promise<void> {
+    await this.rest.move({ parentId: parent_id, childIds: items.map(i => i.id)});
+  }
+
+  public async restDuplicate(items: ITreeItem<TaskResponseDto>[], parent_id: number): Promise<ITreeItem<TaskResponseDto>[]> {
+    return await TaskTreeHelper.mapDtoToTree(await this.rest.copy(parent_id, items.map(i => i.id)));
+  }
 }
 
 @Component({
