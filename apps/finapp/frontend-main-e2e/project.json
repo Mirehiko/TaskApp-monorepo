@@ -1,0 +1,28 @@
+{
+  "root": "apps/finapp/frontend-main-e2e",
+  "sourceRoot": "apps/finapp/frontend-main-e2e/src",
+  "projectType": "application",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/finapp/frontend-main-e2e/cypress.json",
+        "devServerTarget": "finapp-frontend-main:serve:development"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "finapp-frontend-main:serve:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/finapp/frontend-main-e2e/**/*.{js,ts}"]
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["finapp-frontend-main"]
+}

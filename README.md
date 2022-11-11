@@ -1,9 +1,32 @@
 # TestApp
 
 > use node v16.14.0, npm: 8.10.0
-
+###Pre-conditions:
 1. Move to project directory;
 2. Run `npm i`;
+3. Create and describe .env file;
+4. Create DB;
+
+## Run:
+development:
+- run script start:backend
+- run script start:frontend
+#Swagger
+http://localhost:5002/api/docs/
+```
+
+## Test
+
+```bash
+# unit tests
+$ npm run test
+
+# e2e tests
+$ npm run test:e2e
+
+# test coverage
+$ npm run test:cov
+```
 
 [comment]: <> (This project was generated using [Nx]&#40;https://nx.dev&#41;.)
 
@@ -59,7 +82,7 @@
 
 [comment]: <> (> You can also use any of the plugins above to generate libraries as well.)
 
-[comment]: <> (Libraries are shareable across libraries and applications. They can be imported from `@finapp/mylib`.)
+[comment]: <> (Libraries are shareable across libraries and applications. They can be imported from `@taskapp/mylib`.)
 
 [comment]: <> (## Development server)
 

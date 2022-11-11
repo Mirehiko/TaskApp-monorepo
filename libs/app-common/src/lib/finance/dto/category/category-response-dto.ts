@@ -1,8 +1,9 @@
 import { IsNotEmpty, IsOptional } from "class-validator";
 import { Expose } from "class-transformer";
+import { BaseTreeDto, TreeEntityType } from '../../../common';
 
 
-export class CategoryResponseDto {
+export class CategoryResponseDto extends BaseTreeDto {
   @Expose()
   id: number;
 
@@ -32,4 +33,12 @@ export class CategoryResponseDto {
   @IsOptional()
   @Expose()
   archived?: boolean;
+
+  @IsNotEmpty()
+  @Expose()
+  sortOrder: number;
+
+  @IsNotEmpty()
+  @Expose()
+  type: TreeEntityType = TreeEntityType.DETAIL;
 }

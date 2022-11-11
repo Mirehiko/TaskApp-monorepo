@@ -1,0 +1,52 @@
+{
+  "root": "apps/taskapp/backend",
+  "sourceRoot": "apps/taskapp/backend/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/taskapp/backend",
+        "main": "apps/taskapp/backend/src/main.ts",
+        "tsConfig": "apps/taskapp/backend/tsconfig.app.json",
+        "assets": ["apps/taskapp/backend/src/assets"]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/taskapp/backend/src/environments/environment.ts",
+              "with": "apps/taskapp/backend/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "taskapp-backend:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/taskapp/backend/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/taskapp/backend"],
+      "options": {
+        "jestConfig": "apps/taskapp/backend/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

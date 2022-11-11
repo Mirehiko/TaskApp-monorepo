@@ -1,5 +1,5 @@
 {
-  "npmScope": "finapp",
+  "npmScope": "taskapp",
   "affected": {
     "defaultBase": "main"
   },

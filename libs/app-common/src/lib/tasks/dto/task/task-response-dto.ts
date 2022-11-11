@@ -1,12 +1,12 @@
 import { Expose } from 'class-transformer';
-import { IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 import { TaskCommentResponseDto } from '../..';
-import { UserResponseDto } from '../../../common';
+import { BaseTreeDto, TreeEntityType, UserResponseDto } from '../../../common';
 import { TaskPriority, TaskStatus } from '../../enums';
 import { TagResponseDto } from '../tag';
 
 
-export class TaskResponseDto {
+export class TaskResponseDto extends BaseTreeDto {
   @Expose()
 	id: number;
 
@@ -62,9 +62,21 @@ export class TaskResponseDto {
 
   @IsOptional()
   @Expose()
+  parent_id: number;
+
+  @IsOptional()
+  @Expose()
   comments?: TaskCommentResponseDto[];
 
   @IsOptional()
   @Expose()
   children?: TaskResponseDto[];
+
+  @IsNotEmpty()
+  @Expose()
+  sortOrder: number;
+
+  @IsNotEmpty()
+  @Expose()
+  type: TreeEntityType = TreeEntityType.DETAIL;
 }

@@ -1,0 +1,45 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: inherit;
+  justify-content: space-between;
+}
+
+h2 {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 10px 0 15px;
+}
+
+.form {
+  border-bottom: 1px solid #efefef;
+
+  ::ng-deep {
+    .control-placeholder {
+      position: absolute;
+    }
+    .control-name .control-placeholder {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0 15px;
+    }
+    .f-control {
+      padding: 0 5px;
+    }
+    .control-description, .control-description * {
+      font-size: 14px;
+      line-height: 20px;
+      font-family: sans-serif;
+    }
+  }
+}
+.section {
+  padding: 15px 10px;
+}
+.page-header, .page-body {
+  height: 50px;
+}
+
+.page-body {
+  height: 100%;
+}

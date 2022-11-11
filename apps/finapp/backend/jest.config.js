@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: 'backend',
+  displayName: 'finapp-backend',
   preset: '../../../jest.preset.js',
   globals: {
     'ts-jest': {

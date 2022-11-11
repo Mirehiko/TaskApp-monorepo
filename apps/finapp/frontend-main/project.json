@@ -1,0 +1,94 @@
+{
+  "projectType": "application",
+  "root": "apps/finapp/frontend-main",
+  "sourceRoot": "apps/finapp/frontend-main/src",
+  "prefix": "taskapp",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/finapp/frontend-main",
+        "index": "apps/finapp/frontend-main/src/index.html",
+        "main": "apps/finapp/frontend-main/src/main.ts",
+        "polyfills": "apps/finapp/frontend-main/src/polyfills.ts",
+        "tsConfig": "apps/finapp/frontend-main/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/finapp/frontend-main/src/favicon.ico",
+          "apps/finapp/frontend-main/src/assets"
+        ],
+        "styles": ["apps/finapp/frontend-main/src/styles.scss"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/finapp/frontend-main/src/environments/environment.ts",
+              "with": "apps/finapp/frontend-main/src/environments/environment.prod.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "finapp-frontend-main:build:production"
+        },
+        "development": {
+          "browserTarget": "finapp-frontend-main:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "finapp-frontend-main:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/finapp/frontend-main/src/**/*.ts",
+          "apps/finapp/frontend-main/src/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/finapp/frontend-main"],
+      "options": {
+        "jestConfig": "apps/finapp/frontend-main/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

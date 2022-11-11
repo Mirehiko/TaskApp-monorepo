@@ -1,4 +1,4 @@
-import { IGetParams } from '@finapp/app-common';
+import { IGetParams } from '@taskapp/app-common';
 
 
 export interface ITagGetParams extends IGetParams {

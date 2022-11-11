@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { ListType } from '../../enums';
 import { ListBehaviorType } from '../../enums/list-behavior-type';
+import { TreeEntityType } from '../../../common';
 
 
 export class ListRequestDto {
@@ -21,10 +21,6 @@ export class ListRequestDto {
   @IsString()
   color?: string;
 
-  @IsString()
-  @IsOptional()
-  type?: ListType;
-
   @IsOptional()
   @IsNumber()
   parent_id?: number;
@@ -34,4 +30,10 @@ export class ListRequestDto {
 
   @IsOptional()
   archived?: boolean;
+
+  @IsOptional()
+  sortOrder?: number;
+
+  @IsNotEmpty()
+  type: TreeEntityType = TreeEntityType.DETAIL;
 }

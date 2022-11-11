@@ -1,0 +1,21 @@
+<div class="form-auth">
+  <div class="form-avatar-block">
+    <div class="form-avatar">T</div>
+  </div>
+  <form class="form-body" [formGroup]="form" (ngSubmit)="submit()">
+    <input class="form-control" formControlName="email" type="email" />
+    <input class="form-control" formControlName="password" type="password" />
+    <input
+      [disabled]="form.invalid || form.disabled"
+      class="form-btn"
+      type="submit"
+      value="Войти"
+    />
+    <div class="text-center form-restore">
+      <a (click)="onClick()">Восстановить пароль</a>
+    </div>
+    <div class="text-center form-social">
+      icons
+    </div>
+  </form>
+</div>

@@ -1,0 +1,78 @@
+.mat-tree-node__item {
+  app-custom-checkbox.mat-tree-node__checkbox.custom-checkbox ::ng-deep {
+    .inp-cbx:checked + .cbx .span.ico {
+      border-color: #9196af;
+      background: #9196af;
+    }
+    .span-text {
+      width: 100%;
+    }
+  }
+}
+.mat-tree-node-hidden {
+  display: none;
+}
+.mat-tree-node__group {
+
+  .mat-tree-node__name {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 10px;
+  }
+  .task-count {
+    font-size: 10px;
+    padding: 0 6px;
+    color: #ccc;
+    font-weight: normal;
+  }
+}
+.clickable-node {
+  cursor: pointer;
+}
+
+
+
+.mat-tree-node__content {
+  display: flex;
+  align-items: center;
+
+  &.mat-tree-node__content-selected {
+    background: #e5e9eb;
+  }
+}
+.mat-tree-node__divider {
+  display: flex;
+  border-bottom: 1px solid #e5e9eb;
+  padding: 10px 0;
+  align-items: center;
+}
+
+.mat-tree-node__icons {
+  white-space: nowrap;
+}
+
+.mat-tree-node__name, .mat-tree-node__name * {
+  font-size: 14px;
+  //height: auto !important;
+}
+
+
+.toggle-btn {
+  width: 12px;
+  font-size: 12px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  margin-right: 2px;
+
+  .mat-icon {
+    width: 100%;
+    height: auto;
+    font-size: 16px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+}

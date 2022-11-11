@@ -1,0 +1,43 @@
+<ul class="nested-list" *ngIf="data.length">
+  <ng-container *ngFor="let dataItem of data">
+    <ng-container
+      *ngIf="dataItem.parent_id === -1"
+      [ngTemplateOutlet]="item"
+      [ngTemplateOutletContext]="{$implicit:dataItem}">
+    </ng-container>
+
+    <ul class="nested-list-group">
+      <ng-container *ngFor="let child of data">
+        <ng-container
+          *ngIf="child.parent_id === dataItem.id"
+          [ngTemplateOutlet]="item"
+          [ngTemplateOutletContext]="{$implicit:child}">
+        </ng-container>
+      </ng-container>
+    </ul>
+
+    <ng-template #item let-content>
+      <li class="nested-item"
+          (click)="itemClicked(content)"
+          [ngClass]="getStyle(content)"
+          (dragstart)="handleDragStart($event, content)"
+          (dragover)="handleDragOver($event, content)"
+          (drop)="handleDrop($event, content)"
+          (dragend)="handleDragEnd($event)"
+          [draggable]="draggable">
+        <div class="nested-item-placeholder"></div>
+        <div class="ni-wrapper">
+          <div class="ni-description">
+            [>]
+            <ng-container
+              *ngIf="itemTemplateRef"
+              [ngTemplateOutlet]="itemTemplateRef"
+              [ngTemplateOutletContext]="{$implicit:content}">
+            </ng-container>
+          </div>
+          <div class="ni-actions">[...]</div>
+        </div>
+      </li>
+    </ng-template>
+  </ng-container>
+</ul>

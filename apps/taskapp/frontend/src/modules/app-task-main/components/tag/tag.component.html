@@ -1,0 +1,19 @@
+<section class="tag-container">
+  <div tag-list class="tag-list">
+    <ng-content select=".tag-list"></ng-content>
+    <div
+      class="tag-control tag-button"
+      [classList]="'control-tag'"
+      [opacity]="1"
+      optionsMenu [menuComponent]="optionsMenuWrapper"
+      inputDirective formControlName="name"
+      (focusChanged)="focusChanged($event)"
+      (inputChanged)="changes($event)"
+      [clearOnBlur]="true"
+      [placeholder]="'+'"></div>
+  </div>
+
+  <options-list-container #optionsMenuWrapper class="options-wrapper">
+    <ng-content select=".options-list"></ng-content>
+  </options-list-container>
+</section>
